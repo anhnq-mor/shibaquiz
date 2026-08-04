@@ -1,0 +1,16 @@
+# dependencies and builds
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# environment and local tooling
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+
+# generated local data must never be deployed as persistence
+data/

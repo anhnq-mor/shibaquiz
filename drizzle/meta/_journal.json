@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1785829037993,
+      "tag": "0000_illegal_moondragon",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1785836136689,
+      "tag": "0001_sad_venom",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785840688675,
+      "tag": "0002_smiling_the_renegades",
+      "breakpoints": true
+    }
+  ]
+}
