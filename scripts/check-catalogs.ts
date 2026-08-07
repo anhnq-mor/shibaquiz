@@ -1,5 +1,6 @@
 import { catalogs } from "../src/i18n/catalogs";
 import { authCatalogs } from "../src/i18n/auth-catalogs";
+import { adminCatalogs } from "../src/i18n/admin-catalogs";
 
 function leafPaths(value: object, prefix = ""): string[] {
   return Object.entries(value).flatMap(([key, child]) => {
@@ -14,6 +15,8 @@ const viKeys = leafPaths(catalogs.vi).sort();
 const enKeys = leafPaths(catalogs.en).sort();
 const viAuthKeys = leafPaths(authCatalogs.vi).sort();
 const enAuthKeys = leafPaths(authCatalogs.en).sort();
+const viAdminKeys = leafPaths(adminCatalogs.vi).sort();
+const enAdminKeys = leafPaths(adminCatalogs.en).sort();
 
 if (JSON.stringify(viKeys) !== JSON.stringify(enKeys)) {
   throw new Error(
@@ -27,6 +30,12 @@ if (JSON.stringify(viAuthKeys) !== JSON.stringify(enAuthKeys)) {
   );
 }
 
+if (JSON.stringify(viAdminKeys) !== JSON.stringify(enAdminKeys)) {
+  throw new Error(
+    "Vietnamese and English admin catalogs do not contain the same keys",
+  );
+}
+
 process.stdout.write(
-  `Catalog parity verified (${viKeys.length + viAuthKeys.length} keys per locale).\n`,
+  `Catalog parity verified (${viKeys.length + viAuthKeys.length + viAdminKeys.length} keys per locale).\n`,
 );

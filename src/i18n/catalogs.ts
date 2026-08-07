@@ -43,6 +43,8 @@ export interface MessageCatalog {
     foundationState: string;
     next: string;
     nextState: string;
+    localization: string;
+    localizationState: string;
   };
   footer: string;
 }
@@ -96,6 +98,8 @@ const vi: MessageCatalog = {
     foundationState: "Hoàn tất",
     next: "Bước 2 · Tài khoản an toàn",
     nextState: "Hoàn tất",
+    localization: "Bước 3 · Ngôn ngữ và bản dịch",
+    localizationState: "Hoàn tất",
   },
   footer: "ShibaQuiz · Thiết kế cho tiếng Việt và English ngay từ đầu.",
 };
@@ -149,6 +153,8 @@ const en: MessageCatalog = {
     foundationState: "Complete",
     next: "Step 2 · Secure accounts",
     nextState: "Complete",
+    localization: "Step 3 · Locales and translations",
+    localizationState: "Complete",
   },
   footer: "ShibaQuiz · Designed for Tiếng Việt and English from day one.",
 };

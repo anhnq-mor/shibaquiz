@@ -1,6 +1,6 @@
 # ShibaQuiz
 
-ShibaQuiz is a bilingual (`vi`/`en`) exam-practice application. Delivery slices 1 and 2 are implemented: the accessible app foundation plus a secure email/password account lifecycle with database sessions and server-side authorization.
+ShibaQuiz is a bilingual (`vi`/`en`) exam-practice application. Delivery slices 1, 2, and 4 are implemented: the accessible app foundation, a secure email/password account lifecycle with database sessions and server-side authorization, and an admin-only content editor for exams, topics, questions, and tests with transactional publishing invariants and a redacted audit trail.
 
 ## Requirements
 
@@ -62,9 +62,13 @@ See [the backlog](docs/backlog.md) and [architecture decisions](docs/decisions/)
 
 Vercel/production configuration must set `STORAGE_DRIVER=postgres`, `DATABASE_URL`, `MEDIA_STORAGE_DRIVER=s3`, object-storage credentials, HTTPS `APP_URL`, `AUTH_SECRET` (at least 32 characters), and a non-console email provider with its credentials. `STORAGE_DRIVER=pglite` is rejected outside local development. Database backup/restore and provider-specific deployment instructions are scheduled for the hardening slice; provider-native point-in-time recovery is recommended.
 
+## Admin content editor
+
+Sign in with an `ADMIN` account and open `/vi/admin` or `/en/admin` to manage exams, topics, questions, and tests. Every admin API route re-checks the session role server-side and every create/update/status/delete runs inside one database transaction with a redacted audit-log entry (entity, action, and status only — never question text, options, explanations, or correct answers). Exams, topics, and questions cannot be hard-deleted; they are archived or soft-deleted so existing attempt snapshots stay unaffected. Publishing an exam requires at least one published topic and one valid published question; publishing a test requires either a fully-selected `FIXED` question list or a `DYNAMIC` topic-percentage split totalling 100% with enough published source questions, previewed before saving.
+
 ## Current limitations
 
-Admin CRUD, imports, media lifecycle endpoints, attempts, scoring, history, and comments are scheduled in later slices. The health endpoint only verifies application/database readiness.
+Imports, media lifecycle endpoints, attempts, scoring, history, and comments are scheduled in later slices. The health endpoint only verifies application/database readiness.
 
 ## Author / copyright
 

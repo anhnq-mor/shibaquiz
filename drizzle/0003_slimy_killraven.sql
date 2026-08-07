@@ -1,0 +1,1 @@
+ALTER TABLE "exams" ADD CONSTRAINT "exams_primary_locale_enabled" CHECK ("exams"."primary_locale" = any("exams"."enabled_locales"));

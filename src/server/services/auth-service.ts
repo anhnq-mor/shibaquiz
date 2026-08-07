@@ -259,6 +259,19 @@ export class AuthService {
     });
   }
 
+  async updatePreferredLocale(
+    sessionToken: string | undefined,
+    locale: Locale,
+  ): Promise<void> {
+    const user = await this.currentUser(sessionToken);
+    if (!user) return;
+    await this.repository.updatePreferredLocale({
+      userId: user.id,
+      locale,
+      now: this.now(),
+    });
+  }
+
   private async enforceRateLimit(
     action: string,
     subject: string,

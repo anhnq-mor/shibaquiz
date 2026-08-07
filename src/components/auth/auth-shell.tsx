@@ -3,13 +3,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import type { Locale } from "@/domain/common/locale";
 import type { AuthCatalog } from "@/i18n/auth-catalogs";
 
 export function AuthShell({
   locale,
   messages,
-  path,
   title,
   description,
   children,
@@ -23,29 +23,16 @@ export function AuthShell({
   children: ReactNode;
   token?: string | undefined;
 }) {
-  const query = token ? `?token=${encodeURIComponent(token)}` : "";
   return (
     <main className="auth-page">
-      <div
+      <LocaleSwitcher
         className="auth-language"
-        aria-label={messages.common.languageNavigation}
-      >
-        <Link
-          href={`/vi/${path}${query}` as Route}
-          lang="vi"
-          aria-current={locale === "vi" ? "page" : undefined}
-        >
-          VI
-        </Link>
-        <span aria-hidden="true">/</span>
-        <Link
-          href={`/en/${path}${query}` as Route}
-          lang="en"
-          aria-current={locale === "en" ? "page" : undefined}
-        >
-          EN
-        </Link>
-      </div>
+        locale={locale}
+        navigationLabel={messages.common.languageNavigation}
+        vietnameseLabel={messages.common.switchToVietnamese}
+        englishLabel={messages.common.switchToEnglish}
+        fallbackSearch={token ? `?token=${encodeURIComponent(token)}` : ""}
+      />
       <section className="auth-card" aria-labelledby="auth-title">
         <Link href={`/${locale}` as Route} className="auth-brand">
           <BrandMark />

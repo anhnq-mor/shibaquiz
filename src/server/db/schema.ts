@@ -176,6 +176,10 @@ export const exams = pgTable(
       "exams_enabled_locales_not_empty",
       sql`cardinality(${table.enabledLocales}) > 0`,
     ),
+    check(
+      "exams_primary_locale_enabled",
+      sql`${table.primaryLocale} = any(${table.enabledLocales})`,
+    ),
   ],
 );
 
@@ -268,6 +272,10 @@ export const questions = pgTable(
     ),
     index("questions_deleted_at_idx").on(table.deletedAt),
     check("questions_version_positive", sql`${table.version} > 0`),
+    check(
+      "questions_deleted_are_archived",
+      sql`${table.deletedAt} is null or ${table.status} = 'ARCHIVED'`,
+    ),
   ],
 );
 

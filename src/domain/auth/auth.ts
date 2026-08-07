@@ -69,6 +69,11 @@ export interface AuthRepository {
     passwordHash: string;
     now: Date;
   }): Promise<void>;
+  updatePreferredLocale(input: {
+    userId: string;
+    locale: Locale;
+    now: Date;
+  }): Promise<void>;
   consumeRateLimit(input: {
     keyHash: string;
     action: string;
@@ -114,4 +119,20 @@ export class AuthError extends Error {
     super(message);
     this.name = "AuthError";
   }
+}
+
+/**
+ * Next.js dev mode compiles the page/RSC layer and the route-handler layer as
+ * separate module graphs, so a class instance created by a `globalThis`-cached
+ * singleton on one side can fail an `instanceof AuthError` check performed by
+ * code compiled on the other side. Matching on `name` plus shape is immune to
+ * that cross-layer identity mismatch.
+ */
+export function isAuthError(error: unknown): error is AuthError {
+  return (
+    error instanceof Error &&
+    error.name === "AuthError" &&
+    typeof (error as AuthError).code === "string" &&
+    typeof (error as AuthError).status === "number"
+  );
 }

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { ZodError, type ZodType } from "zod";
 
-import { AuthError } from "@/domain/auth/auth";
+import { AuthError, isAuthError } from "@/domain/auth/auth";
 import type { Locale } from "@/domain/common/locale";
 import { loadAuthConfig } from "@/server/config/env";
 
@@ -16,6 +16,7 @@ const messages = {
     TOKEN_INVALID: "Liên kết không hợp lệ hoặc đã hết hạn.",
     RATE_LIMITED: "Bạn thao tác quá nhanh. Vui lòng thử lại sau.",
     AUTH_REQUIRED: "Vui lòng đăng nhập để tiếp tục.",
+    FORBIDDEN: "Bạn không có quyền thực hiện thao tác này.",
     CURRENT_PASSWORD_INVALID: "Mật khẩu hiện tại không đúng.",
     INTERNAL_ERROR: "Đã có lỗi xảy ra. Vui lòng thử lại.",
   },
@@ -28,6 +29,7 @@ const messages = {
     TOKEN_INVALID: "The link is invalid or has expired.",
     RATE_LIMITED: "Too many requests. Please try again later.",
     AUTH_REQUIRED: "Sign in to continue.",
+    FORBIDDEN: "You do not have permission to perform this action.",
     CURRENT_PASSWORD_INVALID: "The current password is incorrect.",
     INTERNAL_ERROR: "Something went wrong. Please try again.",
   },
@@ -87,7 +89,7 @@ export function authErrorResponse(
       { status: 400 },
     );
   }
-  if (error instanceof AuthError) {
+  if (isAuthError(error)) {
     const code = error.code as keyof (typeof messages)[Locale];
     return NextResponse.json(
       {

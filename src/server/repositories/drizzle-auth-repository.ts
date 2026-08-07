@@ -307,6 +307,15 @@ export class DrizzleAuthRepository implements AuthRepository {
     });
   }
 
+  async updatePreferredLocale(
+    input: Parameters<AuthRepository["updatePreferredLocale"]>[0],
+  ): Promise<void> {
+    await this.database
+      .update(users)
+      .set({ preferredLocale: input.locale, updatedAt: input.now })
+      .where(and(eq(users.id, input.userId), eq(users.status, "ACTIVE")));
+  }
+
   async consumeRateLimit(
     input: Parameters<AuthRepository["consumeRateLimit"]>[0],
   ): Promise<number> {

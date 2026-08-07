@@ -122,6 +122,10 @@ describe("secure account vertical slice", () => {
     expect(await service.currentUser(login.sessionToken)).toMatchObject({
       email: "learner@example.com",
     });
+    await service.updatePreferredLocale(login.sessionToken, "en");
+    expect(await service.currentUser(login.sessionToken)).toMatchObject({
+      preferredLocale: "en",
+    });
 
     await service.requestPasswordReset({
       email: "learner@example.com",

@@ -1,6 +1,6 @@
 # ShibaQuiz delivery backlog
 
-Last reviewed: 2026-08-04
+Last reviewed: 2026-08-05
 Source of truth: `SHIBAQUIZ_SPEC.md`
 Statuses: `DONE`, `IN PROGRESS`, `PLANNED`, `BLOCKED`
 
@@ -8,19 +8,19 @@ This backlog maps every functional and non-functional requirement to an incremen
 
 ## Delivery slices
 
-| Slice | Outcome                                                                                                   | Included requirements                                   | Exit evidence                                                                           | Status  |
-| ----- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------- |
-| 1     | Deployable foundation: app shell/design tokens, CI, PostgreSQL schema, repository and media-storage ports | NFR-02, NFR-03, NFR-04, NFR-05, foundation for FR-15/16 | Versioned migration, schema/repository contract tests, bilingual accessible shell, CI   | DONE    |
-| 1A    | Zero-dependency local runtime with the same PostgreSQL schema/repository boundaries                       | NFR-03, NFR-05                                          | Idempotent migrate/seed; `/vi`, `/en`, and database health return 200                   | DONE    |
-| 2     | Secure account lifecycle and server-side authorization                                                    | FR-01, FR-02, FR-14 (seed/admin guard subset), NFR-02   | Auth migrations, unit/integration tests, bilingual screens/email                        | DONE    |
-| 3     | Complete locale routing/catalog and content-translation gates                                             | FR-15                                                   | Catalog parity test, locale resolution tests, bilingual email/templates                 | PLANNED |
-| 4     | Admin content authoring and publishing                                                                    | FR-10, FR-11, FR-12, FR-14                              | CRUD/audit migrations and integration tests, accessible bilingual editor                | PLANNED |
-| 5     | Private media lifecycle                                                                                   | FR-16                                                   | Signed upload/finalize/access tests, object signature validation, no binary persistence | PLANNED |
-| 6     | Transactional import                                                                                      | FR-13                                                   | Preview/validation/rollback tests and safe CSV export                                   | PLANNED |
-| 7     | Discovery and immutable localized attempts                                                                | FR-03, FR-04, FR-05, FR-06                              | Snapshot/autosave/expiry tests; answer-disclosure policy tests                          | PLANNED |
-| 8     | Idempotent submission, scoring, review, and history                                                       | FR-07, FR-08                                            | Transaction/scoring/ownership tests and critical E2E flows                              | PLANNED |
-| 9     | Question discussion, moderation, and audit                                                                | FR-09, remaining FR-14                                  | Ownership/moderation/rate-limit tests                                                   | PLANNED |
-| 10    | Hardening, accessibility, observability, deployment documentation                                         | all NFRs and MVP DoD                                    | E2E, WCAG checks, scans, restore drill, Vercel verification                             | PLANNED |
+| Slice | Outcome                                                                                                   | Included requirements                                   | Exit evidence                                                                           | Status      |
+| ----- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------- |
+| 1     | Deployable foundation: app shell/design tokens, CI, PostgreSQL schema, repository and media-storage ports | NFR-02, NFR-03, NFR-04, NFR-05, foundation for FR-15/16 | Versioned migration, schema/repository contract tests, bilingual accessible shell, CI   | DONE        |
+| 1A    | Zero-dependency local runtime with the same PostgreSQL schema/repository boundaries                       | NFR-03, NFR-05                                          | Idempotent migrate/seed; `/vi`, `/en`, and database health return 200                   | DONE        |
+| 2     | Secure account lifecycle and server-side authorization                                                    | FR-01, FR-02, FR-14 (seed/admin guard subset), NFR-02   | Auth migrations, unit/integration tests, bilingual screens/email                        | DONE        |
+| 3     | Complete locale routing/catalog and content-translation gates                                             | FR-15                                                   | Catalog parity test, locale resolution tests, bilingual email/templates                 | IN PROGRESS |
+| 4     | Admin content authoring and publishing                                                                    | FR-10, FR-11, FR-12, FR-14                              | CRUD/audit migrations and integration tests, accessible bilingual editor                | DONE        |
+| 5     | Private media lifecycle                                                                                   | FR-16                                                   | Signed upload/finalize/access tests, object signature validation, no binary persistence | PLANNED     |
+| 6     | Transactional import                                                                                      | FR-13                                                   | Preview/validation/rollback tests and safe CSV export                                   | PLANNED     |
+| 7     | Discovery and immutable localized attempts                                                                | FR-03, FR-04, FR-05, FR-06                              | Snapshot/autosave/expiry tests; answer-disclosure policy tests                          | PLANNED     |
+| 8     | Idempotent submission, scoring, review, and history                                                       | FR-07, FR-08                                            | Transaction/scoring/ownership tests and critical E2E flows                              | PLANNED     |
+| 9     | Question discussion, moderation, and audit                                                                | FR-09, remaining FR-14                                  | Ownership/moderation/rate-limit tests                                                   | PLANNED     |
+| 10    | Hardening, accessibility, observability, deployment documentation                                         | all NFRs and MVP DoD                                    | E2E, WCAG checks, scans, restore drill, Vercel verification                             | PLANNED     |
 
 ## Functional requirements
 
@@ -35,9 +35,9 @@ This backlog maps every functional and non-functional requirement to an incremen
 | FR-07 | Confirm submit, transactional idempotency, exact scoring, immutable result and topic breakdown                                                             |     8 | Unit + concurrent integration + E2E                   | PLANNED     |
 | FR-08 | Owner-only cursor history/filter/resume/review                                                                                                             |     8 | Authorization integration + E2E                       | PLANNED     |
 | FR-09 | Plain-text paginated comments, owner edit/soft-delete, admin moderation/reason                                                                             |     9 | XSS/ownership/rate-limit integration tests            | PLANNED     |
-| FR-10 | Exam/topic CRUD, uniqueness, safe archive, publish invariant                                                                                               |     4 | Service/repository integration tests                  | PLANNED     |
-| FR-11 | Valid single/multiple-choice editor, translations, audit and soft delete                                                                                   |     4 | Domain validation + integration tests                 | PLANNED     |
-| FR-12 | Fixed/dynamic test CRUD, 100% rule, source sufficiency, preview and attempt isolation                                                                      |     4 | Unit + transaction integration tests                  | PLANNED     |
+| FR-10 | Exam/topic CRUD, uniqueness, safe archive, publish invariant                                                                                               |     4 | Service/repository integration tests                  | DONE        |
+| FR-11 | Valid single/multiple-choice editor, translations, audit and soft delete                                                                                   |     4 | Domain validation + integration tests                 | DONE        |
+| FR-12 | Fixed/dynamic test CRUD, 100% rule, source sufficiency, preview and attempt isolation                                                                      |     4 | Unit + transaction integration tests                  | DONE        |
 | FR-13 | UTF-8 CSV/XLSX preview and full validation; atomic create/upsert; localized fields; safe export; READY media references only                               |     6 | Parser unit + rollback integration + E2E              | PLANNED     |
 | FR-14 | Safe admin user search/actions, revoke on lock, last-admin guard, reset email, redacted audit                                                              |   2/9 | Permission + concurrency integration tests            | PLANNED     |
 | FR-15 | `vi`/`en` UI and content translations, stable locale URLs/preference, completeness gate, fixed attempt locale                                              | 1/3/7 | Catalog parity + locale/snapshot tests + E2E          | IN PROGRESS |
@@ -84,6 +84,26 @@ This backlog maps every functional and non-functional requirement to an incremen
 | S2-09 | Verify migration, domain lifecycle, production build, and local HTTP smoke | Automated tests and real local register/verify/login/change/logout flow pass                                      | DONE   |
 | S2-10 | Add configurable email-verification policy and complete resend lifecycle   | Server-only default-on toggle; durable exemptions; generic/no-op disabled resend; bilingual UI; both-policy tests | DONE   |
 | S2-11 | Require password confirmation for registration, reset, and password change | Matching is enforced by client and server; bilingual accessible fields and validation tests                       | DONE   |
+
+## Slice 3 task board
+
+| ID    | Task                                                                 | Acceptance                                                                                                        | Status      |
+| ----- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------- |
+| S3-01 | Resolve locale by profile, cookie, language header, then Vietnamese  | Root redirect follows deterministic tested priority; invalid values are ignored                                   | DONE        |
+| S3-02 | Persist locale changes for guests and authenticated users            | Same-origin mutation writes a one-year cookie and updates the active user's profile only through `AuthRepository` | DONE        |
+| S3-03 | Preserve localized route and query state in every language switcher  | Header/auth switchers retain the current pathname and query; labels and pending state remain accessible           | DONE        |
+| S3-04 | Enforce transactional exam-locale translation completeness           | Missing exam/topic/question/option/test/media accessibility translations prevent enabling a locale                | DONE        |
+| S3-05 | Add schema invariant, migration, locale formatting, and verification | Primary locale stays enabled; migration, unit/integration, build, and bilingual browser smoke pass                | IN PROGRESS |
+
+## Slice 4 task board
+
+| ID    | Task                                                            | Acceptance                                                                                                                        | Status |
+| ----- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| S4-01 | Define validated admin content commands and repository port     | Domain rejects invalid question correctness and invalid fixed/dynamic structures before persistence                               | DONE   |
+| S4-02 | Implement transactional exam/topic/question/test CRUD and audit | Each write and redacted audit event commit atomically; archive/soft-delete preserves references                                   | DONE   |
+| S4-03 | Enforce publishing and source-sufficiency invariants            | Exams, topics, questions and tests cannot publish with invalid structure or incomplete enabled-locale content                     | DONE   |
+| S4-04 | Add admin-only API and accessible bilingual editor              | Non-admin access is denied; editor provides `vi`/`en` fields, missing-translation cues and localized feedback                     | DONE   |
+| S4-05 | Add integration tests, unit tests, and local verification       | Content/schema already versioned in slice 1; CRUD/publish/audit tests, catalog parity, typecheck, lint, and production build pass | DONE   |
 
 ## Product-owner decisions (non-blocking for development)
 

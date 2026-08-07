@@ -4,6 +4,8 @@ export interface AuthCatalog {
   common: {
     home: string;
     languageNavigation: string;
+    switchToVietnamese: string;
+    switchToEnglish: string;
     connectionError: string;
     consoleEmailNotice: string;
     submit: string;
@@ -77,6 +79,8 @@ const vi: AuthCatalog = {
   common: {
     home: "Về trang chủ",
     languageNavigation: "Chọn ngôn ngữ",
+    switchToVietnamese: "Chuyển sang Tiếng Việt",
+    switchToEnglish: "Switch to English",
     connectionError: "Không thể kết nối. Vui lòng thử lại.",
     consoleEmailNotice:
       "Môi trường local không gửi email thật; mở data/dev.log hoặc terminal chạy app để lấy liên kết được yêu cầu.",
@@ -160,6 +164,8 @@ const en: AuthCatalog = {
   common: {
     home: "Back to home",
     languageNavigation: "Choose language",
+    switchToVietnamese: "Chuyển sang Tiếng Việt",
+    switchToEnglish: "Switch to English",
     connectionError: "Unable to connect. Please try again.",
     consoleEmailNotice:
       "Local development does not send real email; open data/dev.log or the app terminal to get the requested link.",

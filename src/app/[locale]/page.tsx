@@ -101,10 +101,17 @@ export default async function HomePage({
                 {messages.status.foundationState}
               </span>
             </li>
-            <li className="current">
+            <li>
               <span className="delivery-marker" aria-hidden="true" />
               <strong>{messages.status.next}</strong>
               <span className="status-pill">{messages.status.nextState}</span>
+            </li>
+            <li className="current">
+              <span className="delivery-marker" aria-hidden="true" />
+              <strong>{messages.status.localization}</strong>
+              <span className="status-pill">
+                {messages.status.localizationState}
+              </span>
             </li>
           </ol>
         </section>

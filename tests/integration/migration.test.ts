@@ -72,4 +72,13 @@ describe("initial migration", () => {
       "email_verified_at",
     ]);
   });
+
+  it("requires the primary exam locale to remain enabled", async () => {
+    await expect(
+      database.query(
+        `insert into exams (code, slug, primary_locale, enabled_locales)
+         values ('INVALID-LOCALE', 'invalid-locale', 'en', array['vi']::locale[])`,
+      ),
+    ).rejects.toThrow();
+  });
 });
