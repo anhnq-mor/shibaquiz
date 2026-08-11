@@ -28,17 +28,16 @@ export default async function HomePage({
     [messages.principles.mediaTitle, messages.principles.mediaBody],
     [messages.principles.privacyTitle, messages.principles.privacyBody],
   ] as const;
+  const completedSteps = messages.status.items.filter(
+    (item) => item.state === "complete",
+  ).length;
 
   return (
     <>
       <a className="skip-link" href="#main-content">
         {messages.a11y.skipToContent}
       </a>
-      <SiteHeader
-        locale={locale}
-        messages={messages}
-        signedIn={Boolean(user)}
-      />
+      <SiteHeader locale={locale} messages={messages} user={user} />
       <main id="main-content">
         <section className="hero page-shell" aria-labelledby="hero-title">
           <div className="hero-copy">
@@ -101,26 +100,33 @@ export default async function HomePage({
             <h2 id="status-heading">{messages.status.heading}</h2>
             <p>{messages.status.description}</p>
           </div>
+          <div className="delivery-summary">
+            <strong>{messages.status.summary}</strong>
+            <progress
+              aria-label={messages.status.progressLabel}
+              max={messages.status.items.length}
+              value={completedSteps}
+            >
+              {completedSteps}/{messages.status.items.length}
+            </progress>
+          </div>
           <ol className="delivery-list">
-            <li>
-              <span className="delivery-marker" aria-hidden="true" />
-              <strong>{messages.status.foundation}</strong>
-              <span className="status-pill">
-                {messages.status.foundationState}
-              </span>
-            </li>
-            <li>
-              <span className="delivery-marker" aria-hidden="true" />
-              <strong>{messages.status.next}</strong>
-              <span className="status-pill">{messages.status.nextState}</span>
-            </li>
-            <li className="current">
-              <span className="delivery-marker" aria-hidden="true" />
-              <strong>{messages.status.localization}</strong>
-              <span className="status-pill">
-                {messages.status.localizationState}
-              </span>
-            </li>
+            {messages.status.items.map((item) => (
+              <li
+                className={item.state === "complete" ? "complete" : "current"}
+                key={item.title}
+              >
+                <span className="delivery-marker" aria-hidden="true" />
+                <strong>{item.title}</strong>
+                <span
+                  className={`status-pill ${item.state === "inProgress" ? "muted" : ""}`}
+                >
+                  {item.state === "complete"
+                    ? messages.status.completeState
+                    : messages.status.inProgressState}
+                </span>
+              </li>
+            ))}
           </ol>
         </section>
       </main>

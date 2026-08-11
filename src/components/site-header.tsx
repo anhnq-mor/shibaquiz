@@ -1,6 +1,8 @@
 import type { Route } from "next";
 import Link from "next/link";
 
+import { AccountMenu } from "@/components/account-menu";
+import type { AuthenticatedUserDto } from "@/domain/auth/auth";
 import type { Locale } from "@/domain/common/locale";
 import type { MessageCatalog } from "@/i18n/catalogs";
 
@@ -10,11 +12,11 @@ import { LanguageSwitcher } from "./language-switcher";
 export function SiteHeader({
   locale,
   messages,
-  signedIn = false,
+  user,
 }: {
   locale: Locale;
   messages: MessageCatalog;
-  signedIn?: boolean;
+  user: AuthenticatedUserDto | null;
 }) {
   return (
     <header className="site-header">
@@ -34,21 +36,12 @@ export function SiteHeader({
           <a href="#principles">{messages.navigation.architecture}</a>
           <a href="#status">{messages.navigation.status}</a>
         </nav>
-        <div className="header-auth-links">
-          {signedIn ? (
-            <>
-              <Link href={`/${locale}/exams` as Route}>
-                {messages.navigation.exams}
-              </Link>
-              <Link
-                className="header-register"
-                href={`/${locale}/history` as Route}
-              >
-                {messages.navigation.history}
-              </Link>
-            </>
+        <div className="header-actions">
+          <LanguageSwitcher locale={locale} messages={messages} />
+          {user ? (
+            <AccountMenu locale={locale} messages={messages} user={user} />
           ) : (
-            <>
+            <div className="header-auth-links">
               <Link href={`/${locale}/login` as Route}>
                 {messages.navigation.login}
               </Link>
@@ -58,10 +51,9 @@ export function SiteHeader({
               >
                 {messages.navigation.register}
               </Link>
-            </>
+            </div>
           )}
         </div>
-        <LanguageSwitcher locale={locale} messages={messages} />
       </div>
     </header>
   );

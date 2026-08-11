@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 
+import { apiFetch } from "@/components/api-activity";
 import { localizedPathname, type Locale } from "@/domain/common/locale";
 
 export function LocaleSwitcher({
@@ -35,7 +36,7 @@ export function LocaleSwitcher({
     setPendingLocale(nextLocale);
     const target = `${localizedPathname(pathname, nextLocale)}${window.location.search}${window.location.hash}`;
     try {
-      await fetch("/api/locale", {
+      await apiFetch("/api/locale", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale: nextLocale }),
@@ -51,7 +52,9 @@ export function LocaleSwitcher({
 
   return (
     <nav
-      className={className}
+      className={["locale-toggle", className].filter(Boolean).join(" ")}
+      data-locale={locale}
+      data-pending={pendingLocale !== null ? "true" : "false"}
       aria-label={navigationLabel}
       aria-busy={pendingLocale !== null}
     >
@@ -65,7 +68,6 @@ export function LocaleSwitcher({
       >
         VI
       </Link>
-      <span aria-hidden="true">/</span>
       <Link
         href={`${localizedPathname(pathname, "en")}${fallbackSearch}` as Route}
         hrefLang="en"

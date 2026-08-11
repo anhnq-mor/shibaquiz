@@ -48,4 +48,14 @@ describe("translation catalogs", () => {
       paths(adminCatalogs.en).sort(),
     );
   });
+
+  it("reports the implemented MVP delivery slices accurately", () => {
+    for (const catalog of Object.values(catalogs)) {
+      expect(catalog.status.items).toHaveLength(10);
+      expect(
+        catalog.status.items.filter((item) => item.state === "complete"),
+      ).toHaveLength(9);
+      expect(catalog.status.items.at(-1)?.state).toBe("inProgress");
+    }
+  });
 });

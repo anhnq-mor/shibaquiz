@@ -9,6 +9,7 @@ export interface MessageCatalog {
     skipToContent: string;
     homeLabel: string;
     languageNavigation: string;
+    apiLoading: string;
   };
   navigation: {
     overview: string;
@@ -19,6 +20,10 @@ export interface MessageCatalog {
     exams: string;
     history: string;
     account: string;
+    admin: string;
+    logout: string;
+    userMenu: string;
+    signedInAs: string;
     switchToVietnamese: string;
     switchToEnglish: string;
   };
@@ -42,12 +47,14 @@ export interface MessageCatalog {
   status: {
     heading: string;
     description: string;
-    foundation: string;
-    foundationState: string;
-    next: string;
-    nextState: string;
-    localization: string;
-    localizationState: string;
+    summary: string;
+    progressLabel: string;
+    completeState: string;
+    inProgressState: string;
+    items: Array<{
+      title: string;
+      state: "complete" | "inProgress";
+    }>;
   };
   footer: string;
 }
@@ -61,6 +68,7 @@ const vi: MessageCatalog = {
     skipToContent: "Chuyển đến nội dung chính",
     homeLabel: "Trang chủ ShibaQuiz",
     languageNavigation: "Chọn ngôn ngữ",
+    apiLoading: "Đang xử lý yêu cầu…",
   },
   navigation: {
     overview: "Tổng quan",
@@ -71,6 +79,10 @@ const vi: MessageCatalog = {
     exams: "Kỳ thi",
     history: "Lịch sử",
     account: "Tài khoản",
+    admin: "Quản trị",
+    logout: "Đăng xuất",
+    userMenu: "Mở menu tài khoản",
+    signedInAs: "Đang đăng nhập với",
     switchToVietnamese: "Chuyển sang Tiếng Việt",
     switchToEnglish: "Switch to English",
   },
@@ -99,13 +111,26 @@ const vi: MessageCatalog = {
   status: {
     heading: "Tiến độ triển khai",
     description:
-      "Mỗi lát cắt đi cùng migration, kiểm thử và tài liệu quyết định.",
-    foundation: "Bước 1 · Nền tảng",
-    foundationState: "Hoàn tất",
-    next: "Bước 2 · Tài khoản an toàn",
-    nextState: "Hoàn tất",
-    localization: "Bước 3 · Ngôn ngữ và bản dịch",
-    localizationState: "Hoàn tất",
+      "Toàn bộ nghiệp vụ MVP đã được triển khai; giai đoạn hiện tại tập trung vào kiểm thử đầu-cuối, accessibility, observability và vận hành production.",
+    summary: "9/10 bước đã hoàn tất",
+    progressLabel: "Tiến độ tổng thể của ShibaQuiz",
+    completeState: "Hoàn tất",
+    inProgressState: "Đang thực hiện",
+    items: [
+      { title: "Bước 1 · Nền tảng và kiến trúc dữ liệu", state: "complete" },
+      { title: "Bước 2 · Tài khoản và phân quyền an toàn", state: "complete" },
+      { title: "Bước 3 · Đa ngôn ngữ và bản dịch", state: "complete" },
+      { title: "Bước 4 · Quản trị nội dung kỳ thi", state: "complete" },
+      { title: "Bước 5 · Vòng đời media riêng tư", state: "complete" },
+      { title: "Bước 6 · Import CSV/XLSX có kiểm chứng", state: "complete" },
+      { title: "Bước 7 · Khám phá và bài làm localized", state: "complete" },
+      { title: "Bước 8 · Chấm điểm, kết quả và lịch sử", state: "complete" },
+      { title: "Bước 9 · Bình luận, kiểm duyệt và audit", state: "complete" },
+      {
+        title: "Bước 10 · Hardening, accessibility và vận hành",
+        state: "inProgress",
+      },
+    ],
   },
   footer: "ShibaQuiz · Thiết kế cho tiếng Việt và English ngay từ đầu.",
 };
@@ -119,6 +144,7 @@ const en: MessageCatalog = {
     skipToContent: "Skip to main content",
     homeLabel: "ShibaQuiz home",
     languageNavigation: "Choose language",
+    apiLoading: "Processing your request…",
   },
   navigation: {
     overview: "Overview",
@@ -129,6 +155,10 @@ const en: MessageCatalog = {
     exams: "Exams",
     history: "History",
     account: "Account",
+    admin: "Administration",
+    logout: "Sign out",
+    userMenu: "Open account menu",
+    signedInAs: "Signed in as",
     switchToVietnamese: "Chuyển sang Tiếng Việt",
     switchToEnglish: "Switch to English",
   },
@@ -157,13 +187,29 @@ const en: MessageCatalog = {
   status: {
     heading: "Delivery progress",
     description:
-      "Every vertical slice includes its migration, tests, and decision record.",
-    foundation: "Step 1 · Foundation",
-    foundationState: "Complete",
-    next: "Step 2 · Secure accounts",
-    nextState: "Complete",
-    localization: "Step 3 · Locales and translations",
-    localizationState: "Complete",
+      "All MVP business flows are implemented; current work focuses on end-to-end verification, accessibility, observability, and production operations.",
+    summary: "9 of 10 steps complete",
+    progressLabel: "Overall ShibaQuiz delivery progress",
+    completeState: "Complete",
+    inProgressState: "In progress",
+    items: [
+      { title: "Step 1 · Foundation and data architecture", state: "complete" },
+      {
+        title: "Step 2 · Secure accounts and authorization",
+        state: "complete",
+      },
+      { title: "Step 3 · Locales and translations", state: "complete" },
+      { title: "Step 4 · Exam content administration", state: "complete" },
+      { title: "Step 5 · Private media lifecycle", state: "complete" },
+      { title: "Step 6 · Validated CSV/XLSX import", state: "complete" },
+      { title: "Step 7 · Discovery and localized attempts", state: "complete" },
+      { title: "Step 8 · Scoring, results, and history", state: "complete" },
+      { title: "Step 9 · Comments, moderation, and audit", state: "complete" },
+      {
+        title: "Step 10 · Hardening, accessibility, and operations",
+        state: "inProgress",
+      },
+    ],
   },
   footer: "ShibaQuiz · Designed for Tiếng Việt and English from day one.",
 };

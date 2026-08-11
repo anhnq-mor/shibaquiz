@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { ReactNode } from "react";
 
+import { ApiLoadingOverlay } from "@/components/api-loading-overlay";
 import { isLocale, locales } from "@/domain/common/locale";
 import { getMessages } from "@/i18n/catalogs";
 
@@ -40,10 +41,14 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) {
     notFound();
   }
+  const messages = getMessages(locale);
 
   return (
     <html lang={locale}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ApiLoadingOverlay label={messages.a11y.apiLoading} />
+      </body>
     </html>
   );
 }

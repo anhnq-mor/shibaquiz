@@ -4,6 +4,7 @@ import type { Route } from "next";
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import { apiFetch } from "@/components/api-activity";
 import type { Locale } from "@/domain/common/locale";
 import type { AuthCatalog } from "@/i18n/auth-catalogs";
 
@@ -82,7 +83,7 @@ export function AuthForm({
     setPending(true);
 
     try {
-      const response = await fetch(action, {
+      const response = await apiFetch(action, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -4,6 +4,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 
+import { apiFetch } from "@/components/api-activity";
 import type { AdminContentWorkspace } from "@/domain/admin/content";
 import type { Locale } from "@/domain/common/locale";
 import type { AdminCatalog } from "@/i18n/admin-catalogs";
@@ -60,10 +61,13 @@ export function ImportWizard({
       const formData = new FormData();
       formData.append("examId", examId);
       formData.append("file", file);
-      const response = await fetch(withLocale("/api/admin/imports/preview"), {
-        method: "POST",
-        body: formData,
-      });
+      const response = await apiFetch(
+        withLocale("/api/admin/imports/preview"),
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data?.message ?? messages.common.requestFailed);
@@ -88,7 +92,7 @@ export function ImportWizard({
       const formData = new FormData();
       formData.append("examId", examId);
       formData.append("file", file);
-      const response = await fetch(withLocale("/api/admin/imports/commit"), {
+      const response = await apiFetch(withLocale("/api/admin/imports/commit"), {
         method: "POST",
         body: formData,
       });

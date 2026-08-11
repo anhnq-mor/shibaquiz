@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
+import { apiFetch } from "@/components/api-activity";
 import { AdminDialog } from "@/components/admin/admin-dialog";
 import {
   adminApiRequest,
@@ -24,7 +25,8 @@ async function sha256Base64(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
   const digest = await crypto.subtle.digest("SHA-256", buffer);
   let binary = "";
-  for (const byte of new Uint8Array(digest)) binary += String.fromCharCode(byte);
+  for (const byte of new Uint8Array(digest))
+    binary += String.fromCharCode(byte);
   return btoa(binary);
 }
 
@@ -147,7 +149,7 @@ export function MediaLibrary({
           checksumSha256Base64,
         },
       });
-      const putResponse = await fetch(created.uploadUrl, {
+      const putResponse = await apiFetch(created.uploadUrl, {
         method: "PUT",
         headers: created.requiredHeaders,
         body: file,
@@ -271,7 +273,9 @@ export function MediaLibrary({
               disabled={uploading}
               onClick={() => fileInputRef.current?.click()}
             >
-              {uploading ? messages.media.uploading : messages.media.uploadAction}
+              {uploading
+                ? messages.media.uploading
+                : messages.media.uploadAction}
             </button>
           </div>
         </div>
@@ -422,7 +426,9 @@ export function MediaLibrary({
               disabled={loadingMore}
               onClick={loadMore}
             >
-              {loadingMore ? messages.media.processing : messages.common.loadMore}
+              {loadingMore
+                ? messages.media.processing
+                : messages.common.loadMore}
             </button>
           </div>
         )}

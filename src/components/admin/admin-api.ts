@@ -1,3 +1,4 @@
+import { apiFetch } from "@/components/api-activity";
 import type { Locale } from "@/domain/common/locale";
 
 export interface AdminApiError {
@@ -25,7 +26,7 @@ export async function adminApiRequest<T>(
     requestInit.headers = { "Content-Type": "application/json" };
     requestInit.body = JSON.stringify(init.body);
   }
-  const response = await fetch(url, requestInit);
+  const response = await apiFetch(url, requestInit);
   const data = (await response.json().catch(() => undefined)) as
     T | AdminApiError | undefined;
   if (!response.ok) {
