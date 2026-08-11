@@ -43,6 +43,13 @@
       "when": 1786440322301,
       "tag": "0005_clear_magus",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786444542989,
+      "tag": "0006_blue_psynapse",
+      "breakpoints": true
     }
   ]
 }

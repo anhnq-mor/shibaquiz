@@ -295,6 +295,43 @@ export interface ImportSummary {
   rows: ImportRowOutcome[];
 }
 
+export type ImportMode = "CREATE_ONLY" | "UPSERT_BY_EXTERNAL_ID";
+export type ImportJobStatus =
+  | "UPLOADED"
+  | "VALIDATING"
+  | "VALIDATED"
+  | "COMMITTING"
+  | "COMPLETED"
+  | "FAILED";
+
+export interface ImportJobLogDto {
+  id: string;
+  level: "INFO" | "ERROR";
+  event: string;
+  message: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface ImportJobDto {
+  id: string;
+  fileName: string;
+  examId: string | null;
+  mode: ImportMode;
+  status: ImportJobStatus;
+  totalRows: number;
+  processedRows: number;
+  createdCount: number;
+  updatedCount: number;
+  attemptCount: number;
+  errorMessage: string | null;
+  createdAt: string;
+  updatedAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  logs: ImportJobLogDto[];
+}
+
 export class ImportError extends Error {
   constructor(
     public readonly code: "NOT_FOUND" | "INVALID_STRUCTURE" | "CONFLICT",
@@ -331,6 +368,24 @@ export interface ImportRepository {
     examId: string,
     actorUserId: string,
     now: Date,
+    jobId?: string,
   ): Promise<{ createdCount: number; updatedCount: number }>;
+  enqueueImport(
+    buffer: Uint8Array,
+    format: ImportFormat,
+    examId: string,
+    fileName: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<ImportJobDto>;
+  processJob(jobId: string, now: Date): Promise<ImportJobDto | null>;
+  processNextJob(now: Date): Promise<ImportJobDto | null>;
+  listJobs(limit: number): Promise<ImportJobDto[]>;
+  getJob(jobId: string): Promise<ImportJobDto | null>;
+  retryJob(
+    jobId: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<ImportJobDto>;
   exportQuestions(examId: string): Promise<string[][]>;
 }

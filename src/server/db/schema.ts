@@ -18,6 +18,7 @@ import {
 
 import type { StoredQuestionSnapshot } from "@/domain/attempts/disclosure";
 import type { AttemptAnswer } from "@/domain/attempts/answer";
+import type { SaveQuestionInput } from "@/domain/admin/content";
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -665,6 +666,9 @@ export const importJobs = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     fileName: text("file_name").notNull(),
+    examId: uuid("exam_id").references(() => exams.id, {
+      onDelete: "restrict",
+    }),
     mode: importModeEnum("mode").notNull(),
     status: importStatusEnum("status").default("UPLOADED").notNull(),
     createdBy: uuid("created_by")
@@ -678,12 +682,71 @@ export const importJobs = pgTable(
       .$type<Record<string, unknown>>()
       .default(sql`'{}'::jsonb`)
       .notNull(),
+    totalRows: integer("total_rows").default(0).notNull(),
+    processedRows: integer("processed_rows").default(0).notNull(),
+    createdCount: integer("created_count").default(0).notNull(),
+    updatedCount: integer("updated_count").default(0).notNull(),
+    attemptCount: integer("attempt_count").default(0).notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    lockedAt: timestamp("locked_at", { withTimezone: true }),
+    errorMessage: text("error_message"),
     ...timestamps,
   },
   (table) => [
     index("import_jobs_creator_created_idx").on(
       table.createdBy,
       table.createdAt,
+    ),
+  ],
+);
+
+export const importJobRows = pgTable(
+  "import_job_rows",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => importJobs.id, { onDelete: "cascade" }),
+    rowNumber: integer("row_number").notNull(),
+    externalId: text("external_id"),
+    payload: jsonb("payload").$type<SaveQuestionInput>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("import_job_rows_job_row_unique").on(
+      table.jobId,
+      table.rowNumber,
+    ),
+    index("import_job_rows_job_idx").on(table.jobId),
+  ],
+);
+
+export const importJobLogs = pgTable(
+  "import_job_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => importJobs.id, { onDelete: "cascade" }),
+    level: text("level").notNull(),
+    event: text("event").notNull(),
+    message: text("message").notNull(),
+    metadata: jsonb("metadata")
+      .$type<Record<string, unknown>>()
+      .default(sql`'{}'::jsonb`)
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("import_job_logs_job_created_idx").on(table.jobId, table.createdAt),
+    check(
+      "import_job_logs_level_check",
+      sql`${table.level} in ('INFO', 'ERROR')`,
     ),
   ],
 );

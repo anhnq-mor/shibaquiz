@@ -248,6 +248,9 @@ Yêu cầu:
 - Hỗ trợ `.csv` UTF-8 và `.xlsx`; giới hạn mặc định 10 MB và 10.000 dòng/file.
 - Với XLSX, đọc sheet đầu tiên hoặc sheet tên `questions`.
 - Import chạy trong transaction: lỗi khi commit phải rollback toàn bộ.
+- Khi admin xác nhận, API chỉ validate/stage và trả về `ImportJob`; việc ghi câu hỏi chạy nền. Admin có thể xem trạng thái, tiến độ, log đã loại dữ liệu nhạy cảm và retry job thất bại.
+- File nguồn không được lưu binary trong database hoặc runtime filesystem. Sau validation, từng dòng được chuẩn hóa và stage trong PostgreSQL qua repository; worker phải revalidate trước transaction commit.
+- Worker dùng lease để tránh xử lý trùng, có cơ chế recovery cho job bị gián đoạn và chỉ đánh dấu `COMPLETED` trong cùng transaction ghi nội dung.
 - Hỗ trợ `CREATE_ONLY` và `UPSERT_BY_EXTERNAL_ID`.
 - Không dùng nội dung câu hỏi làm khóa định danh.
 - Sinh báo cáo số dòng tạo mới/cập nhật/bỏ qua/lỗi.
@@ -442,8 +445,10 @@ Mọi ID dùng UUID hoặc ULID; mọi bảng chính có `createdAt`, `updatedAt
 
 ### ImportJob
 
-- `id`, `fileName`, `mode`, `status`, `createdBy`
-- `summary` JSON, `errorReport` JSON, timestamps
+- `id`, `fileName`, `examId`, `mode`, `status`, `createdBy`
+- `totalRows`, `processedRows`, `createdCount`, `updatedCount`, `attemptCount`
+- `summary` JSON, `errorReport` JSON, `errorMessage`, lease/start/completion timestamps
+- `ImportJobRow` lưu payload đã chuẩn hóa theo dòng; `ImportJobLog` lưu event/log an toàn để Admin theo dõi.
 
 ### AuditLog
 

@@ -7,6 +7,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { apiFetch } from "@/components/api-activity";
 import type { AdminContentWorkspace } from "@/domain/admin/content";
 import type { Locale } from "@/domain/common/locale";
+import type { ImportJobDto } from "@/domain/import/import";
 import type { AdminCatalog } from "@/i18n/admin-catalogs";
 
 type Exam = AdminContentWorkspace["exams"][number];
@@ -61,10 +62,7 @@ export function ImportWizard({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<ImportSummary | null>(null);
-  const [result, setResult] = useState<{
-    createdCount: number;
-    updatedCount: number;
-  } | null>(null);
+  const [result, setResult] = useState<ImportJobDto | null>(null);
   const previewErrorRows: PreviewErrorRow[] =
     summary?.rows.filter(
       (row): row is PreviewErrorRow => row.status === "ERROR",
@@ -334,23 +332,17 @@ export function ImportWizard({
 
         {step === "result" && result && (
           <div>
-            <h2>{messages.imports.commitSuccessHeading}</h2>
-            <dl className="admin-dashboard-grid">
-              <div className="admin-stat-card">
-                <dt>{messages.imports.createdCountLabel}</dt>
-                <dd>{result.createdCount}</dd>
-              </div>
-              <div className="admin-stat-card">
-                <dt>{messages.imports.updatedCountLabel}</dt>
-                <dd>{result.updatedCount}</dd>
-              </div>
-            </dl>
+            <h2>{messages.imports.queuedHeading}</h2>
+            <p>{messages.imports.queuedDescription}</p>
+            <p className="admin-job-id">
+              <code>{result.id}</code>
+            </p>
             <div className="admin-form-actions">
               <Link
-                href={`/${locale}/admin/questions` as Route}
+                href={`/${locale}/admin/import/jobs` as Route}
                 className="button button-primary"
               >
-                {messages.imports.backToQuestions}
+                {messages.imports.viewJobsAction}
               </Link>
               <button
                 type="button"

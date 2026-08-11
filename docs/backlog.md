@@ -105,6 +105,15 @@ This backlog maps every functional and non-functional requirement to an incremen
 | S4-04 | Add admin-only API and accessible bilingual editor              | Non-admin access is denied; editor provides `vi`/`en` fields, missing-translation cues and localized feedback                     | DONE   |
 | S4-05 | Add integration tests, unit tests, and local verification       | Content/schema already versioned in slice 1; CRUD/publish/audit tests, catalog parity, typecheck, lint, and production build pass | DONE   |
 
+## Slice 6 extension: background import jobs
+
+| ID    | Task                                                               | Acceptance                                                                                                                            | Status |
+| ----- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| S6-06 | Persist normalized import job rows and safe job logs               | Migration adds durable job staging/log tables; no source-file binary is stored in PostgreSQL or runtime filesystem                    | DONE   |
+| S6-07 | Enqueue import and process it after the API response               | Confirm returns `202` with a job ID; worker lease prevents duplicate execution; question writes remain one all-or-nothing transaction | DONE   |
+| S6-08 | Add Admin job monitor, polling, retry and recovery worker endpoint | Admin sees localized live status/log/counts, failed jobs can be retried, and a secret-protected scheduler can recover queued jobs     | DONE   |
+| S6-09 | Cover background imports with migration, integration and UI tests  | Enqueue/claim/complete/fail/retry, authorization, catalogs, typecheck, lint and production build pass                                 | DONE   |
+
 ## Slice 7 task board
 
 | ID    | Task                                                                                                     | Acceptance                                                                                                                    | Status |

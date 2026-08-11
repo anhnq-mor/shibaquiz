@@ -49,6 +49,7 @@ inline documentation; the ones with no safe default are:
 | `MEDIA_S3_BUCKET`                                       | Bucket name                                                                                     |
 | `MEDIA_S3_ACCESS_KEY_ID` / `MEDIA_S3_SECRET_ACCESS_KEY` | Scoped credentials                                                                              |
 | `MEDIA_S3_FORCE_PATH_STYLE`                             | `true` for most non-AWS providers, `false` for real AWS S3                                      |
+| `CRON_SECRET`                                           | Random 32+ character bearer secret for the background-import recovery endpoint                  |
 
 Everything else (`AUTH_BCRYPT_COST`, `AUTH_SESSION_DAYS`,
 `REQUIRE_EMAIL_VERIFICATION`, `MEDIA_SIGNED_URL_TTL_SECONDS`,
@@ -67,6 +68,14 @@ misconfigured deploy fails fast rather than serving broken requests.
 - **Node.js version**: 22.x (matches `engines.node` in `package.json` and CI).
 - **Install command**: default (`npm ci` is used in CI; Vercel's default
   `npm install` also works).
+
+For durable import recovery, configure Vercel Cron (or another trusted
+scheduler) to call `GET /api/internal/import-jobs/run` with
+`Authorization: Bearer <CRON_SECRET>`. A five-minute schedule is recommended.
+Confirm Import also starts the worker immediately through Next.js `after()`,
+so the scheduler is a recovery path for queued or expired-lease jobs rather
+than the normal source of latency. The Admin job monitor can safely kick the
+same lease-protected worker while an administrator is watching it.
 
 Do not set `VERCEL=1` yourself — Vercel sets it automatically, and the app's
 config validation uses it (alongside `NODE_ENV=production`) to enforce the
@@ -122,6 +131,9 @@ explicit guard against accidentally seeding a production database.
    `Strict-Transport-Security`, and the other headers from
    `next.config.mjs`'s `headers()` — spot-check with
    `curl -sI https://<your-domain>/vi | grep -i content-security-policy`.
+7. Confirm a small question import returns an Import Job immediately, then
+   verify `/vi/admin/import/jobs` advances from Queued/Committing to Completed
+   and shows redacted operational logs.
 
 ## Rollback
 

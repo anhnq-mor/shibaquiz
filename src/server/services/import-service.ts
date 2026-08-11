@@ -24,6 +24,44 @@ export class ImportService {
     );
   }
 
+  enqueueImport(
+    buffer: Uint8Array,
+    format: ImportFormat,
+    examId: string,
+    fileName: string,
+    actorUserId: string,
+    now = new Date(),
+  ) {
+    return this.repository.enqueueImport(
+      buffer,
+      format,
+      examId,
+      fileName,
+      actorUserId,
+      now,
+    );
+  }
+
+  processJob(jobId: string, now = new Date()) {
+    return this.repository.processJob(jobId, now);
+  }
+
+  processNextJob(now = new Date()) {
+    return this.repository.processNextJob(now);
+  }
+
+  listJobs(limit = 50) {
+    return this.repository.listJobs(limit);
+  }
+
+  getJob(jobId: string) {
+    return this.repository.getJob(jobId);
+  }
+
+  retryJob(jobId: string, actorUserId: string, now = new Date()) {
+    return this.repository.retryJob(jobId, actorUserId, now);
+  }
+
   exportQuestions(examId: string) {
     return this.repository.exportQuestions(examId);
   }

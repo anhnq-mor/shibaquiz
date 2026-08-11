@@ -30,10 +30,12 @@ describe("initial migration", () => {
         "attempts",
         "attempt_questions",
         "media_assets",
+        "import_job_rows",
+        "import_job_logs",
         "audit_logs",
       ]),
     );
-    expect(result.rows).toHaveLength(24);
+    expect(result.rows).toHaveLength(26);
   });
 
   it("enforces case-insensitive email uniqueness at the database boundary", async () => {

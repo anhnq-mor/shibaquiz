@@ -365,12 +365,6 @@ button:focus-visible {
   line-height: 1.3;
 }
 
-.shiba-loading-copy span {
-  color: var(--ink-700);
-  font-size: 0.88rem;
-  font-style: italic;
-}
-
 @keyframes shiba-run-across {
   0% {
     left: -9rem;
@@ -490,6 +484,13 @@ button:focus-visible {
     forwards;
 }
 
+.route-loading-shell,
+.admin-route-loading {
+  display: grid;
+  width: 100%;
+  place-items: center;
+}
+
 .route-loading-shell {
   min-height: 60vh;
   padding-block: clamp(3rem, 10vw, 7rem);
@@ -508,6 +509,8 @@ button:focus-visible {
   display: grid;
   width: min(32rem, 100%);
   gap: 1.25rem;
+  justify-self: center;
+  margin-inline: auto;
 }
 
 @keyframes route-loading-progress {
@@ -1360,6 +1363,89 @@ h1 {
   margin: 0;
   color: var(--ink-700);
   max-width: 60ch;
+}
+
+.admin-page-header > .button {
+  margin-top: 1rem;
+}
+
+.import-jobs-monitor {
+  display: grid;
+  gap: 1rem;
+}
+
+.import-jobs-table {
+  min-width: 64rem;
+}
+
+.import-jobs-table td {
+  vertical-align: top;
+}
+
+.import-jobs-table small,
+.admin-job-id {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.admin-job-id {
+  max-width: 18rem;
+  overflow-wrap: anywhere;
+  color: var(--ink-700);
+  font-size: 0.75rem;
+}
+
+.import-jobs-table progress {
+  width: 9rem;
+  accent-color: var(--green-700);
+}
+
+.import-job-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-700);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.import-job-status.status-validated,
+.import-job-status.status-committing {
+  background: #fff0c7;
+  color: #704900;
+}
+
+.import-job-status.status-completed {
+  background: var(--green-100);
+  color: var(--green-800);
+}
+
+.import-job-status.status-failed,
+.import-job-error,
+.import-job-logs .log-error {
+  color: #9f2525;
+}
+
+.import-job-error {
+  max-width: 28ch;
+  margin: 0.45rem 0 0;
+  font-size: 0.82rem;
+}
+
+.import-job-logs {
+  width: min(24rem, 75vw);
+  max-height: 14rem;
+  margin: 0.6rem 0 0;
+  padding-inline-start: 1.2rem;
+  overflow: auto;
+  font-size: 0.8rem;
+}
+
+.import-job-logs li + li {
+  margin-top: 0.45rem;
 }
 
 .admin-dashboard-grid {

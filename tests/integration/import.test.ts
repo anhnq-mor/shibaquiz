@@ -315,6 +315,105 @@ describe("import commit", () => {
   });
 });
 
+describe("background import jobs", () => {
+  it("stages normalized rows and completes them through a durable job", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "BACKGROUND-JOB-1" })]),
+      "CSV",
+      examId,
+      "questions.csv",
+      adminId,
+      new Date("2026-08-11T10:00:00.000Z"),
+    );
+
+    expect(job.status).toBe("VALIDATED");
+    expect(job.totalRows).toBe(1);
+    expect(job.logs.map((log) => log.event)).toContain("QUEUED");
+
+    const completed = await repository.processJob(
+      job.id,
+      new Date("2026-08-11T10:01:00.000Z"),
+    );
+    expect(completed).toMatchObject({
+      status: "COMPLETED",
+      processedRows: 1,
+      createdCount: 1,
+      updatedCount: 0,
+      attemptCount: 1,
+    });
+    expect(completed?.logs.map((log) => log.event)).toEqual([
+      "QUEUED",
+      "STARTED",
+      "COMPLETED",
+    ]);
+  });
+
+  it("records a safe failure and lets an admin retry the staged job", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "BACKGROUND-RETRY-1" })]),
+      "CSV",
+      examId,
+      "retry.csv",
+      adminId,
+      new Date("2026-08-11T11:00:00.000Z"),
+    );
+    const [staged] = await database
+      .select()
+      .from(schema.importJobRows)
+      .where(eq(schema.importJobRows.jobId, job.id));
+    await database
+      .update(schema.importJobRows)
+      .set({
+        payload: {
+          ...staged!.payload,
+          topicId: "70000000-0000-4000-8000-000000000099",
+        },
+      })
+      .where(eq(schema.importJobRows.id, staged!.id));
+
+    const failed = await repository.processJob(
+      job.id,
+      new Date("2026-08-11T11:01:00.000Z"),
+    );
+    expect(failed?.status).toBe("FAILED");
+    expect(failed?.errorMessage).not.toContain("BACKGROUND-RETRY-1");
+    expect(failed?.logs.map((log) => log.event)).toContain("FAILED");
+
+    const retried = await repository.retryJob(
+      job.id,
+      adminId,
+      new Date("2026-08-11T11:02:00.000Z"),
+    );
+    expect(retried.status).toBe("VALIDATED");
+    expect(retried.logs.at(-1)?.event).toBe("RETRIED");
+  });
+
+  it("recovers an expired worker lease before processing the next job", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "BACKGROUND-RECOVER-1" })]),
+      "CSV",
+      examId,
+      "recover.csv",
+      adminId,
+      new Date("2026-08-11T09:00:00.000Z"),
+    );
+    await database
+      .update(schema.importJobs)
+      .set({
+        status: "COMMITTING",
+        lockedAt: new Date("2026-08-11T09:01:00.000Z"),
+      })
+      .where(eq(schema.importJobs.id, job.id));
+
+    const recovered = await repository.processNextJob(
+      new Date("2026-08-11T10:00:00.000Z"),
+    );
+    expect(recovered?.id).toBe(job.id);
+    expect(recovered?.status).toBe("COMPLETED");
+    expect(recovered?.logs.map((log) => log.event)).toContain("RECOVERED");
+  });
+});
+
 describe("export questions", () => {
   it("exports committed questions back into the same column shape used for import", async () => {
     const buffer = toCsvBuffer([

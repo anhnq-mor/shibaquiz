@@ -1,14 +1,19 @@
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 
 import type { ContentStatus } from "@/domain/admin/content";
 import {
+  IMPORT_TEMPLATE_HEADERS,
   buildImportRowInput,
   ImportError,
+  isImportError,
+  type ImportJobDto,
+  type ImportJobLogDto,
   type ImportRepository,
   type ImportRowContext,
   type ImportRowOutcome,
   type ImportSummary,
 } from "@/domain/import/import";
+import { toCsv } from "@/domain/import/csv";
 import {
   parseSpreadsheet,
   type ImportFormat,
@@ -17,6 +22,9 @@ import type { Database } from "@/server/db/client";
 import {
   auditLogs,
   exams,
+  importJobLogs,
+  importJobRows,
+  importJobs,
   mediaAssets,
   questionMedia,
   questionOptionTranslations,
@@ -25,6 +33,23 @@ import {
   questions,
   topics,
 } from "@/server/db/schema";
+
+type StagedImportRow = typeof importJobRows.$inferSelect;
+
+function toIso(value: Date | null): string | null {
+  return value?.toISOString() ?? null;
+}
+
+function mapJobLog(row: typeof importJobLogs.$inferSelect): ImportJobLogDto {
+  return {
+    id: row.id,
+    level: row.level === "ERROR" ? "ERROR" : "INFO",
+    event: row.event,
+    message: row.message,
+    metadata: row.metadata,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
 
 function splitIds(value: string): string[] {
   return value
@@ -144,6 +169,377 @@ export class DrizzleImportRepository implements ImportRepository {
     });
   }
 
+  private async attachLogs(
+    jobRows: Array<typeof importJobs.$inferSelect>,
+  ): Promise<ImportJobDto[]> {
+    if (jobRows.length === 0) return [];
+    const logs = await this.database
+      .select()
+      .from(importJobLogs)
+      .where(
+        inArray(
+          importJobLogs.jobId,
+          jobRows.map((job) => job.id),
+        ),
+      )
+      .orderBy(asc(importJobLogs.createdAt));
+    const logsByJob = new Map<string, ImportJobLogDto[]>();
+    for (const log of logs) {
+      const current = logsByJob.get(log.jobId) ?? [];
+      current.push(mapJobLog(log));
+      logsByJob.set(log.jobId, current);
+    }
+    return jobRows.map((job) => ({
+      id: job.id,
+      fileName: job.fileName,
+      examId: job.examId,
+      mode: job.mode,
+      status: job.status,
+      totalRows: job.totalRows,
+      processedRows: job.processedRows,
+      createdCount: job.createdCount,
+      updatedCount: job.updatedCount,
+      attemptCount: job.attemptCount,
+      errorMessage: job.errorMessage,
+      createdAt: job.createdAt.toISOString(),
+      updatedAt: job.updatedAt.toISOString(),
+      startedAt: toIso(job.startedAt),
+      completedAt: toIso(job.completedAt),
+      logs: logsByJob.get(job.id) ?? [],
+    }));
+  }
+
+  private async stagedRowsToCsv(rows: StagedImportRow[]): Promise<Uint8Array> {
+    const topicIds = [...new Set(rows.map((row) => row.payload.topicId))];
+    const topicRows = topicIds.length
+      ? await this.database
+          .select({ id: topics.id, slug: topics.slug })
+          .from(topics)
+          .where(inArray(topics.id, topicIds))
+      : [];
+    const topicSlugById = new Map(
+      topicRows.map((topic) => [topic.id, topic.slug]),
+    );
+    const tableRows = rows.map((row) => {
+      const input = row.payload;
+      const vi = input.translations.find((item) => item.locale === "vi");
+      const en = input.translations.find((item) => item.locale === "en");
+      const optionColumns = Array.from({ length: 20 }, (_, index): string[] => {
+        const option = [...input.options].sort(
+          (left, right) => left.displayOrder - right.displayOrder,
+        )[index];
+        if (!option) return ["", "", "", "", "", ""];
+        const optionVi = option.translations.find(
+          (item) => item.locale === "vi",
+        );
+        const optionEn = option.translations.find(
+          (item) => item.locale === "en",
+        );
+        return [
+          option.label,
+          optionVi?.content ?? "",
+          optionEn?.content ?? "",
+          optionVi?.matchContent ?? "",
+          optionEn?.matchContent ?? "",
+          option.isCorrect ? "TRUE" : "FALSE",
+        ];
+      }).flat();
+      return [
+        input.externalId ?? "",
+        topicSlugById.get(input.topicId) ?? "",
+        input.type,
+        input.status,
+        vi?.content ?? "",
+        vi?.explanation ?? "",
+        en?.content ?? "",
+        en?.explanation ?? "",
+        input.mediaIds.join(";"),
+        ...optionColumns,
+      ];
+    });
+    return new TextEncoder().encode(
+      toCsv([IMPORT_TEMPLATE_HEADERS, ...tableRows]),
+    );
+  }
+
+  async enqueueImport(
+    buffer: Uint8Array,
+    format: ImportFormat,
+    examId: string,
+    fileName: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<ImportJobDto> {
+    const rows = await this.buildOutcomes(buffer, format, examId);
+    if (rows.length === 0) {
+      throw new ImportError(
+        "INVALID_STRUCTURE",
+        400,
+        "The file has no data rows",
+      );
+    }
+    const errorRows = rows.filter((row) => row.status === "ERROR");
+    if (errorRows.length > 0) {
+      throw new ImportError(
+        "INVALID_STRUCTURE",
+        400,
+        "Import contains invalid rows; no job was created",
+        errorRows.map((row) => ({
+          rowNumber: row.rowNumber,
+          externalId: row.externalId,
+          errors: row.errors,
+        })),
+      );
+    }
+    const validRows = rows.filter(
+      (row): row is Extract<ImportRowOutcome, { status: "VALID" }> =>
+        row.status === "VALID",
+    );
+    const jobId = await this.database.transaction(async (tx) => {
+      const job = (
+        await tx
+          .insert(importJobs)
+          .values({
+            examId,
+            fileName: fileName.slice(0, 255),
+            mode: "UPSERT_BY_EXTERNAL_ID",
+            status: "VALIDATED",
+            createdBy: actorUserId,
+            totalRows: validRows.length,
+            summary: {
+              totalRows: validRows.length,
+              validCount: validRows.length,
+              errorCount: 0,
+            },
+            createdAt: now,
+            updatedAt: now,
+          })
+          .returning()
+      )[0]!;
+      await tx.insert(importJobRows).values(
+        validRows.map((row) => ({
+          jobId: job.id,
+          rowNumber: row.rowNumber,
+          externalId: row.externalId,
+          payload: row.input,
+          createdAt: now,
+        })),
+      );
+      await tx.insert(importJobLogs).values({
+        jobId: job.id,
+        level: "INFO",
+        event: "QUEUED",
+        message: "Import job queued after validation.",
+        metadata: { totalRows: validRows.length },
+        createdAt: now,
+      });
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "IMPORT_JOB_QUEUED",
+        entityType: "IMPORT_JOB",
+        entityId: job.id,
+        metadata: { examId, totalRows: validRows.length },
+        createdAt: now,
+      });
+      return job.id;
+    });
+    return (await this.getJob(jobId))!;
+  }
+
+  async listJobs(limit: number): Promise<ImportJobDto[]> {
+    const rows = await this.database
+      .select()
+      .from(importJobs)
+      .orderBy(desc(importJobs.createdAt))
+      .limit(Math.min(Math.max(limit, 1), 100));
+    return this.attachLogs(rows);
+  }
+
+  async getJob(jobId: string): Promise<ImportJobDto | null> {
+    const row = (
+      await this.database
+        .select()
+        .from(importJobs)
+        .where(eq(importJobs.id, jobId))
+        .limit(1)
+    )[0];
+    if (!row) return null;
+    return (await this.attachLogs([row]))[0]!;
+  }
+
+  async processJob(jobId: string, now: Date): Promise<ImportJobDto | null> {
+    const claimed = (
+      await this.database
+        .update(importJobs)
+        .set({
+          status: "COMMITTING",
+          startedAt: now,
+          completedAt: null,
+          lockedAt: now,
+          errorMessage: null,
+          errorReport: {},
+          attemptCount: sql`${importJobs.attemptCount} + 1`,
+          updatedAt: now,
+        })
+        .where(
+          and(eq(importJobs.id, jobId), eq(importJobs.status, "VALIDATED")),
+        )
+        .returning()
+    )[0];
+    if (!claimed) return this.getJob(jobId);
+
+    await this.database.insert(importJobLogs).values({
+      jobId,
+      level: "INFO",
+      event: "STARTED",
+      message: "Worker started the import transaction.",
+      metadata: { attempt: claimed.attemptCount },
+      createdAt: now,
+    });
+
+    try {
+      if (!claimed.examId) {
+        throw new ImportError("CONFLICT", 409, "Import job has no exam");
+      }
+      const stagedRows = await this.database
+        .select()
+        .from(importJobRows)
+        .where(eq(importJobRows.jobId, jobId))
+        .orderBy(asc(importJobRows.rowNumber));
+      const buffer = await this.stagedRowsToCsv(stagedRows);
+      await this.commitImport(
+        buffer,
+        "CSV",
+        claimed.examId,
+        claimed.createdBy,
+        now,
+        jobId,
+      );
+    } catch (error) {
+      const failedAt = new Date();
+      const safeMessage =
+        "Import failed while committing. Review the source data and retry.";
+      await this.database.transaction(async (tx) => {
+        await tx
+          .update(importJobs)
+          .set({
+            status: "FAILED",
+            errorMessage: safeMessage,
+            errorReport: {
+              code: isImportError(error) ? error.code : "INTERNAL_ERROR",
+            },
+            lockedAt: null,
+            completedAt: failedAt,
+            updatedAt: failedAt,
+          })
+          .where(eq(importJobs.id, jobId));
+        await tx.insert(importJobLogs).values({
+          jobId,
+          level: "ERROR",
+          event: "FAILED",
+          message: safeMessage,
+          metadata: {
+            code: isImportError(error) ? error.code : "INTERNAL_ERROR",
+          },
+          createdAt: failedAt,
+        });
+      });
+    }
+    return this.getJob(jobId);
+  }
+
+  async processNextJob(now: Date): Promise<ImportJobDto | null> {
+    const leaseExpiredBefore = new Date(now.getTime() - 15 * 60 * 1000);
+    const recovered = await this.database
+      .update(importJobs)
+      .set({
+        status: "VALIDATED",
+        lockedAt: null,
+        errorMessage: null,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(importJobs.status, "COMMITTING"),
+          lt(importJobs.lockedAt, leaseExpiredBefore),
+        ),
+      )
+      .returning();
+    if (recovered.length > 0) {
+      await this.database.insert(importJobLogs).values(
+        recovered.map((job) => ({
+          jobId: job.id,
+          level: "INFO",
+          event: "RECOVERED",
+          message: "Expired worker lease was recovered and queued again.",
+          metadata: {},
+          createdAt: now,
+        })),
+      );
+    }
+    const next = (
+      await this.database
+        .select({ id: importJobs.id })
+        .from(importJobs)
+        .where(eq(importJobs.status, "VALIDATED"))
+        .orderBy(asc(importJobs.createdAt))
+        .limit(1)
+    )[0];
+    return next ? this.processJob(next.id, now) : null;
+  }
+
+  async retryJob(
+    jobId: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<ImportJobDto> {
+    const retried = await this.database.transaction(async (tx) => {
+      const row = (
+        await tx
+          .update(importJobs)
+          .set({
+            status: "VALIDATED",
+            processedRows: 0,
+            createdCount: 0,
+            updatedCount: 0,
+            errorMessage: null,
+            errorReport: {},
+            startedAt: null,
+            completedAt: null,
+            lockedAt: null,
+            updatedAt: now,
+          })
+          .where(and(eq(importJobs.id, jobId), eq(importJobs.status, "FAILED")))
+          .returning()
+      )[0];
+      if (!row) {
+        throw new ImportError(
+          "CONFLICT",
+          409,
+          "Only failed jobs can be retried",
+        );
+      }
+      await tx.insert(importJobLogs).values({
+        jobId,
+        level: "INFO",
+        event: "RETRIED",
+        message: "Administrator queued the failed job for retry.",
+        metadata: {},
+        createdAt: now,
+      });
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "IMPORT_JOB_RETRIED",
+        entityType: "IMPORT_JOB",
+        entityId: jobId,
+        metadata: {},
+        createdAt: now,
+      });
+      return row;
+    });
+    return (await this.getJob(retried.id))!;
+  }
+
   async previewImport(
     buffer: Uint8Array,
     format: ImportFormat,
@@ -165,6 +561,7 @@ export class DrizzleImportRepository implements ImportRepository {
     examId: string,
     actorUserId: string,
     now: Date,
+    jobId?: string,
   ): Promise<{ createdCount: number; updatedCount: number }> {
     const rows = await this.buildOutcomes(buffer, format, examId);
     if (rows.length === 0) {
@@ -325,6 +722,44 @@ export class DrizzleImportRepository implements ImportRepository {
         const created = await upsertOne(outcome);
         if (created) createdCount += 1;
         else updatedCount += 1;
+      }
+      if (jobId) {
+        await tx
+          .update(importJobs)
+          .set({
+            status: "COMPLETED",
+            processedRows: rows.length,
+            createdCount,
+            updatedCount,
+            errorMessage: null,
+            errorReport: {},
+            lockedAt: null,
+            completedAt: now,
+            summary: {
+              totalRows: rows.length,
+              createdCount,
+              updatedCount,
+              errorCount: 0,
+            },
+            updatedAt: now,
+          })
+          .where(eq(importJobs.id, jobId));
+        await tx.insert(importJobLogs).values({
+          jobId,
+          level: "INFO",
+          event: "COMPLETED",
+          message: "Import transaction completed successfully.",
+          metadata: { createdCount, updatedCount },
+          createdAt: now,
+        });
+        await tx.insert(auditLogs).values({
+          actorUserId,
+          action: "IMPORT_JOB_COMPLETED",
+          entityType: "IMPORT_JOB",
+          entityId: jobId,
+          metadata: { examId, createdCount, updatedCount },
+          createdAt: now,
+        });
       }
     });
     return { createdCount, updatedCount };

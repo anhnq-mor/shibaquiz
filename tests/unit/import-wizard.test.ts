@@ -29,4 +29,10 @@ describe("admin import wizard file lifecycle", () => {
     expect(source).toContain("messages.imports.confirmBlockedHint");
     expect(source).toContain('"import-errors-notice"');
   });
+
+  it("returns a background job and links to its monitor", () => {
+    expect(source).toContain("ImportJobDto");
+    expect(source).toContain("messages.imports.queuedHeading");
+    expect(source).toContain("/admin/import/jobs");
+  });
 });

@@ -10,9 +10,12 @@ import { authErrorResponse } from "@/server/http/auth-http";
 
 const MAX_IMPORT_FILE_BYTES = 10 * 1024 * 1024;
 
-export async function parseImportRequest(
-  request: Request,
-): Promise<{ buffer: Uint8Array; format: ImportFormat; examId: string }> {
+export async function parseImportRequest(request: Request): Promise<{
+  buffer: Uint8Array;
+  format: ImportFormat;
+  examId: string;
+  fileName: string;
+}> {
   const formData = await request.formData();
   const file = formData.get("file");
   const examIdRaw = formData.get("examId");
@@ -27,7 +30,7 @@ export async function parseImportRequest(
     ? "XLSX"
     : "CSV";
   const buffer = new Uint8Array(await file.arrayBuffer());
-  return { buffer, format, examId };
+  return { buffer, format, examId, fileName: file.name };
 }
 
 const messages = {

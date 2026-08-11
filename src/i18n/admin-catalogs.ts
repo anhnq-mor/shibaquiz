@@ -205,6 +205,34 @@ export interface AdminCatalog {
     fixErrorsNotice: string;
     previewing: string;
     startOverAction: string;
+    queuedHeading: string;
+    queuedDescription: string;
+    viewJobsAction: string;
+    jobsTitle: string;
+    jobsDescription: string;
+    jobsEmpty: string;
+    refreshAction: string;
+    retryAction: string;
+    retrying: string;
+    fileNameLabel: string;
+    progressLabel: string;
+    resultLabel: string;
+    attemptsLabel: string;
+    createdAtLabel: string;
+    logsLabel: string;
+    statusUploaded: string;
+    statusValidating: string;
+    statusValidated: string;
+    statusCommitting: string;
+    statusCompleted: string;
+    statusFailed: string;
+    jobFailedMessage: string;
+    logQueued: string;
+    logStarted: string;
+    logCompleted: string;
+    logFailed: string;
+    logRetried: string;
+    logRecovered: string;
   };
   users: {
     title: string;
@@ -469,6 +497,38 @@ const vi: AdminCatalog = {
       "Có dòng lỗi. Hãy sửa tệp và xem trước lại; không có gì được ghi vào hệ thống.",
     previewing: "Đang xem trước…",
     startOverAction: "Nhập tệp khác",
+    queuedHeading: "Đã tạo job nhập câu hỏi",
+    queuedDescription:
+      "Job đang chạy ngầm. Bạn có thể rời trang này và theo dõi lại trong màn nhật ký import.",
+    viewJobsAction: "Theo dõi job import",
+    jobsTitle: "Nhật ký job import",
+    jobsDescription:
+      "Theo dõi trạng thái, kết quả và log vận hành của các lần nhập câu hỏi chạy ngầm.",
+    jobsEmpty: "Chưa có job import nào.",
+    refreshAction: "Làm mới",
+    retryAction: "Chạy lại",
+    retrying: "Đang xếp hàng lại…",
+    fileNameLabel: "Tệp",
+    progressLabel: "Tiến độ",
+    resultLabel: "Kết quả",
+    attemptsLabel: "Số lần chạy",
+    createdAtLabel: "Tạo lúc",
+    logsLabel: "Log",
+    statusUploaded: "Đã tải lên",
+    statusValidating: "Đang kiểm tra",
+    statusValidated: "Đang chờ",
+    statusCommitting: "Đang ghi dữ liệu",
+    statusCompleted: "Hoàn tất",
+    statusFailed: "Thất bại",
+    jobFailedMessage:
+      "Job import thất bại khi ghi dữ liệu. Hãy kiểm tra log và thử chạy lại.",
+    logQueued: "Job đã được kiểm tra và đưa vào hàng đợi.",
+    logStarted: "Worker đã bắt đầu transaction import.",
+    logCompleted: "Transaction import đã hoàn tất thành công.",
+    logFailed: "Transaction import thất bại và không ghi dữ liệu một phần.",
+    logRetried: "Quản trị viên đã đưa job thất bại vào hàng đợi lại.",
+    logRecovered:
+      "Lease worker hết hạn đã được thu hồi và job được xếp hàng lại.",
   },
   users: {
     title: "Người dùng",
@@ -737,6 +797,37 @@ const en: AdminCatalog = {
       "The file has invalid rows. Fix them and preview again; nothing was committed.",
     previewing: "Previewing…",
     startOverAction: "Import another file",
+    queuedHeading: "Import job created",
+    queuedDescription:
+      "The job is running in the background. You can leave this page and return to the import job log later.",
+    viewJobsAction: "View import jobs",
+    jobsTitle: "Import job log",
+    jobsDescription:
+      "Track the status, result, and operational logs of background question imports.",
+    jobsEmpty: "No import jobs yet.",
+    refreshAction: "Refresh",
+    retryAction: "Retry",
+    retrying: "Queueing again…",
+    fileNameLabel: "File",
+    progressLabel: "Progress",
+    resultLabel: "Result",
+    attemptsLabel: "Attempts",
+    createdAtLabel: "Created",
+    logsLabel: "Logs",
+    statusUploaded: "Uploaded",
+    statusValidating: "Validating",
+    statusValidated: "Queued",
+    statusCommitting: "Committing",
+    statusCompleted: "Completed",
+    statusFailed: "Failed",
+    jobFailedMessage:
+      "The import job failed while writing data. Review the log and retry.",
+    logQueued: "The validated job was added to the queue.",
+    logStarted: "The worker started the import transaction.",
+    logCompleted: "The import transaction completed successfully.",
+    logFailed: "The import transaction failed without a partial write.",
+    logRetried: "An administrator queued the failed job again.",
+    logRecovered: "The expired worker lease was recovered and queued again.",
   },
   users: {
     title: "Users",

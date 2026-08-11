@@ -33,12 +33,8 @@ describe("route navigation feedback", () => {
 
   it("provides localized status text without blocking the page", () => {
     expect(loadingFallback).toContain("ShibaLoading");
-    expect(loadingCatalog).toContain(
-      'missionPrimary: "Shiba nhận nhiệm vụ rồi! 🐕💨"',
-    );
-    expect(loadingCatalog).toContain(
-      'missionPrimary: "Shiba got the mission! 🐕💨"',
-    );
+    expect(loadingCatalog).toContain('mission: "Shiba nhận nhiệm vụ rồi!"');
+    expect(loadingCatalog).toContain('mission: "Shiba got the mission!"');
     expect(shibaLoading).toContain('aria-hidden="true"');
     expect(loadingFallback).not.toContain("position: fixed");
   });
@@ -54,5 +50,14 @@ describe("route navigation feedback", () => {
     expect(stylesheet).toContain("@keyframes shiba-run-across");
     expect(stylesheet).toContain("@keyframes shiba-tail-done");
     expect(stylesheet).toContain("prefers-reduced-motion: reduce");
+  });
+
+  it("centers route loading for admin and regular user screens", () => {
+    expect(stylesheet).toMatch(
+      /\.route-loading-shell,\s*\.admin-route-loading\s*{[^}]*place-items: center;/,
+    );
+    expect(stylesheet).toMatch(
+      /\.route-loading-content\s*{[^}]*justify-self: center;[^}]*margin-inline: auto;/,
+    );
   });
 });

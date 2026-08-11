@@ -6,15 +6,17 @@ import { getLoadingMessages } from "@/i18n/loading-catalogs";
 describe("Shiba loading experience", () => {
   const activity = readFileSync("src/components/api-activity.ts", "utf8");
 
-  it("provides bilingual running and completion copy", () => {
+  it("provides one localized running and completion message", () => {
     expect(getLoadingMessages("vi")).toEqual({
-      missionPrimary: "Shiba nhận nhiệm vụ rồi! 🐕💨",
-      missionSecondary: "Shiba got the mission!",
-      donePrimary: "Xong rồi nè! 🐾",
-      doneSecondary: "All done!",
+      mission: "Shiba nhận nhiệm vụ rồi!",
+      done: "Xong rồi nè! 🐾",
     });
-    expect(getLoadingMessages("en").missionPrimary).toBe(
-      "Shiba got the mission! 🐕💨",
+    expect(getLoadingMessages("en")).toEqual({
+      mission: "Shiba got the mission!",
+      done: "All done! 🐾",
+    });
+    expect(getLoadingMessages("vi").mission).not.toBe(
+      getLoadingMessages("en").mission,
     );
   });
 

@@ -94,8 +94,7 @@ export function ShibaLoading({
         )}
       </div>
       <div className="shiba-loading-copy">
-        <strong>{done ? messages.donePrimary : messages.missionPrimary}</strong>
-        <span>{done ? messages.doneSecondary : messages.missionSecondary}</span>
+        <strong>{done ? messages.done : messages.mission}</strong>
       </div>
     </div>
   );
