@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import type { ReactNode } from "react";
 
 import { isLocale, locales } from "@/domain/common/locale";
@@ -32,6 +33,9 @@ export default async function LocaleLayout({
   children,
   params,
 }: Readonly<{ children: ReactNode; params: Promise<{ locale: string }> }>) {
+  // A per-request render is required so Next.js can attach the CSP nonce from
+  // proxy.ts to its bootstrap and page scripts.
+  await connection();
   const { locale } = await params;
   if (!isLocale(locale)) {
     notFound();

@@ -5,13 +5,34 @@ import {
   localePreferenceCookieName,
   resolveLocale,
 } from "@/domain/common/locale";
+import { createContentSecurityPolicy } from "@/server/http/content-security-policy";
+
+function applyContentSecurityPolicy(
+  response: NextResponse,
+  contentSecurityPolicy: string,
+) {
+  response.headers.set("Content-Security-Policy", contentSecurityPolicy);
+  return response;
+}
 
 export function proxy(request: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const contentSecurityPolicy = createContentSecurityPolicy({
+    nonce,
+    isDevelopment: process.env.NODE_ENV === "development",
+  });
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", contentSecurityPolicy);
+
   const pathname = request.nextUrl.pathname;
   const firstSegment = pathname.split("/")[1];
 
   if (pathname === "/") {
-    return NextResponse.next();
+    return applyContentSecurityPolicy(
+      NextResponse.next({ request: { headers: requestHeaders } }),
+      contentSecurityPolicy,
+    );
   }
 
   if (firstSegment && !isLocale(firstSegment)) {
@@ -21,10 +42,16 @@ export function proxy(request: NextRequest) {
     });
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = `/${locale}${pathname}`;
-    return NextResponse.redirect(redirectUrl);
+    return applyContentSecurityPolicy(
+      NextResponse.redirect(redirectUrl),
+      contentSecurityPolicy,
+    );
   }
 
-  return NextResponse.next();
+  return applyContentSecurityPolicy(
+    NextResponse.next({ request: { headers: requestHeaders } }),
+    contentSecurityPolicy,
+  );
 }
 
 export const config = {

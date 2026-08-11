@@ -127,7 +127,7 @@ export function AuthForm({
   }
 
   return (
-    <form className="auth-form" onSubmit={submit}>
+    <form action={action} className="auth-form" method="post" onSubmit={submit}>
       {mode === "register" && (
         <label>
           <span>{messages.common.displayName}</span>
