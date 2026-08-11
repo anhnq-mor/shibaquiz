@@ -17,6 +17,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import type { StoredQuestionSnapshot } from "@/domain/attempts/disclosure";
+import type { AttemptAnswer } from "@/domain/attempts/answer";
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -42,6 +43,9 @@ export const contentStatusEnum = pgEnum("content_status", [
 export const questionTypeEnum = pgEnum("question_type", [
   "SINGLE_CHOICE",
   "MULTIPLE_CHOICE",
+  "TRUE_FALSE",
+  "MATCHING",
+  "ORDERING",
 ]);
 export const testTypeEnum = pgEnum("test_type", ["FIXED", "DYNAMIC"]);
 export const attemptScopeEnum = pgEnum("attempt_scope", [
@@ -313,6 +317,7 @@ export const questionOptions = pgTable(
     label: text("label").notNull(),
     isCorrect: boolean("is_correct").default(false).notNull(),
     displayOrder: integer("display_order").notNull(),
+    matchTargetId: uuid("match_target_id").defaultRandom().notNull(),
     ...timestamps,
   },
   (table) => [
@@ -324,6 +329,7 @@ export const questionOptions = pgTable(
       table.questionId,
       table.displayOrder,
     ),
+    uniqueIndex("question_options_match_target_unique").on(table.matchTargetId),
     check(
       "question_options_display_order_nonnegative",
       sql`${table.displayOrder} >= 0`,
@@ -339,6 +345,7 @@ export const questionOptionTranslations = pgTable(
       .references(() => questionOptions.id, { onDelete: "cascade" }),
     locale: localeEnum("locale").notNull(),
     content: text("content").notNull(),
+    matchTargetContent: text("match_target_content"),
     ...timestamps,
   },
   (table) => [
@@ -346,6 +353,10 @@ export const questionOptionTranslations = pgTable(
     check(
       "question_option_translation_content_length",
       sql`char_length(${table.content}) between 1 and 10000`,
+    ),
+    check(
+      "question_option_translation_match_content_length",
+      sql`${table.matchTargetContent} is null or char_length(${table.matchTargetContent}) between 1 and 10000`,
     ),
   ],
 );
@@ -585,6 +596,10 @@ export const attemptQuestions = pgTable(
     selectedOptionIds: jsonb("selected_option_ids")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`)
+      .notNull(),
+    answerPayload: jsonb("answer_payload")
+      .$type<AttemptAnswer>()
+      .default(sql`'{"kind":"CHOICE","selectedOptionIds":[]}'::jsonb`)
       .notNull(),
     isFlagged: boolean("is_flagged").default(false).notNull(),
     checkedAt: timestamp("checked_at", { withTimezone: true }),

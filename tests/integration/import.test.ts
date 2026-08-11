@@ -17,7 +17,9 @@ const adminId = "60000000-0000-4000-8000-000000000001";
 let examId: string;
 let readyMediaId: string;
 
-function csvRow(overrides: Record<string, string> = {}): Record<string, string> {
+function csvRow(
+  overrides: Record<string, string> = {},
+): Record<string, string> {
   return {
     external_id: "",
     topic_slug: "algebra",
@@ -43,7 +45,9 @@ function csvRow(overrides: Record<string, string> = {}): Record<string, string> 
 function toCsvBuffer(rows: Record<string, string>[]): Uint8Array {
   const table = [
     IMPORT_TEMPLATE_HEADERS,
-    ...rows.map((row) => IMPORT_TEMPLATE_HEADERS.map((header) => row[header] ?? "")),
+    ...rows.map((row) =>
+      IMPORT_TEMPLATE_HEADERS.map((header) => row[header] ?? ""),
+    ),
   ];
   return new TextEncoder().encode(toCsv(table));
 }
@@ -63,12 +67,10 @@ beforeAll(async () => {
     .values({ code: "IMPORT-1", slug: "import-1", status: "DRAFT" })
     .returning();
   examId = exam!.id;
-  await database
-    .insert(schema.topics)
-    .values([
-      { examId, slug: "algebra", displayOrder: 0 },
-      { examId, slug: "geometry", displayOrder: 1 },
-    ]);
+  await database.insert(schema.topics).values([
+    { examId, slug: "algebra", displayOrder: 0 },
+    { examId, slug: "geometry", displayOrder: 1 },
+  ]);
   const [media] = await database
     .insert(schema.mediaAssets)
     .values({
@@ -106,8 +108,44 @@ describe("import preview", () => {
     expect(summary.errorCount).toBe(0);
   });
 
+  it("accepts a published row with one language and mirrors it before persistence", async () => {
+    const buffer = toCsvBuffer([
+      csvRow({
+        external_id: "MIRROR-EN-TO-VI",
+        status: "PUBLISHED",
+        content_vi: "",
+        explanation_vi: "",
+        content_en: "Imported in English",
+        explanation_en: "English explanation",
+        option_1_content_vi: "",
+        option_1_content_en: "Correct",
+        option_2_content_vi: "",
+        option_2_content_en: "Incorrect",
+      }),
+    ]);
+    const summary = await repository.previewImport(buffer, "CSV", examId);
+    expect(summary.validCount).toBe(1);
+    if (summary.rows[0]?.status === "VALID") {
+      expect(summary.rows[0].input.translations).toEqual([
+        {
+          locale: "vi",
+          content: "Imported in English",
+          explanation: "English explanation",
+        },
+        {
+          locale: "en",
+          content: "Imported in English",
+          explanation: "English explanation",
+        },
+      ]);
+    }
+  });
+
   it("flags a row referencing an unknown topic slug without touching the others", async () => {
-    const buffer = toCsvBuffer([csvRow(), csvRow({ topic_slug: "unknown-topic" })]);
+    const buffer = toCsvBuffer([
+      csvRow(),
+      csvRow({ topic_slug: "unknown-topic" }),
+    ]);
     const summary = await repository.previewImport(buffer, "CSV", examId);
     expect(summary.validCount).toBe(1);
     expect(summary.errorCount).toBe(1);
@@ -131,7 +169,9 @@ describe("import preview", () => {
         "CSV",
         "70000000-0000-4000-8000-000000000000",
       ),
-    ).rejects.toSatisfy((error) => isImportError(error) && error.code === "NOT_FOUND");
+    ).rejects.toSatisfy(
+      (error) => isImportError(error) && error.code === "NOT_FOUND",
+    );
   });
 });
 
@@ -142,7 +182,13 @@ describe("import commit", () => {
       csvRow({ external_id: "ATOMIC-1" }),
       csvRow({ external_id: "ATOMIC-2", topic_slug: "geometry" }),
     ]);
-    const result = await repository.commitImport(buffer, "CSV", examId, adminId, new Date());
+    const result = await repository.commitImport(
+      buffer,
+      "CSV",
+      examId,
+      adminId,
+      new Date(),
+    );
     expect(result).toEqual({ createdCount: 2, updatedCount: 0 });
     expect(await questionCount()).toBe(before + 2);
   });
@@ -208,7 +254,13 @@ describe("import commit", () => {
 
   it("rejects committing a file with no data rows", async () => {
     await expect(
-      repository.commitImport(toCsvBuffer([]), "CSV", examId, adminId, new Date()),
+      repository.commitImport(
+        toCsvBuffer([]),
+        "CSV",
+        examId,
+        adminId,
+        new Date(),
+      ),
     ).rejects.toSatisfy(
       (error) => isImportError(error) && error.code === "INVALID_STRUCTURE",
     );

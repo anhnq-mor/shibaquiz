@@ -10,7 +10,7 @@ import {
 import type { Locale } from "@/domain/common/locale";
 import type { ImportFormat } from "@/domain/import/spreadsheet";
 
-export const IMPORT_MAX_OPTION_SLOTS = 8;
+export const IMPORT_MAX_OPTION_SLOTS = 20;
 
 export const IMPORT_TEMPLATE_HEADERS = [
   "external_id",
@@ -26,6 +26,8 @@ export const IMPORT_TEMPLATE_HEADERS = [
     `option_${index + 1}_label`,
     `option_${index + 1}_content_vi`,
     `option_${index + 1}_content_en`,
+    `option_${index + 1}_match_vi`,
+    `option_${index + 1}_match_en`,
     `option_${index + 1}_correct`,
   ]).flat(),
 ];
@@ -52,8 +54,8 @@ export function buildImportTemplateRows(): string[][] {
     (_, index) => {
       const example = EXAMPLE_OPTIONS[index];
       return example
-        ? [example.label, example.contentVi, "", example.correct]
-        : ["", "", "", ""];
+        ? [example.label, example.contentVi, "", "", "", example.correct]
+        : ["", "", "", "", "", ""];
     },
   ).flat();
   return [IMPORT_TEMPLATE_HEADERS, [...fixedColumns, ...optionColumns]];
@@ -88,6 +90,18 @@ function splitIds(value: string): string[] {
     .filter(Boolean);
 }
 
+function mirrorLocalizedValues(
+  viValue: string | undefined,
+  enValue: string | undefined,
+): { vi: string; en: string } {
+  const vi = viValue?.trim() ?? "";
+  const en = enValue?.trim() ?? "";
+  return {
+    vi: vi || en,
+    en: en || vi,
+  };
+}
+
 export function buildImportRowInput(
   raw: Record<string, string>,
   rowNumber: number,
@@ -118,22 +132,23 @@ export function buildImportRowInput(
   }
 
   const translations: SaveQuestionInput["translations"] = [];
-  const contentVi = raw.content_vi?.trim() ?? "";
-  const explanationVi = raw.explanation_vi?.trim() ?? "";
-  if (contentVi && explanationVi) {
+  const content = mirrorLocalizedValues(raw.content_vi, raw.content_en);
+  const explanation = mirrorLocalizedValues(
+    raw.explanation_vi,
+    raw.explanation_en,
+  );
+  if (content.vi && explanation.vi) {
     translations.push({
       locale: "vi",
-      content: contentVi,
-      explanation: explanationVi,
+      content: content.vi,
+      explanation: explanation.vi,
     });
   }
-  const contentEn = raw.content_en?.trim() ?? "";
-  const explanationEn = raw.explanation_en?.trim() ?? "";
-  if (contentEn && explanationEn) {
+  if (content.en && explanation.en) {
     translations.push({
       locale: "en",
-      content: contentEn,
-      explanation: explanationEn,
+      content: content.en,
+      explanation: explanation.en,
     });
   }
 
@@ -143,13 +158,27 @@ export function buildImportRowInput(
     if (!label) continue;
     const optionTranslations: SaveQuestionInput["options"][number]["translations"] =
       [];
-    const optionContentVi = raw[`option_${slot}_content_vi`]?.trim() ?? "";
-    if (optionContentVi) {
-      optionTranslations.push({ locale: "vi", content: optionContentVi });
+    const optionContent = mirrorLocalizedValues(
+      raw[`option_${slot}_content_vi`],
+      raw[`option_${slot}_content_en`],
+    );
+    const matchContent = mirrorLocalizedValues(
+      raw[`option_${slot}_match_vi`],
+      raw[`option_${slot}_match_en`],
+    );
+    if (optionContent.vi) {
+      optionTranslations.push({
+        locale: "vi",
+        content: optionContent.vi,
+        matchContent: matchContent.vi || null,
+      });
     }
-    const optionContentEn = raw[`option_${slot}_content_en`]?.trim() ?? "";
-    if (optionContentEn) {
-      optionTranslations.push({ locale: "en", content: optionContentEn });
+    if (optionContent.en) {
+      optionTranslations.push({
+        locale: "en",
+        content: optionContent.en,
+        matchContent: matchContent.en || null,
+      });
     }
     options.push({
       label,

@@ -7,6 +7,13 @@ import type {
   AttemptStatus,
   QuestionDto,
 } from "@/domain/attempts/disclosure";
+import {
+  attemptAnswerSchema,
+  isAnswerEmpty,
+  isAttemptAnswerCorrect,
+  type AttemptAnswer,
+} from "@/domain/attempts/answer";
+import type { StoredQuestionSnapshot } from "@/domain/attempts/disclosure";
 
 export const attemptScopes = ["TOPIC", "FULL_TEST", "QUESTION_BANK"] as const;
 export const attemptModes = [
@@ -73,10 +80,21 @@ export const startAttemptSchema = z
 
 export type StartAttemptInput = z.infer<typeof startAttemptSchema>;
 
-export const saveAnswerSchema = z.object({
-  selectedOptionIds: z.array(idSchema).max(8),
-  isFlagged: z.boolean().optional(),
-});
+export const saveAnswerSchema = z
+  .object({
+    answer: attemptAnswerSchema.optional(),
+    selectedOptionIds: z.array(idSchema).max(20).optional(),
+    isFlagged: z.boolean().optional(),
+  })
+  .superRefine((value, context) => {
+    if (!value.answer && !value.selectedOptionIds) {
+      context.addIssue({
+        code: "custom",
+        path: ["answer"],
+        message: "answer is required",
+      });
+    }
+  });
 
 export type SaveAnswerInput = z.infer<typeof saveAnswerSchema>;
 
@@ -173,8 +191,10 @@ export interface AttemptResultSummary {
 
 export interface AttemptQuestionOutcome {
   topicId: string;
-  selectedOptionIds: string[];
-  correctOptionIds: string[];
+  selectedOptionIds?: string[];
+  correctOptionIds?: string[];
+  answer?: AttemptAnswer;
+  snapshot?: StoredQuestionSnapshot;
 }
 
 export function computeAttemptResult(
@@ -195,12 +215,21 @@ export function computeAttemptResult(
     };
     breakdown.totalCount += 1;
 
-    if (question.selectedOptionIds.length === 0) {
+    const unanswered = question.answer
+      ? isAnswerEmpty(question.answer)
+      : (question.selectedOptionIds?.length ?? 0) === 0;
+    const correct =
+      question.answer && question.snapshot
+        ? isAttemptAnswerCorrect(question.answer, question.snapshot)
+        : isAnswerCorrect(
+            question.selectedOptionIds ?? [],
+            question.correctOptionIds ?? [],
+          );
+
+    if (unanswered) {
       unansweredCount += 1;
       breakdown.unansweredCount += 1;
-    } else if (
-      isAnswerCorrect(question.selectedOptionIds, question.correctOptionIds)
-    ) {
+    } else if (correct) {
       correctCount += 1;
       breakdown.correctCount += 1;
     } else {
@@ -231,6 +260,7 @@ export interface AttemptQuestionState {
   topicName: string;
   type: QuestionType;
   selectedOptionIds: string[];
+  answer: AttemptAnswer;
   isFlagged: boolean;
   checkedAt: string | null;
   question: QuestionDto;
@@ -257,6 +287,7 @@ export interface AttemptResultQuestion {
   displayOrder: number;
   topicId: string;
   selectedOptionIds: string[];
+  answer: AttemptAnswer;
   isCorrect: boolean | null;
   question: QuestionDto;
 }

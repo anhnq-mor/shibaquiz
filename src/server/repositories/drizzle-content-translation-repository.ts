@@ -126,6 +126,13 @@ export class DrizzleContentTranslationRepository implements ContentTranslationRe
                 or(
                   isNull(questionOptionTranslations.optionId),
                   sql`btrim(${questionOptionTranslations.content}) = ''`,
+                  and(
+                    eq(questions.type, "MATCHING"),
+                    or(
+                      isNull(questionOptionTranslations.matchTargetContent),
+                      sql`btrim(${questionOptionTranslations.matchTargetContent}) = ''`,
+                    ),
+                  ),
                 ),
               ),
             ),

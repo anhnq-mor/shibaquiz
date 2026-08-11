@@ -1,18 +1,27 @@
 import { describe, expect, it } from "vitest";
 
-import { buildImportRowInput, type ImportRowContext } from "@/domain/import/import";
+import {
+  buildImportRowInput,
+  type ImportRowContext,
+} from "@/domain/import/import";
 
-function baseContext(overrides: Partial<ImportRowContext> = {}): ImportRowContext {
+function baseContext(
+  overrides: Partial<ImportRowContext> = {},
+): ImportRowContext {
   return {
     examId: "10000000-0000-4000-8000-000000000001",
-    topicIdBySlug: new Map([["algebra", "20000000-0000-4000-8000-000000000001"]]),
+    topicIdBySlug: new Map([
+      ["algebra", "20000000-0000-4000-8000-000000000001"],
+    ]),
     requiredLocales: () => ["vi"],
     readyMediaIds: new Set<string>(),
     ...overrides,
   };
 }
 
-function validRow(overrides: Record<string, string> = {}): Record<string, string> {
+function validRow(
+  overrides: Record<string, string> = {},
+): Record<string, string> {
   return {
     external_id: "",
     topic_slug: "algebra",
@@ -41,9 +50,52 @@ describe("buildImportRowInput", () => {
     expect(outcome.status).toBe("VALID");
     if (outcome.status === "VALID") {
       expect(outcome.input.type).toBe("SINGLE_CHOICE");
-      expect(outcome.input.topicId).toBe("20000000-0000-4000-8000-000000000001");
+      expect(outcome.input.topicId).toBe(
+        "20000000-0000-4000-8000-000000000001",
+      );
       expect(outcome.input.options).toHaveLength(2);
       expect(outcome.input.options[0]?.isCorrect).toBe(true);
+      expect(outcome.input.translations).toEqual([
+        {
+          locale: "vi",
+          content: "1 + 1 = ?",
+          explanation: "Phép cộng cơ bản.",
+        },
+        {
+          locale: "en",
+          content: "1 + 1 = ?",
+          explanation: "Phép cộng cơ bản.",
+        },
+      ]);
+    }
+  });
+
+  it("mirrors English question and option text into missing Vietnamese fields", () => {
+    const outcome = buildImportRowInput(
+      validRow({
+        content_vi: "",
+        explanation_vi: "",
+        content_en: "English question?",
+        explanation_en: "English explanation.",
+        option_1_content_vi: "",
+        option_1_content_en: "Correct",
+        option_2_content_vi: "",
+        option_2_content_en: "Incorrect",
+      }),
+      2,
+      baseContext(),
+    );
+    expect(outcome.status).toBe("VALID");
+    if (outcome.status === "VALID") {
+      expect(outcome.input.translations[0]).toMatchObject({
+        locale: "vi",
+        content: "English question?",
+        explanation: "English explanation.",
+      });
+      expect(outcome.input.options[0]?.translations[0]).toMatchObject({
+        locale: "vi",
+        content: "Correct",
+      });
     }
   });
 
@@ -59,9 +111,39 @@ describe("buildImportRowInput", () => {
     }
   });
 
-  it("rejects an invalid question type", () => {
+  it("accepts a true/false question type", () => {
     const outcome = buildImportRowInput(
       validRow({ type: "TRUE_FALSE" }),
+      2,
+      baseContext(),
+    );
+    expect(outcome.status).toBe("VALID");
+  });
+
+  it("accepts a matching row only with localized target content", () => {
+    const outcome = buildImportRowInput(
+      validRow({
+        type: "MATCHING",
+        option_1_correct: "FALSE",
+        option_2_correct: "FALSE",
+        option_1_match_vi: "Một",
+        option_2_match_vi: "Hai",
+      }),
+      2,
+      baseContext(),
+    );
+    expect(outcome.status).toBe("VALID");
+    if (outcome.status === "VALID") {
+      expect(outcome.input.options[0]?.translations).toEqual([
+        { locale: "vi", content: "2", matchContent: "Một" },
+        { locale: "en", content: "2", matchContent: "Một" },
+      ]);
+    }
+  });
+
+  it("still rejects a localized field when both language columns are blank", () => {
+    const outcome = buildImportRowInput(
+      validRow({ content_vi: "", content_en: "" }),
       2,
       baseContext(),
     );
@@ -118,15 +200,17 @@ describe("buildImportRowInput", () => {
     }
   });
 
-  it("requires a translation for every locale the exam mandates at this status", () => {
+  it("satisfies required locales by mirroring the available localized content", () => {
     const outcome = buildImportRowInput(
       validRow({ status: "PUBLISHED" }),
       2,
       baseContext({ requiredLocales: () => ["vi", "en"] }),
     );
-    expect(outcome.status).toBe("ERROR");
-    if (outcome.status === "ERROR") {
-      expect(outcome.errors.join()).toMatch(/en/);
+    expect(outcome.status).toBe("VALID");
+    if (outcome.status === "VALID") {
+      expect(
+        outcome.input.translations.map((translation) => translation.locale),
+      ).toEqual(["vi", "en"]);
     }
   });
 

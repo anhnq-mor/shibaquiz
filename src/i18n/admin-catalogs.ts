@@ -92,12 +92,17 @@ export interface AdminCatalog {
     type: string;
     typeSingle: string;
     typeMultiple: string;
+    typeTrueFalse: string;
+    typeMatching: string;
+    typeOrdering: string;
     content: string;
     explanation: string;
     options: string;
     optionLabel: string;
     optionText: string;
     optionCorrect: string;
+    matchTargetText: string;
+    orderingHint: string;
     addOption: string;
     removeOption: string;
     filterKeyword: string;
@@ -334,12 +339,18 @@ const vi: AdminCatalog = {
     type: "Loại câu hỏi",
     typeSingle: "Một đáp án đúng",
     typeMultiple: "Nhiều đáp án đúng",
+    typeTrueFalse: "Đúng / Sai",
+    typeMatching: "Ghép cặp",
+    typeOrdering: "Sắp xếp thứ tự",
     content: "Nội dung câu hỏi",
     explanation: "Giải thích",
     options: "Lựa chọn",
     optionLabel: "Nhãn",
     optionText: "Nội dung lựa chọn",
     optionCorrect: "Đáp án đúng",
+    matchTargetText: "Nội dung cần ghép",
+    orderingHint:
+      "Thứ tự hiển thị bên dưới chính là thứ tự đúng; dùng nút lên/xuống để điều chỉnh.",
     addOption: "Thêm lựa chọn",
     removeOption: "Bỏ lựa chọn",
     filterKeyword: "Tìm theo từ khóa",
@@ -348,7 +359,8 @@ const vi: AdminCatalog = {
     filterAll: "Tất cả",
     version: "Phiên bản",
     mediaHeading: "Media đính kèm (tối đa 5, chỉ tệp Sẵn sàng)",
-    mediaEmpty: "Chưa có media nào ở trạng thái Sẵn sàng. Hãy tải lên trong trang Media.",
+    mediaEmpty:
+      "Chưa có media nào ở trạng thái Sẵn sàng. Hãy tải lên trong trang Media.",
     mediaLimitReached: "Đã chọn tối đa 5 tệp media.",
   },
   tests: {
@@ -467,7 +479,8 @@ const vi: AdminCatalog = {
     confirmLock: "Khóa tài khoản này? Mọi phiên đăng nhập sẽ bị thu hồi.",
     confirmUnlock: "Mở khóa tài khoản này?",
     confirmPromote: "Cấp quyền quản trị viên cho người dùng này?",
-    confirmDemote: "Hạ quyền quản trị viên của người dùng này xuống người dùng thường?",
+    confirmDemote:
+      "Hạ quyền quản trị viên của người dùng này xuống người dùng thường?",
     confirmResetPassword: "Gửi email đặt lại mật khẩu cho người dùng này?",
     lastAdminGuardError:
       "Không thể khóa hoặc hạ quyền quản trị viên cuối cùng còn hoạt động.",
@@ -475,7 +488,8 @@ const vi: AdminCatalog = {
   },
   audit: {
     title: "Nhật ký kiểm toán",
-    description: "Xem lại các hành động quản trị đã được ghi lại (đã ẩn dữ liệu nhạy cảm).",
+    description:
+      "Xem lại các hành động quản trị đã được ghi lại (đã ẩn dữ liệu nhạy cảm).",
     listHeading: "Danh sách sự kiện",
     tableActor: "Người thực hiện",
     tableAction: "Hành động",
@@ -583,12 +597,18 @@ const en: AdminCatalog = {
     type: "Question type",
     typeSingle: "Single choice",
     typeMultiple: "Multiple choice",
+    typeTrueFalse: "True / False",
+    typeMatching: "Matching",
+    typeOrdering: "Ordering",
     content: "Question content",
     explanation: "Explanation",
     options: "Options",
     optionLabel: "Label",
     optionText: "Option content",
     optionCorrect: "Correct answer",
+    matchTargetText: "Matching target",
+    orderingHint:
+      "The order shown below is the correct order; use the up/down buttons to adjust it.",
     addOption: "Add option",
     removeOption: "Remove option",
     filterKeyword: "Search by keyword",
@@ -718,7 +738,8 @@ const en: AdminCatalog = {
     confirmPromote: "Grant this user admin access?",
     confirmDemote: "Revoke this user's admin access?",
     confirmResetPassword: "Send a password reset email to this user?",
-    lastAdminGuardError: "Cannot lock or demote the last remaining active admin.",
+    lastAdminGuardError:
+      "Cannot lock or demote the last remaining active admin.",
     actionFailed: "The action failed. Please try again.",
   },
   audit: {

@@ -13,10 +13,10 @@ import {
 
 import { appApiRequest } from "@/components/app/app-api";
 import {
-  isAnswerCorrect,
   type AttemptQuestionState,
   type AttemptTakingView,
 } from "@/domain/attempts/attempt";
+import { isAnswerEmpty, type AttemptAnswer } from "@/domain/attempts/answer";
 import type { Locale } from "@/domain/common/locale";
 import type { QuizCatalog } from "@/i18n/quiz-catalogs";
 
@@ -27,7 +27,7 @@ function matchesFilter(
   question: AttemptQuestionState,
   filter: NavFilter,
 ): boolean {
-  if (filter === "unanswered") return question.selectedOptionIds.length === 0;
+  if (filter === "unanswered") return isAnswerEmpty(question.answer);
   if (filter === "flagged") return question.isFlagged;
   return true;
 }
@@ -77,8 +77,8 @@ export function AttemptRunner({
   const autoSubmitted = useRef(false);
 
   const current = questions[currentIndex]!;
-  const unansweredCount = questions.filter(
-    (question) => question.selectedOptionIds.length === 0,
+  const unansweredCount = questions.filter((question) =>
+    isAnswerEmpty(question.answer),
   ).length;
   const answeredCount = questions.length - unansweredCount;
   const distinctTopicCount = new Set(
@@ -150,11 +150,7 @@ export function AttemptRunner({
   }, []);
 
   const persistAnswer = useCallback(
-    (
-      attemptQuestionId: string,
-      selectedOptionIds: string[],
-      isFlagged: boolean,
-    ) => {
+    (attemptQuestionId: string, answer: AttemptAnswer, isFlagged: boolean) => {
       window.clearTimeout(saveTimers.current[attemptQuestionId]);
       pendingSaveCount.current += 1;
       setSaveStatus((state) => ({ ...state, [attemptQuestionId]: "saving" }));
@@ -163,7 +159,7 @@ export function AttemptRunner({
           const updated = await appApiRequest<AttemptQuestionState>(
             `/api/attempts/${initial.attemptId}/answers/${attemptQuestionId}`,
             locale,
-            { body: { selectedOptionIds, isFlagged } },
+            { body: { answer, isFlagged } },
           );
           setQuestions((list) =>
             list.map((question) =>
@@ -191,19 +187,91 @@ export function AttemptRunner({
 
   function selectOption(optionId: string) {
     if (current.checkedAt) return;
+    const selectedOptionIds =
+      current.answer.kind === "CHOICE"
+        ? current.answer.selectedOptionIds
+        : current.selectedOptionIds;
     const nextSelected = toggleOption(
-      current.selectedOptionIds,
+      selectedOptionIds,
       optionId,
-      current.type === "SINGLE_CHOICE",
+      current.type === "SINGLE_CHOICE" || current.type === "TRUE_FALSE",
     );
+    const answer: AttemptAnswer = {
+      kind: "CHOICE",
+      selectedOptionIds: nextSelected,
+    };
     setQuestions((list) =>
       list.map((question) =>
         question.attemptQuestionId === current.attemptQuestionId
-          ? { ...question, selectedOptionIds: nextSelected }
+          ? { ...question, selectedOptionIds: nextSelected, answer }
           : question,
       ),
     );
-    persistAnswer(current.attemptQuestionId, nextSelected, current.isFlagged);
+    persistAnswer(current.attemptQuestionId, answer, current.isFlagged);
+  }
+
+  function selectMatch(leftOptionId: string, rightOptionId: string) {
+    if (current.checkedAt || current.answer.kind !== "MATCHING") return;
+    const pairs = current.answer.pairs
+      .filter(
+        (pair) =>
+          pair.leftOptionId !== leftOptionId &&
+          pair.rightOptionId !== rightOptionId,
+      )
+      .concat(rightOptionId ? [{ leftOptionId, rightOptionId }] : []);
+    const answer: AttemptAnswer = { kind: "MATCHING", pairs };
+    setQuestions((list) =>
+      list.map((question) =>
+        question.attemptQuestionId === current.attemptQuestionId
+          ? { ...question, answer }
+          : question,
+      ),
+    );
+    persistAnswer(current.attemptQuestionId, answer, current.isFlagged);
+  }
+
+  function moveOrder(index: number, direction: -1 | 1) {
+    if (current.checkedAt) return;
+    const orderedOptionIds =
+      current.answer.kind === "ORDERING" &&
+      current.answer.orderedOptionIds.length > 0
+        ? [...current.answer.orderedOptionIds]
+        : current.question.options.map((option) => option.id);
+    const target = index + direction;
+    if (target < 0 || target >= orderedOptionIds.length) return;
+    [orderedOptionIds[index], orderedOptionIds[target]] = [
+      orderedOptionIds[target]!,
+      orderedOptionIds[index]!,
+    ];
+    const answer: AttemptAnswer = { kind: "ORDERING", orderedOptionIds };
+    setQuestions((list) =>
+      list.map((question) =>
+        question.attemptQuestionId === current.attemptQuestionId
+          ? { ...question, answer }
+          : question,
+      ),
+    );
+    persistAnswer(current.attemptQuestionId, answer, current.isFlagged);
+  }
+
+  function saveCurrentOrder() {
+    if (current.checkedAt) return;
+    const answer: AttemptAnswer = {
+      kind: "ORDERING",
+      orderedOptionIds:
+        current.answer.kind === "ORDERING" &&
+        current.answer.orderedOptionIds.length > 0
+          ? current.answer.orderedOptionIds
+          : current.question.options.map((option) => option.id),
+    };
+    setQuestions((list) =>
+      list.map((question) =>
+        question.attemptQuestionId === current.attemptQuestionId
+          ? { ...question, answer }
+          : question,
+      ),
+    );
+    persistAnswer(current.attemptQuestionId, answer, current.isFlagged);
   }
 
   function toggleFlag() {
@@ -215,11 +283,7 @@ export function AttemptRunner({
           : question,
       ),
     );
-    persistAnswer(
-      current.attemptQuestionId,
-      current.selectedOptionIds,
-      nextFlag,
-    );
+    persistAnswer(current.attemptQuestionId, current.answer, nextFlag);
   }
 
   async function checkCurrentAnswer() {
@@ -258,13 +322,48 @@ export function AttemptRunner({
   const status = saveStatus[current.attemptQuestionId] ?? "idle";
   const revealed = current.question.disclosure === "REVEALED";
   const isCurrentCorrect =
-    revealed && current.checkedAt && "options" in current.question
-      ? isAnswerCorrect(
-          current.selectedOptionIds,
-          current.question.options
-            .filter((option) => "isCorrect" in option && option.isCorrect)
-            .map((option) => option.id),
-        )
+    revealed && current.checkedAt
+      ? current.type === "MATCHING" && current.answer.kind === "MATCHING"
+        ? current.answer.pairs.length === current.question.options.length &&
+          current.question.options.every(
+            (option) =>
+              "correctMatchTargetId" in option &&
+              current.answer.kind === "MATCHING" &&
+              current.answer.pairs.some(
+                (pair) =>
+                  pair.leftOptionId === option.id &&
+                  pair.rightOptionId === option.correctMatchTargetId,
+              ),
+          )
+        : current.type === "ORDERING" && current.answer.kind === "ORDERING"
+          ? [...current.question.options]
+              .sort((left, right) =>
+                "correctOrder" in left && "correctOrder" in right
+                  ? left.correctOrder - right.correctOrder
+                  : 0,
+              )
+              .every(
+                (option, index) =>
+                  current.answer.kind === "ORDERING" &&
+                  current.answer.orderedOptionIds[index] === option.id,
+              )
+          : current.answer.kind === "CHOICE"
+            ? (() => {
+                const correct = new Set(
+                  current.question.options
+                    .filter(
+                      (option) => "isCorrect" in option && option.isCorrect,
+                    )
+                    .map((option) => option.id),
+                );
+                return (
+                  correct.size === current.answer.selectedOptionIds.length &&
+                  current.answer.selectedOptionIds.every((id) =>
+                    correct.has(id),
+                  )
+                );
+              })()
+            : false
       : null;
 
   return (
@@ -359,35 +458,149 @@ export function AttemptRunner({
             />
           )}
 
-          <ul className="option-list">
-            {current.question.options.map((option) => {
-              const isSelected = current.selectedOptionIds.includes(option.id);
-              const isCorrectOption =
-                "isCorrect" in option ? option.isCorrect : undefined;
-              const optionClass =
-                revealed && isCorrectOption
-                  ? "correct"
-                  : revealed && isSelected && isCorrectOption === false
-                    ? "incorrect"
+          {current.type === "MATCHING" ? (
+            <div className="option-list">
+              <p className="admin-hint">
+                {messages.attempt.matchingInstruction}
+              </p>
+              {current.question.options.map((option) => {
+                const selected =
+                  current.answer.kind === "MATCHING"
+                    ? (current.answer.pairs.find(
+                        (pair) => pair.leftOptionId === option.id,
+                      )?.rightOptionId ?? "")
                     : "";
-              return (
-                <li key={option.id} className={optionClass}>
-                  <label>
-                    <input
-                      type={
-                        current.type === "SINGLE_CHOICE" ? "radio" : "checkbox"
-                      }
-                      name={`question-${current.attemptQuestionId}`}
-                      checked={isSelected}
-                      disabled={Boolean(current.checkedAt)}
-                      onChange={() => selectOption(option.id)}
-                    />
+                return (
+                  <label key={option.id}>
                     <span>{option.content}</span>
+                    <select
+                      value={selected}
+                      disabled={Boolean(current.checkedAt)}
+                      onChange={(event) =>
+                        selectMatch(option.id, event.target.value)
+                      }
+                    >
+                      <option value="">
+                        {messages.attempt.matchingPlaceholder}
+                      </option>
+                      {current.question.matchingTargets.map((target) => (
+                        <option key={target.id} value={target.id}>
+                          {target.content}
+                        </option>
+                      ))}
+                    </select>
+                    {revealed && "correctMatchTargetId" in option && (
+                      <small>
+                        {messages.attempt.correctMatchLabel}:{" "}
+                        {current.question.matchingTargets.find(
+                          (target) => target.id === option.correctMatchTargetId,
+                        )?.content ?? ""}
+                      </small>
+                    )}
                   </label>
-                </li>
-              );
-            })}
-          </ul>
+                );
+              })}
+            </div>
+          ) : current.type === "ORDERING" ? (
+            <div className="option-list">
+              <p className="admin-hint">
+                {messages.attempt.orderingInstruction}
+              </p>
+              {(current.answer.kind === "ORDERING" &&
+              current.answer.orderedOptionIds.length > 0
+                ? current.answer.orderedOptionIds
+                    .map((id) =>
+                      current.question.options.find(
+                        (option) => option.id === id,
+                      ),
+                    )
+                    .filter((option) => option !== undefined)
+                : current.question.options
+              ).map((option, index, list) => (
+                <div key={option.id} className="admin-option-row">
+                  <strong>{index + 1}</strong>
+                  <span>{option.content}</span>
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    disabled={Boolean(current.checkedAt) || index === 0}
+                    onClick={() => moveOrder(index, -1)}
+                  >
+                    {messages.attempt.moveUpAction}
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    disabled={
+                      Boolean(current.checkedAt) || index === list.length - 1
+                    }
+                    onClick={() => moveOrder(index, 1)}
+                  >
+                    {messages.attempt.moveDownAction}
+                  </button>
+                </div>
+              ))}
+              {!current.checkedAt &&
+                current.answer.kind === "ORDERING" &&
+                current.answer.orderedOptionIds.length === 0 && (
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={saveCurrentOrder}
+                  >
+                    {messages.attempt.saveOrderAction}
+                  </button>
+                )}
+              {revealed && (
+                <p>
+                  {messages.attempt.correctOrderLabel}:{" "}
+                  {[...current.question.options]
+                    .sort((left, right) =>
+                      "correctOrder" in left && "correctOrder" in right
+                        ? left.correctOrder - right.correctOrder
+                        : 0,
+                    )
+                    .map((option) => option.content)
+                    .join(" → ")}
+                </p>
+              )}
+            </div>
+          ) : (
+            <ul className="option-list">
+              {current.question.options.map((option) => {
+                const isSelected = current.selectedOptionIds.includes(
+                  option.id,
+                );
+                const isCorrectOption =
+                  "isCorrect" in option ? option.isCorrect : undefined;
+                const optionClass =
+                  revealed && isCorrectOption
+                    ? "correct"
+                    : revealed && isSelected && isCorrectOption === false
+                      ? "incorrect"
+                      : "";
+                return (
+                  <li key={option.id} className={optionClass}>
+                    <label>
+                      <input
+                        type={
+                          current.type === "SINGLE_CHOICE" ||
+                          current.type === "TRUE_FALSE"
+                            ? "radio"
+                            : "checkbox"
+                        }
+                        name={`question-${current.attemptQuestionId}`}
+                        checked={isSelected}
+                        disabled={Boolean(current.checkedAt)}
+                        onChange={() => selectOption(option.id)}
+                      />
+                      <span>{option.content}</span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
 
           {initial.mode === "EXAM_DEFERRED" && !revealed && (
             <p className="admin-hint">{messages.exams.modeExamDeferredHint}</p>
@@ -423,7 +636,7 @@ export function AttemptRunner({
                     onClick={() =>
                       persistAnswer(
                         current.attemptQuestionId,
-                        current.selectedOptionIds,
+                        current.answer,
                         current.isFlagged,
                       )
                     }
@@ -629,12 +842,12 @@ function AttemptNavigator({
   const jumpInputRef = useRef<HTMLInputElement>(null);
   const total = questions.length;
   const answeredCount = questions.filter(
-    (question) => question.selectedOptionIds.length > 0,
+    (question) => !isAnswerEmpty(question.answer),
   ).length;
   const progressPercent =
     total === 0 ? 0 : Math.round((answeredCount / total) * 100);
-  const firstUnansweredIndex = questions.findIndex(
-    (question) => question.selectedOptionIds.length === 0,
+  const firstUnansweredIndex = questions.findIndex((question) =>
+    isAnswerEmpty(question.answer),
   );
 
   function submitJump(event: FormEvent<HTMLFormElement>) {
@@ -730,7 +943,7 @@ function AttemptNavigator({
               if (!matchesFilter(question, filter)) return null;
               const classes = [
                 "attempt-nav-item",
-                question.selectedOptionIds.length > 0 ? "answered" : "",
+                !isAnswerEmpty(question.answer) ? "answered" : "",
                 question.isFlagged ? "flagged" : "",
                 index === currentIndex ? "current" : "",
               ]

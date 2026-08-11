@@ -84,6 +84,14 @@ export interface QuizCatalog {
     checkAction: string;
     checkedCorrect: string;
     checkedIncorrect: string;
+    matchingInstruction: string;
+    matchingPlaceholder: string;
+    correctMatchLabel: string;
+    orderingInstruction: string;
+    moveUpAction: string;
+    moveDownAction: string;
+    saveOrderAction: string;
+    correctOrderLabel: string;
     timeRemainingLabel: string;
     timeUpNotice: string;
     submitAction: string;
@@ -252,6 +260,14 @@ const vi: QuizCatalog = {
     checkAction: "Kiểm tra",
     checkedCorrect: "Chính xác!",
     checkedIncorrect: "Chưa đúng.",
+    matchingInstruction: "Chọn mục tương ứng cho từng nội dung.",
+    matchingPlaceholder: "Chọn mục để ghép",
+    correctMatchLabel: "Cặp đúng",
+    orderingInstruction: "Dùng các nút để sắp xếp theo thứ tự đúng.",
+    moveUpAction: "Di chuyển lên",
+    moveDownAction: "Di chuyển xuống",
+    saveOrderAction: "Xác nhận thứ tự hiện tại",
+    correctOrderLabel: "Thứ tự đúng",
     timeRemainingLabel: "Thời gian còn lại",
     timeUpNotice: "Đã hết giờ. Bài làm đang được nộp tự động.",
     submitAction: "Nộp bài",
@@ -423,6 +439,15 @@ const en: QuizCatalog = {
     checkAction: "Check",
     checkedCorrect: "Correct!",
     checkedIncorrect: "Not quite.",
+    matchingInstruction: "Choose the matching item for each entry.",
+    matchingPlaceholder: "Choose a match",
+    correctMatchLabel: "Correct match",
+    orderingInstruction:
+      "Use the buttons to arrange the steps in the correct order.",
+    moveUpAction: "Move up",
+    moveDownAction: "Move down",
+    saveOrderAction: "Confirm current order",
+    correctOrderLabel: "Correct order",
     timeRemainingLabel: "Time remaining",
     timeUpNotice: "Time's up. Submitting your attempt automatically.",
     submitAction: "Submit",

@@ -1,4 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -586,6 +587,239 @@ describe("ownership and abandonment", () => {
     await expect(
       service.abandonAttempt(attemptId, u1, now),
     ).rejects.toMatchObject({ code: "LOCKED" });
+  });
+});
+
+describe("matching and ordering vertical slice", () => {
+  it("issues hidden structured DTOs, persists both answer kinds, and scores exactly", async () => {
+    const userId = uid(100);
+    const structuredExamId = uid(101);
+    const structuredTopicId = uid(102);
+    const matchingQuestionId = uid(103);
+    const orderingQuestionId = uid(104);
+    const structuredTestId = uid(105);
+    const matchingOptionIds = [uid(110), uid(111)];
+    const orderingOptionIds = [uid(112), uid(113), uid(114)];
+
+    await database.insert(schema.users).values({
+      id: userId,
+      email: "structured-attempt@example.com",
+      displayName: "Structured User",
+      passwordHash: "not-a-real-password-hash",
+      emailVerifiedAt: new Date("2026-08-11T00:00:00.000Z"),
+    });
+    await database.insert(schema.exams).values({
+      id: structuredExamId,
+      code: "STRUCTURED",
+      slug: "structured",
+      primaryLocale: "vi",
+      enabledLocales: ["vi", "en"],
+      status: "PUBLISHED",
+    });
+    await database.insert(schema.examTranslations).values([
+      {
+        examId: structuredExamId,
+        locale: "vi",
+        name: "Cấu trúc",
+        description: "Mô tả",
+      },
+      {
+        examId: structuredExamId,
+        locale: "en",
+        name: "Structured",
+        description: "Description",
+      },
+    ]);
+    await database.insert(schema.topics).values({
+      id: structuredTopicId,
+      examId: structuredExamId,
+      slug: "structured-topic",
+      displayOrder: 0,
+      status: "PUBLISHED",
+    });
+    await database.insert(schema.topicTranslations).values([
+      {
+        topicId: structuredTopicId,
+        locale: "vi",
+        name: "Cấu trúc",
+        description: "Mô tả",
+      },
+      {
+        topicId: structuredTopicId,
+        locale: "en",
+        name: "Structured",
+        description: "Description",
+      },
+    ]);
+    await database.insert(schema.questions).values([
+      {
+        id: matchingQuestionId,
+        examId: structuredExamId,
+        topicId: structuredTopicId,
+        type: "MATCHING",
+        status: "PUBLISHED",
+        version: 1,
+        createdBy: authorId,
+        updatedBy: authorId,
+      },
+      {
+        id: orderingQuestionId,
+        examId: structuredExamId,
+        topicId: structuredTopicId,
+        type: "ORDERING",
+        status: "PUBLISHED",
+        version: 1,
+        createdBy: authorId,
+        updatedBy: authorId,
+      },
+    ]);
+    await database.insert(schema.questionTranslations).values(
+      [matchingQuestionId, orderingQuestionId].flatMap((questionId) => [
+        {
+          questionId,
+          locale: "vi" as const,
+          content: "Câu hỏi",
+          explanation: "Giải thích",
+        },
+        {
+          questionId,
+          locale: "en" as const,
+          content: "Question",
+          explanation: "Explanation",
+        },
+      ]),
+    );
+    await database.insert(schema.questionOptions).values([
+      ...matchingOptionIds.map((id, index) => ({
+        id,
+        questionId: matchingQuestionId,
+        label: String.fromCharCode(65 + index),
+        isCorrect: false,
+        displayOrder: index,
+      })),
+      ...orderingOptionIds.map((id, index) => ({
+        id,
+        questionId: orderingQuestionId,
+        label: String.fromCharCode(65 + index),
+        isCorrect: false,
+        displayOrder: index,
+      })),
+    ]);
+    const storedMatchingOptions = await database
+      .select({
+        id: schema.questionOptions.id,
+        targetId: schema.questionOptions.matchTargetId,
+      })
+      .from(schema.questionOptions)
+      .where(eq(schema.questionOptions.questionId, matchingQuestionId));
+    await database.insert(schema.questionOptionTranslations).values([
+      ...storedMatchingOptions.flatMap((option, index) => [
+        {
+          optionId: option.id,
+          locale: "vi" as const,
+          content: `Trái ${index + 1}`,
+          matchTargetContent: `Phải ${index + 1}`,
+        },
+        {
+          optionId: option.id,
+          locale: "en" as const,
+          content: `Left ${index + 1}`,
+          matchTargetContent: `Right ${index + 1}`,
+        },
+      ]),
+      ...orderingOptionIds.flatMap((optionId, index) => [
+        { optionId, locale: "vi" as const, content: `Bước ${index + 1}` },
+        { optionId, locale: "en" as const, content: `Step ${index + 1}` },
+      ]),
+    ]);
+    await database.insert(schema.quizTests).values({
+      id: structuredTestId,
+      examId: structuredExamId,
+      type: "FIXED",
+      status: "PUBLISHED",
+      questionCount: 2,
+      durationMinutes: null,
+      passingScorePercent: "100.00",
+      shuffleQuestions: false,
+      shuffleOptions: false,
+    });
+    await database.insert(schema.testTranslations).values([
+      {
+        testId: structuredTestId,
+        locale: "vi",
+        name: "Đề",
+        description: "Mô tả",
+      },
+      {
+        testId: structuredTestId,
+        locale: "en",
+        name: "Test",
+        description: "Description",
+      },
+    ]);
+    await database.insert(schema.testQuestions).values([
+      {
+        testId: structuredTestId,
+        questionId: matchingQuestionId,
+        displayOrder: 0,
+      },
+      {
+        testId: structuredTestId,
+        questionId: orderingQuestionId,
+        displayOrder: 1,
+      },
+    ]);
+
+    const now = new Date("2026-08-11T08:00:00.000Z");
+    const { attemptId } = await service.startOrResumeAttempt(
+      {
+        examId: structuredExamId,
+        scope: "FULL_TEST",
+        mode: "EXAM_DEFERRED",
+        testId: structuredTestId,
+      },
+      userId,
+      "vi",
+      now,
+    );
+    const view = await service.getAttemptForTaking(attemptId, userId, now);
+    expect(JSON.stringify(view)).not.toContain("correctMatchTargetId");
+    expect(JSON.stringify(view)).not.toContain("correctOrder");
+    expect(view.questions[0]?.question.matchingTargets).toHaveLength(2);
+
+    await service.saveAnswer(
+      attemptId,
+      view.questions[0]!.attemptQuestionId,
+      userId,
+      {
+        answer: {
+          kind: "MATCHING",
+          pairs: storedMatchingOptions.map((option) => ({
+            leftOptionId: option.id,
+            rightOptionId: option.targetId,
+          })),
+        },
+      },
+      now,
+    );
+    await service.saveAnswer(
+      attemptId,
+      view.questions[1]!.attemptQuestionId,
+      userId,
+      {
+        answer: {
+          kind: "ORDERING",
+          orderedOptionIds: orderingOptionIds,
+        },
+      },
+      now,
+    );
+
+    const result = await service.submitAttempt(attemptId, userId, now);
+    expect(result.correctCount).toBe(2);
+    expect(result.scorePercent).toBe(100);
+    expect(JSON.stringify(result)).toContain("correctMatchTargetId");
+    expect(JSON.stringify(result)).toContain("correctOrder");
   });
 });
 

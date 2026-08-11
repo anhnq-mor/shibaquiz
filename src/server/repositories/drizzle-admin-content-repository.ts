@@ -221,7 +221,10 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         })
         .from(questionMedia)
         .innerJoin(mediaAssets, eq(mediaAssets.id, questionMedia.mediaAssetId))
-        .orderBy(asc(questionMedia.questionId), asc(questionMedia.displayOrder)),
+        .orderBy(
+          asc(questionMedia.questionId),
+          asc(questionMedia.displayOrder),
+        ),
     ]);
 
     return {
@@ -279,7 +282,11 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
             displayOrder: option.displayOrder,
             translations: optionTranslationRows
               .filter((translation) => translation.optionId === option.id)
-              .map(({ locale, content }) => ({ locale, content })),
+              .map(({ locale, content, matchTargetContent }) => ({
+                locale,
+                content,
+                matchContent: matchTargetContent,
+              })),
           })),
         media: questionMediaRows
           .filter((row) => row.questionId === question.id)
@@ -730,7 +737,9 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           await transaction.insert(questionOptionTranslations).values(
             option.translations.map((translation) => ({
               optionId,
-              ...translation,
+              locale: translation.locale,
+              content: translation.content,
+              matchTargetContent: translation.matchContent ?? null,
               createdAt: now,
               updatedAt: now,
             })),

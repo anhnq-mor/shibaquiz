@@ -96,4 +96,26 @@ describe("question answer disclosure", () => {
     expect(result.locale).toBe("vi");
     expect(result.content).toBe(snapshot.content);
   });
+
+  it("does not disclose matching associations or ordering keys early", () => {
+    const structured: StoredQuestionSnapshot = {
+      ...snapshot,
+      schemaVersion: 2,
+      type: "MATCHING",
+      options: snapshot.options.map((option, index) => ({
+        ...option,
+        correctOrder: index,
+        matchTargetId: `target-${index}`,
+        matchTargetContent: `Target ${index}`,
+      })),
+      matchingTargetOrder: ["target-1", "target-0"],
+    };
+    const serialized = JSON.stringify(
+      toQuestionDto(structured, context({ mode: "EXAM_DEFERRED" })),
+    );
+    expect(serialized).not.toContain("correctMatchTargetId");
+    expect(serialized).not.toContain("correctOrder");
+    expect(serialized).not.toContain("isCorrect");
+    expect(serialized).toContain("matchingTargets");
+  });
 });

@@ -147,6 +147,18 @@ This backlog maps every functional and non-functional requirement to an incremen
 | S10-07 | Refresh global request feedback and Home navigation/progress UX    | Concurrent API requests drive one localized accessible loading overlay; Home has a sticky responsive header, account dropdown, locale toggle, and accurate 10-step progress                                | DONE                                                                                                                 |
 | S10-08 | Add responsive feedback for route navigation                       | Internal route links expose a delayed, accessible pending state and localized streaming fallback; same-page anchors remain immediate and do not show a loader                                              | DONE                                                                                                                 |
 
+## Slice 11 task board — complete question interaction model
+
+| ID     | Backlog item                                                 | Acceptance evidence                                                                           | Status |
+| ------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- | ------ |
+| S11-01 | Extend the domain and PostgreSQL enum to five question types | Additive migration, domain validation, repository-only persistence                            | DONE   |
+| S11-02 | Store matching targets and structured attempt answers        | Opaque target IDs, localized target text, backward-compatible `answer_payload` migration      | DONE   |
+| S11-03 | Preserve disclosure and localized attempt snapshots          | Hidden DTO omits correct matches/order/correctness; snapshot v2 freezes issued locale/content | DONE   |
+| S11-04 | Extend admin editor and CSV/XLSX import/export               | All five types, per-type limits, localized matching targets and accessible ordering controls  | DONE   |
+| S11-05 | Extend attempt and result UI                                 | Choice, true/false, matching and ordering can be answered/reviewed in `vi`/`en`               | DONE   |
+| S11-06 | Verify migration, validation, scoring and disclosure         | Unit/integration tests plus lint, typecheck and production build                              | DONE   |
+| S11-07 | Mirror missing localized import cells                        | Field-level `vi`/`en` fallback for questions, explanations, options and matching targets      | DONE   |
+
 ## Product-owner decisions (non-blocking for development)
 
 - `BLOCKED FOR PUBLIC RELEASE`: legal author/owner name and license choice.

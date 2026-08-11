@@ -30,6 +30,8 @@ interface OptionRow {
   isCorrect: boolean;
   viContent: string;
   enContent: string;
+  viMatchContent: string;
+  enMatchContent: string;
 }
 
 interface QuestionForm {
@@ -61,6 +63,8 @@ function emptyOption(existingLabels: string[]): OptionRow {
     isCorrect: false,
     viContent: "",
     enContent: "",
+    viMatchContent: "",
+    enMatchContent: "",
   };
 }
 
@@ -97,6 +101,12 @@ function formFromQuestion(
           enContent:
             option.translations.find((item) => item.locale === "en")?.content ??
             "",
+          viMatchContent:
+            option.translations.find((item) => item.locale === "vi")
+              ?.matchContent ?? "",
+          enMatchContent:
+            option.translations.find((item) => item.locale === "en")
+              ?.matchContent ?? "",
         }))
       : [emptyOption([]), emptyOption(["A"])],
     mediaIds: question
@@ -219,6 +229,66 @@ export function QuestionsEditor({
     }));
   }
 
+  function moveOption(index: number, direction: -1 | 1) {
+    setForm((current) => {
+      const target = index + direction;
+      if (target < 0 || target >= current.options.length) return current;
+      const options = [...current.options];
+      [options[index], options[target]] = [options[target]!, options[index]!];
+      return { ...current, options };
+    });
+  }
+
+  function changeType(type: QuestionType) {
+    setForm((current) => {
+      if (type !== "TRUE_FALSE") {
+        return {
+          ...current,
+          type,
+          options: current.options.map((option) => ({
+            ...option,
+            isCorrect:
+              type === "MATCHING" || type === "ORDERING"
+                ? false
+                : option.isCorrect,
+          })),
+        };
+      }
+      const first = current.options[0] ?? emptyOption([]);
+      const second = current.options[1] ?? emptyOption(["TRUE"]);
+      return {
+        ...current,
+        type,
+        options: [
+          {
+            ...first,
+            label: "TRUE",
+            viContent: first.viContent || "Đúng",
+            enContent: first.enContent || "True",
+            isCorrect: true,
+          },
+          {
+            ...second,
+            label: "FALSE",
+            viContent: second.viContent || "Sai",
+            enContent: second.enContent || "False",
+            isCorrect: false,
+          },
+        ],
+      };
+    });
+  }
+
+  function questionTypeLabel(type: QuestionType): string {
+    return {
+      SINGLE_CHOICE: messages.questions.typeSingle,
+      MULTIPLE_CHOICE: messages.questions.typeMultiple,
+      TRUE_FALSE: messages.questions.typeTrueFalse,
+      MATCHING: messages.questions.typeMatching,
+      ORDERING: messages.questions.typeOrdering,
+    }[type];
+  }
+
   function removeOption(index: number) {
     setForm((current) => ({
       ...current,
@@ -246,7 +316,10 @@ export function QuestionsEditor({
       const target = index + direction;
       if (target < 0 || target >= current.mediaIds.length) return current;
       const mediaIds = [...current.mediaIds];
-      [mediaIds[index], mediaIds[target]] = [mediaIds[target]!, mediaIds[index]!];
+      [mediaIds[index], mediaIds[target]] = [
+        mediaIds[target]!,
+        mediaIds[index]!,
+      ];
       return { ...current, mediaIds };
     });
   }
@@ -277,9 +350,21 @@ export function QuestionsEditor({
         isCorrect: option.isCorrect,
         displayOrder: index,
         translations: [
-          { locale: "vi" as const, content: option.viContent },
+          {
+            locale: "vi" as const,
+            content: option.viContent,
+            matchContent:
+              form.type === "MATCHING" ? option.viMatchContent : null,
+          },
           ...(englishRequired
-            ? [{ locale: "en" as const, content: option.enContent }]
+            ? [
+                {
+                  locale: "en" as const,
+                  content: option.enContent,
+                  matchContent:
+                    form.type === "MATCHING" ? option.enMatchContent : null,
+                },
+              ]
             : []),
         ],
       }));
@@ -387,6 +472,15 @@ export function QuestionsEditor({
               <option value="MULTIPLE_CHOICE">
                 {messages.questions.typeMultiple}
               </option>
+              <option value="TRUE_FALSE">
+                {messages.questions.typeTrueFalse}
+              </option>
+              <option value="MATCHING">
+                {messages.questions.typeMatching}
+              </option>
+              <option value="ORDERING">
+                {messages.questions.typeOrdering}
+              </option>
             </select>
           </label>
           <label>
@@ -453,9 +547,7 @@ export function QuestionsEditor({
                     {topicsById.get(question.topicId)?.slug ?? question.topicId}
                   </td>
                   <td className="admin-cell-nowrap">
-                    {question.type === "SINGLE_CHOICE"
-                      ? messages.questions.typeSingle
-                      : messages.questions.typeMultiple}
+                    {questionTypeLabel(question.type)}
                   </td>
                   <td className="admin-cell-nowrap">
                     <span className="status-pill">
@@ -552,7 +644,7 @@ export function QuestionsEditor({
               <select
                 value={form.type}
                 onChange={(event) =>
-                  setForm({ ...form, type: event.target.value as QuestionType })
+                  changeType(event.target.value as QuestionType)
                 }
               >
                 <option value="SINGLE_CHOICE">
@@ -560,6 +652,15 @@ export function QuestionsEditor({
                 </option>
                 <option value="MULTIPLE_CHOICE">
                   {messages.questions.typeMultiple}
+                </option>
+                <option value="TRUE_FALSE">
+                  {messages.questions.typeTrueFalse}
+                </option>
+                <option value="MATCHING">
+                  {messages.questions.typeMatching}
+                </option>
+                <option value="ORDERING">
+                  {messages.questions.typeOrdering}
                 </option>
               </select>
             </label>
@@ -663,6 +764,9 @@ export function QuestionsEditor({
 
           <fieldset className="admin-fieldset">
             <legend>{messages.questions.options}</legend>
+            {form.type === "ORDERING" && (
+              <p className="admin-hint">{messages.questions.orderingHint}</p>
+            )}
             {form.options.map((option, index) => (
               <div className="admin-option-row" key={index}>
                 <label>
@@ -702,21 +806,95 @@ export function QuestionsEditor({
                     </label>
                   )}
                 </div>
-                <label className="admin-checkbox-field">
-                  <span>{messages.questions.optionCorrect}</span>
-                  <input
-                    type="checkbox"
-                    checked={option.isCorrect}
-                    onChange={(event) =>
-                      updateOption(index, { isCorrect: event.target.checked })
-                    }
-                  />
-                </label>
+                {form.type === "MATCHING" && (
+                  <div className="admin-option-translations">
+                    <label>
+                      <span>{`${messages.questions.matchTargetText} (${messages.common.vietnameseTab})`}</span>
+                      <textarea
+                        value={option.viMatchContent}
+                        onChange={(event) =>
+                          updateOption(index, {
+                            viMatchContent: event.target.value,
+                          })
+                        }
+                        required
+                        maxLength={10000}
+                      />
+                    </label>
+                    {englishRequired && (
+                      <label>
+                        <span>{`${messages.questions.matchTargetText} (${messages.common.englishTab})`}</span>
+                        <textarea
+                          value={option.enMatchContent}
+                          onChange={(event) =>
+                            updateOption(index, {
+                              enMatchContent: event.target.value,
+                            })
+                          }
+                          required
+                          maxLength={10000}
+                        />
+                      </label>
+                    )}
+                  </div>
+                )}
+                {(form.type === "SINGLE_CHOICE" ||
+                  form.type === "MULTIPLE_CHOICE" ||
+                  form.type === "TRUE_FALSE") && (
+                  <label className="admin-checkbox-field">
+                    <span>{messages.questions.optionCorrect}</span>
+                    <input
+                      type={
+                        form.type === "MULTIPLE_CHOICE" ? "checkbox" : "radio"
+                      }
+                      name="question-correct-option"
+                      checked={option.isCorrect}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          options: current.options.map(
+                            (candidate, candidateIndex) => ({
+                              ...candidate,
+                              isCorrect:
+                                form.type === "MULTIPLE_CHOICE"
+                                  ? candidateIndex === index
+                                    ? event.target.checked
+                                    : candidate.isCorrect
+                                  : candidateIndex === index,
+                            }),
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
+                )}
+                {form.type === "ORDERING" && (
+                  <div className="admin-row-actions">
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() => moveOption(index, -1)}
+                      disabled={index === 0}
+                    >
+                      {messages.common.moveUp}
+                    </button>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() => moveOption(index, 1)}
+                      disabled={index === form.options.length - 1}
+                    >
+                      {messages.common.moveDown}
+                    </button>
+                  </div>
+                )}
                 <button
                   type="button"
                   className="button button-secondary"
                   onClick={() => removeOption(index)}
-                  disabled={form.options.length <= 2}
+                  disabled={
+                    form.options.length <= 2 || form.type === "TRUE_FALSE"
+                  }
                 >
                   {messages.questions.removeOption}
                 </button>
@@ -726,7 +904,10 @@ export function QuestionsEditor({
               type="button"
               className="button button-secondary"
               onClick={addOption}
-              disabled={form.options.length >= 8}
+              disabled={
+                form.type === "TRUE_FALSE" ||
+                form.options.length >= (form.type === "SINGLE_CHOICE" ? 6 : 20)
+              }
             >
               {messages.questions.addOption}
             </button>
@@ -770,7 +951,9 @@ export function QuestionsEditor({
                             type="button"
                             className="button button-secondary"
                             onClick={() => moveMedia(selectedIndex, 1)}
-                            disabled={selectedIndex === form.mediaIds.length - 1}
+                            disabled={
+                              selectedIndex === form.mediaIds.length - 1
+                            }
                           >
                             {messages.common.moveDown}
                           </button>
@@ -782,7 +965,9 @@ export function QuestionsEditor({
               </ul>
             )}
             {form.mediaIds.length >= MAX_QUESTION_MEDIA && (
-              <p className="form-message">{messages.questions.mediaLimitReached}</p>
+              <p className="form-message">
+                {messages.questions.mediaLimitReached}
+              </p>
             )}
           </fieldset>
 

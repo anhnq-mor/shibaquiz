@@ -81,4 +81,36 @@ describe("initial migration", () => {
       ),
     ).rejects.toThrow();
   });
+
+  it("adds structured question types and answer storage", async () => {
+    const enumValues = await database.query<{ enumlabel: string }>(
+      `select enumlabel
+       from pg_enum
+       join pg_type on pg_type.oid = pg_enum.enumtypid
+       where pg_type.typname = 'question_type'
+       order by enumsortorder`,
+    );
+    expect(enumValues.rows.map((row) => row.enumlabel)).toEqual([
+      "SINGLE_CHOICE",
+      "MULTIPLE_CHOICE",
+      "TRUE_FALSE",
+      "MATCHING",
+      "ORDERING",
+    ]);
+
+    const columns = await database.query<{ column_name: string }>(
+      `select column_name
+       from information_schema.columns
+       where table_schema = 'public'
+         and ((table_name = 'attempt_questions' and column_name = 'answer_payload')
+           or (table_name = 'question_options' and column_name = 'match_target_id')
+           or (table_name = 'question_option_translations' and column_name = 'match_target_content'))
+       order by column_name`,
+    );
+    expect(columns.rows.map((row) => row.column_name)).toEqual([
+      "answer_payload",
+      "match_target_content",
+      "match_target_id",
+    ]);
+  });
 });

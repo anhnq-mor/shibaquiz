@@ -1,11 +1,20 @@
 import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 
-import { allocateLargestRemainder } from "@/domain/admin/content";
+import {
+  allocateLargestRemainder,
+  type QuestionType,
+} from "@/domain/admin/content";
+import {
+  emptyAnswerFor,
+  isAnswerEmpty,
+  isAttemptAnswerCorrect,
+  validateAnswerForSnapshot,
+  type AttemptAnswer,
+} from "@/domain/attempts/answer";
 import {
   AttemptError,
   computeAttemptExpiry,
   computeAttemptResult,
-  isAnswerCorrect,
   isAttemptExpired,
   shuffle,
   type AttemptHistoryItem,
@@ -52,7 +61,7 @@ type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
 interface QuestionSource {
   topicId: string;
   version: number;
-  type: "SINGLE_CHOICE" | "MULTIPLE_CHOICE";
+  type: QuestionType;
   snapshot: StoredQuestionSnapshot;
 }
 
@@ -94,6 +103,7 @@ async function loadQuestionSources(
           label: questionOptions.label,
           isCorrect: questionOptions.isCorrect,
           displayOrder: questionOptions.displayOrder,
+          matchTargetId: questionOptions.matchTargetId,
         })
         .from(questionOptions)
         .where(inArray(questionOptions.questionId, questionIds))
@@ -129,6 +139,7 @@ async function loadQuestionSources(
           .select({
             optionId: questionOptionTranslations.optionId,
             content: questionOptionTranslations.content,
+            matchTargetContent: questionOptionTranslations.matchTargetContent,
           })
           .from(questionOptionTranslations)
           .where(
@@ -160,7 +171,7 @@ async function loadQuestionSources(
     translationRows.map((row) => [row.questionId, row]),
   );
   const optionTranslationByOptionId = new Map(
-    optionTranslationRows.map((row) => [row.optionId, row.content]),
+    optionTranslationRows.map((row) => [row.optionId, row]),
   );
   const mediaTranslationByAssetId = new Map(
     mediaTranslationRows.map((row) => [row.mediaAssetId, row]),
@@ -172,8 +183,12 @@ async function loadQuestionSources(
     list.push({
       id: option.id,
       label: option.label,
-      content: optionTranslationByOptionId.get(option.id) ?? "",
+      content: optionTranslationByOptionId.get(option.id)?.content ?? "",
       isCorrect: option.isCorrect,
+      correctOrder: option.displayOrder,
+      matchTargetId: option.matchTargetId,
+      matchTargetContent:
+        optionTranslationByOptionId.get(option.id)?.matchTargetContent ?? null,
     });
     optionsByQuestionId.set(option.questionId, list);
   }
@@ -204,13 +219,20 @@ async function loadQuestionSources(
       version: row.version,
       type: row.type,
       snapshot: {
-        schemaVersion: 1,
+        schemaVersion: 2,
         locale,
         sourceQuestionVersion: row.version,
         type: row.type,
         content: translation.content,
         explanation: translation.explanation,
         options: optionsByQuestionId.get(row.id) ?? [],
+        ...(row.type === "MATCHING"
+          ? {
+              matchingTargetOrder: (optionsByQuestionId.get(row.id) ?? []).map(
+                (option) => option.matchTargetId!,
+              ),
+            }
+          : {}),
         media: mediaByQuestionId.get(row.id) ?? [],
       },
     });
@@ -218,10 +240,20 @@ async function loadQuestionSources(
   return result;
 }
 
-function correctOptionIds(snapshot: StoredQuestionSnapshot): string[] {
-  return snapshot.options
-    .filter((option) => option.isCorrect)
-    .map((option) => option.id);
+function answerFromRow(row: {
+  answerPayload: AttemptAnswer;
+  selectedOptionIds: string[];
+  questionSnapshot: StoredQuestionSnapshot;
+}): AttemptAnswer {
+  if (row.answerPayload) return row.answerPayload;
+  if (
+    ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE"].includes(
+      row.questionSnapshot.type,
+    )
+  ) {
+    return { kind: "CHOICE", selectedOptionIds: row.selectedOptionIds };
+  }
+  return emptyAnswerFor(row.questionSnapshot.type);
 }
 
 function attemptQuestionRowToState(
@@ -230,6 +262,7 @@ function attemptQuestionRowToState(
     displayOrder: number;
     topicId: string;
     selectedOptionIds: string[];
+    answerPayload: AttemptAnswer;
     isFlagged: boolean;
     checkedAt: Date | null;
     questionSnapshot: StoredQuestionSnapshot;
@@ -245,6 +278,7 @@ function attemptQuestionRowToState(
     topicName,
     type: row.questionSnapshot.type,
     selectedOptionIds: row.selectedOptionIds,
+    answer: answerFromRow(row),
     isFlagged: row.isFlagged,
     checkedAt: row.checkedAt ? row.checkedAt.toISOString() : null,
     question: toQuestionDto(row.questionSnapshot, {
@@ -526,9 +560,22 @@ export class DrizzleAttemptRepository implements AttemptRepository {
       await transaction.insert(attemptQuestions).values(
         questionIds.map((questionId, index) => {
           const source = sources.get(questionId)!;
-          const snapshot: StoredQuestionSnapshot = shuffleOptions
-            ? { ...source.snapshot, options: shuffle(source.snapshot.options) }
-            : source.snapshot;
+          const mustShuffleOptions =
+            source.type === "ORDERING" || shuffleOptions;
+          const snapshot: StoredQuestionSnapshot = {
+            ...source.snapshot,
+            options: mustShuffleOptions
+              ? shuffle(source.snapshot.options)
+              : source.snapshot.options,
+            ...(source.type === "MATCHING"
+              ? {
+                  matchingTargetOrder: shuffle(
+                    source.snapshot.matchingTargetOrder ?? [],
+                  ),
+                }
+              : {}),
+          };
+          const answerPayload = emptyAnswerFor(source.type);
           return {
             attemptId,
             sourceQuestionId: questionId,
@@ -536,6 +583,7 @@ export class DrizzleAttemptRepository implements AttemptRepository {
             displayOrder: index,
             questionSnapshot: snapshot,
             selectedOptionIds: [],
+            answerPayload,
             isFlagged: false,
           };
         }),
@@ -575,8 +623,8 @@ export class DrizzleAttemptRepository implements AttemptRepository {
 
     const outcomes: AttemptQuestionOutcome[] = rows.map((row) => ({
       topicId: row.topicId,
-      selectedOptionIds: row.selectedOptionIds,
-      correctOptionIds: correctOptionIds(row.questionSnapshot),
+      answer: answerFromRow(row),
+      snapshot: row.questionSnapshot,
     }));
     const summary = computeAttemptResult(outcomes);
     const status = isAttemptExpired(now, attempt.expiresAt)
@@ -585,13 +633,10 @@ export class DrizzleAttemptRepository implements AttemptRepository {
 
     await Promise.all(
       rows.map((row) => {
-        const isCorrect =
-          row.selectedOptionIds.length === 0
-            ? null
-            : isAnswerCorrect(
-                row.selectedOptionIds,
-                correctOptionIds(row.questionSnapshot),
-              );
+        const answer = answerFromRow(row);
+        const isCorrect = isAnswerEmpty(answer)
+          ? null
+          : isAttemptAnswerCorrect(answer, row.questionSnapshot);
         return transaction
           .update(attemptQuestions)
           .set({ isCorrect, updatedAt: now })
@@ -733,23 +778,26 @@ export class DrizzleAttemptRepository implements AttemptRepository {
           "This question was already checked",
         );
       }
-      const validOptionIds = new Set(
-        row.questionSnapshot.options.map((option) => option.id),
-      );
-      if (!input.selectedOptionIds.every((id) => validOptionIds.has(id))) {
+      const answer = input.answer ?? {
+        kind: "CHOICE" as const,
+        selectedOptionIds: input.selectedOptionIds ?? [],
+      };
+      if (!validateAnswerForSnapshot(answer, row.questionSnapshot)) {
         throw new AttemptError(
           "INVALID_STRUCTURE",
           400,
-          "Selected options do not belong to this question",
+          "The answer does not match this question structure",
         );
       }
 
       const [updated] = await transaction
         .update(attemptQuestions)
         .set({
-          selectedOptionIds: input.selectedOptionIds,
+          answerPayload: answer,
+          selectedOptionIds:
+            answer.kind === "CHOICE" ? answer.selectedOptionIds : [],
           isFlagged: input.isFlagged ?? row.isFlagged,
-          answeredAt: input.selectedOptionIds.length > 0 ? now : null,
+          answeredAt: isAnswerEmpty(answer) ? null : now,
           updatedAt: now,
         })
         .where(eq(attemptQuestions.id, row.id))
@@ -830,10 +878,15 @@ export class DrizzleAttemptRepository implements AttemptRepository {
         );
       }
 
-      const isCorrect = isAnswerCorrect(
-        row.selectedOptionIds,
-        correctOptionIds(row.questionSnapshot),
-      );
+      const answer = answerFromRow(row);
+      if (isAnswerEmpty(answer)) {
+        throw new AttemptError(
+          "INVALID_STRUCTURE",
+          400,
+          "Answer the question before checking it",
+        );
+      }
+      const isCorrect = isAttemptAnswerCorrect(answer, row.questionSnapshot);
       const [updated] = await transaction
         .update(attemptQuestions)
         .set({ checkedAt: now, isCorrect, updatedAt: now })
@@ -984,8 +1037,8 @@ export class DrizzleAttemptRepository implements AttemptRepository {
 
     const outcomes: AttemptQuestionOutcome[] = questionRows.map((row) => ({
       topicId: row.topicId,
-      selectedOptionIds: row.selectedOptionIds,
-      correctOptionIds: correctOptionIds(row.questionSnapshot),
+      answer: answerFromRow(row),
+      snapshot: row.questionSnapshot,
     }));
     const summary = computeAttemptResult(outcomes);
     const topicBreakdown: Array<TopicBreakdown & { topicName: string }> =
@@ -1033,6 +1086,7 @@ export class DrizzleAttemptRepository implements AttemptRepository {
         displayOrder: row.displayOrder,
         topicId: row.topicId,
         selectedOptionIds: row.selectedOptionIds,
+        answer: answerFromRow(row),
         isCorrect: row.isCorrect,
         question: toQuestionDto(row.questionSnapshot, {
           mode: attempt.mode,

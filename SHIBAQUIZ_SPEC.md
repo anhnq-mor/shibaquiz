@@ -1,7 +1,7 @@
 # ShibaQuiz — Product & Technical Specification
 
-> Phiên bản: 1.2
-> Ngày: 2026-08-04
+> Phiên bản: 1.3
+> Ngày: 2026-08-11
 > Trạng thái: Sẵn sàng triển khai MVP
 > Nguồn yêu cầu: `requirement.md`
 
@@ -17,8 +17,8 @@ Các điểm dưới đây chưa được nêu rõ trong yêu cầu gốc và đ
 
 1. Giao diện MVP hỗ trợ tiếng Việt và tiếng Anh, mặc định tiếng Việt; thiết kế responsive cho desktop và mobile.
 2. Hệ thống có hai vai trò: `USER` và `ADMIN`. Một tài khoản chỉ có một vai trò tại một thời điểm.
-3. Mỗi câu hỏi thuộc đúng một kỳ thi và một chủ đề; hỗ trợ câu chọn một đáp án và chọn nhiều đáp án.
-4. Câu nhiều đáp án chỉ được tính đúng khi người dùng chọn đúng toàn bộ đáp án và không chọn thừa; MVP không chấm điểm một phần.
+3. Mỗi câu hỏi thuộc đúng một kỳ thi và một chủ đề; hỗ trợ `SINGLE_CHOICE`, `MULTIPLE_CHOICE`, `TRUE_FALSE`, `MATCHING` và `ORDERING`.
+4. Mọi dạng câu hỏi chỉ được tính đúng khi toàn bộ câu trả lời chính xác; MVP không chấm điểm một phần cho lựa chọn, ghép cặp hoặc sắp xếp.
 5. Mặc định mỗi câu đúng được 1 điểm, câu sai hoặc bỏ trống được 0 điểm; chưa hỗ trợ điểm âm.
 6. Đề thi có thể cấu hình thời gian, điểm đạt, số câu, tỷ lệ câu theo chủ đề, trộn thứ tự câu và trộn đáp án.
 7. Một lần làm bài là một `attempt`. Mỗi người dùng chỉ có tối đa một attempt `IN_PROGRESS` cho cùng một đề/cấu hình luyện tập; có thể tiếp tục hoặc bỏ attempt để làm lại.
@@ -30,6 +30,9 @@ Các điểm dưới đây chưa được nêu rõ trong yêu cầu gốc và đ
 13. MVP hỗ trợ hai locale `vi` (Tiếng Việt) và `en` (English). `vi` là locale mặc định; lựa chọn của user được lưu trong hồ sơ và cookie.
 14. Đa ngôn ngữ gồm cả giao diện hệ thống và nội dung học. Nội dung dịch được lưu theo từng locale, không lưu hai ngôn ngữ chung trong một chuỗi.
 15. Media được lưu ở object storage; database chỉ lưu metadata và object key. Không lưu binary/base64 trong PostgreSQL hoặc JSON và không ghi media vào filesystem runtime của Vercel.
+16. `SINGLE_CHOICE` có 2–6 lựa chọn; `TRUE_FALSE` có đúng 2 lựa chọn; các dạng “nhiều” được giới hạn 2–20 item trong MVP để giới hạn payload, thời gian validate và độ phức tạp giao diện. `MULTIPLE_CHOICE` vẫn cần ít nhất hai đáp án đúng và một đáp án sai.
+17. `MATCHING` dùng ID đích ghép độc lập và trộn danh sách đích; `ORDERING` luôn trộn thứ tự trình bày. Quan hệ ghép đúng, thứ tự đúng, cờ đúng và explanation không xuất hiện trong DTO trước thời điểm disclosure cho phép.
+18. Answer của attempt là payload phân biệt theo loại câu hỏi và nằm trong localized immutable snapshot. Migration giữ `selectedOptionIds` cũ để tương thích, nhưng mọi nghiệp vụ mới đi qua repository và `answerPayload`.
 
 ## 3. Phạm vi
 
@@ -211,9 +214,13 @@ Tiêu chí chấp nhận:
 
 ### FR-11 — Admin quản lý câu hỏi
 
-- Trường bắt buộc: kỳ thi, chủ đề, loại, nội dung, ít nhất 2 lựa chọn, đáp án đúng, explanation.
-- `SINGLE_CHOICE` phải có đúng một đáp án đúng.
-- `MULTIPLE_CHOICE` phải có ít nhất hai đáp án đúng và ít nhất một đáp án sai.
+- Trường bắt buộc: kỳ thi, chủ đề, loại, nội dung localized, cấu trúc trả lời hợp lệ và explanation localized.
+- `SINGLE_CHOICE`: 2–6 lựa chọn, đúng một đáp án đúng.
+- `MULTIPLE_CHOICE`: 2–20 lựa chọn, ít nhất hai đáp án đúng và ít nhất một đáp án sai.
+- `TRUE_FALSE`: đúng hai lựa chọn Đúng/Sai và đúng một đáp án đúng.
+- `MATCHING`: 2–20 cặp; cả vế trái và vế đích phải đủ bản dịch cho mọi locale được publish.
+- `ORDERING`: 2–20 bước; `displayOrder` trong ngân hàng câu hỏi là thứ tự chuẩn nhưng không được phát nguyên trạng cho attempt.
+- Editor và import/export phải hỗ trợ đủ năm loại; validation cấu trúc chạy ở domain trước transaction ghi dữ liệu.
 - Cho phép trạng thái `DRAFT/PUBLISHED/ARCHIVED`.
 - CRUD thủ công; tìm/lọc theo kỳ thi, chủ đề, loại, trạng thái và từ khóa.
 - Xóa là soft delete. Attempt cũ vẫn đọc được từ snapshot.
@@ -246,24 +253,25 @@ Yêu cầu:
 - Sinh báo cáo số dòng tạo mới/cập nhật/bỏ qua/lỗi.
 - Escape dữ liệu khi export CSV để giảm nguy cơ CSV formula injection.
 - Các cột nội dung dùng hậu tố locale `_vi`/`_en`. Dòng có thể được lưu `DRAFT` khi chỉ có ngôn ngữ chính; chỉ được `PUBLISHED` cho locale đã đủ toàn bộ trường bắt buộc.
+- Trong riêng luồng import, nếu một ô localized `_vi` hoặc `_en` để trống nhưng ô tương ứng ở ngôn ngữ còn lại có dữ liệu, hệ thống sao chép nguyên văn dữ liệu đó sang ô thiếu trước khi validation. Quy tắc áp dụng độc lập cho question content, explanation, option content và matching target; nếu cả hai ô tương ứng đều trống thì import vẫn lỗi.
 - Spreadsheet không chứa binary hoặc URL media tùy ý. Cột `media_ids` chỉ tham chiếu các asset `READY` đã upload vào thư viện và admin có quyền sử dụng.
 
 Schema import chuẩn:
 
-| Cột                                    | Bắt buộc | Quy tắc/ví dụ                                                           |
-| -------------------------------------- | :------: | ----------------------------------------------------------------------- |
-| `external_id`                          |    ✓     | ID ổn định trong nguồn import, ví dụ `SAA-001`                          |
-| `exam_code`                            |    ✓     | Mã kỳ thi đã tồn tại                                                    |
-| `topic_name_vi`, `topic_name_en`       |    ✓*    | Bắt buộc cho locale được publish; tạo topic mới chỉ khi import cho phép |
-| `question_type`                        |    ✓     | `SINGLE_CHOICE` hoặc `MULTIPLE_CHOICE`                                  |
-| `question_text_vi`, `question_text_en` |    ✓*    | 1–10.000 ký tự; bắt buộc cho locale được publish                        |
-| `option_a_vi` ... `option_h_vi`        |    ✓*    | Ít nhất A và B cho tiếng Việt; tối đa 8 lựa chọn                        |
-| `option_a_en` ... `option_h_en`        |    ✓*    | Cùng option identity với bản Việt; bắt buộc khi publish English         |
-| `correct_options`                      |    ✓     | Danh sách chữ cái phân cách bằng `                                      | `, ví dụ `A | C`  |
-| `explanation_vi`, `explanation_en`     |    ✓*    | 1–20.000 ký tự; bắt buộc cho locale được publish                        |
-| `media_ids`                            |    —     | Danh sách asset ID trạng thái `READY`, phân cách bằng `                 | `           |
-| `status`                               |    —     | Mặc định `DRAFT`; `PUBLISHED` chỉ nếu dòng hợp lệ                       |
-| `tags`                                 |    —     | Phân cách bằng `                                                        | `           |
+| Cột                                    | Bắt buộc | Quy tắc/ví dụ                                                                |
+| -------------------------------------- | :------: | ---------------------------------------------------------------------------- |
+| `external_id`                          |    ✓     | ID ổn định trong nguồn import, ví dụ `SAA-001`                               |
+| `exam_code`                            |    ✓     | Mã kỳ thi đã tồn tại                                                         |
+| `topic_name_vi`, `topic_name_en`       |    ✓*    | Bắt buộc cho locale được publish; tạo topic mới chỉ khi import cho phép      |
+| `question_type`                        |    ✓     | `SINGLE_CHOICE`, `MULTIPLE_CHOICE`, `TRUE_FALSE`, `MATCHING` hoặc `ORDERING` |
+| `question_text_vi`, `question_text_en` |    ✓*    | 1–10.000 ký tự; bắt buộc cho locale được publish                             |
+| `option_a_vi` ... `option_h_vi`        |    ✓*    | Ít nhất A và B cho tiếng Việt; tối đa 8 lựa chọn                             |
+| `option_a_en` ... `option_h_en`        |    ✓*    | Cùng option identity với bản Việt; bắt buộc khi publish English              |
+| `correct_options`                      |    ✓     | Danh sách chữ cái phân cách bằng `                                           | `, ví dụ `A | C`  |
+| `explanation_vi`, `explanation_en`     |    ✓*    | 1–20.000 ký tự; bắt buộc cho locale được publish                             |
+| `media_ids`                            |    —     | Danh sách asset ID trạng thái `READY`, phân cách bằng `                      | `           |
+| `status`                               |    —     | Mặc định `DRAFT`; `PUBLISHED` chỉ nếu dòng hợp lệ                            |
+| `tags`                                 |    —     | Phân cách bằng `                                                             | `           |
 
 ### FR-14 — Admin quản lý user
 
@@ -415,7 +423,8 @@ Mọi ID dùng UUID hoặc ULID; mọi bảng chính có `createdAt`, `updatedAt
 
 - `id`, `attemptId`, `sourceQuestionId`, `topicId`, `displayOrder`
 - `questionSnapshot` JSON chứa nội dung localized, options và media references theo đúng thứ tự đã phát
-- `selectedOptionIds` JSON/array, `isFlagged`, `checkedAt`, `isCorrect`
+- `answerPayload` JSON phân biệt `CHOICE/MATCHING/ORDERING`; giữ `selectedOptionIds` trong giai đoạn tương thích migration
+- `isFlagged`, `checkedAt`, `isCorrect`
 - `answeredAt`, `updatedAt`
 
 ### Comment

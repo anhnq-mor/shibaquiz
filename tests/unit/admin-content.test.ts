@@ -171,6 +171,42 @@ describe("assertQuestionCorrectness", () => {
       ),
     ).toThrow(AdminContentError);
   });
+
+  it("accepts true/false with exactly two options and one correct", () => {
+    expect(() =>
+      assertQuestionCorrectness(question({ type: "TRUE_FALSE" })),
+    ).not.toThrow();
+  });
+
+  it("accepts complete localized matching pairs", () => {
+    expect(() =>
+      assertQuestionCorrectness(
+        question({
+          type: "MATCHING",
+          options: question().options.map((option, index) => ({
+            ...option,
+            isCorrect: false,
+            translations: option.translations.map((translation) => ({
+              ...translation,
+              matchContent: `Target ${index + 1}`,
+            })),
+          })),
+        }),
+      ),
+    ).not.toThrow();
+  });
+
+  it("rejects matching pairs without localized target content", () => {
+    expect(() =>
+      assertQuestionCorrectness(question({ type: "MATCHING" })),
+    ).toThrow(AdminContentError);
+  });
+
+  it("accepts ordering with at least two steps", () => {
+    expect(() =>
+      assertQuestionCorrectness(question({ type: "ORDERING" })),
+    ).not.toThrow();
+  });
 });
 
 describe("assertUniqueTestStructure", () => {

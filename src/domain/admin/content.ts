@@ -3,7 +3,13 @@ import { z } from "zod";
 import { locales, type Locale } from "@/domain/common/locale";
 
 export const contentStatuses = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
-export const questionTypes = ["SINGLE_CHOICE", "MULTIPLE_CHOICE"] as const;
+export const questionTypes = [
+  "SINGLE_CHOICE",
+  "MULTIPLE_CHOICE",
+  "TRUE_FALSE",
+  "MATCHING",
+  "ORDERING",
+] as const;
 export const testTypes = ["FIXED", "DYNAMIC"] as const;
 
 export type ContentStatus = (typeof contentStatuses)[number];
@@ -32,6 +38,7 @@ const questionTranslationSchema = z.object({
 const optionTranslationSchema = z.object({
   locale: localeSchema,
   content: trimmed(1, 10_000),
+  matchContent: trimmed(1, 10_000).nullable().optional(),
 });
 
 function uniqueLocales<T extends { locale: Locale }>(values: T[]): boolean {
@@ -88,7 +95,7 @@ export const saveQuestionSchema = z.object({
   options: z
     .array(questionOptionInputSchema)
     .min(2)
-    .max(8)
+    .max(20)
     .refine(
       (options) =>
         new Set(options.map((option) => option.label)).size === options.length,
@@ -260,22 +267,60 @@ export interface AdminContentRepository {
 }
 
 export function assertQuestionCorrectness(input: SaveQuestionInput): void {
+  const count = input.options.length;
   const correct = input.options.filter((option) => option.isCorrect).length;
   const incorrect = input.options.length - correct;
-  if (input.type === "SINGLE_CHOICE" && correct !== 1) {
+  if (
+    input.type === "SINGLE_CHOICE" &&
+    (count < 2 || count > 6 || correct !== 1)
+  ) {
     throw new AdminContentError(
       "INVALID_STRUCTURE",
       400,
-      "A single-choice question must have exactly one correct option",
-      { options: ["SINGLE_REQUIRES_ONE_CORRECT"] },
+      "A single-choice question needs 2-6 options and exactly one correct option",
+      { options: ["SINGLE_REQUIRES_TWO_TO_SIX_AND_ONE_CORRECT"] },
     );
   }
-  if (input.type === "MULTIPLE_CHOICE" && (correct < 2 || incorrect < 1)) {
+  if (
+    input.type === "MULTIPLE_CHOICE" &&
+    (count > 20 || correct < 2 || incorrect < 1)
+  ) {
     throw new AdminContentError(
       "INVALID_STRUCTURE",
       400,
       "A multiple-choice question needs two correct and one incorrect option",
       { options: ["MULTIPLE_REQUIRES_TWO_CORRECT_ONE_INCORRECT"] },
+    );
+  }
+  if (input.type === "TRUE_FALSE" && (count !== 2 || correct !== 1)) {
+    throw new AdminContentError(
+      "INVALID_STRUCTURE",
+      400,
+      "A true/false question needs exactly two options and one correct option",
+      { options: ["TRUE_FALSE_REQUIRES_TWO_AND_ONE_CORRECT"] },
+    );
+  }
+  if (input.type === "MATCHING") {
+    const completeTargets = input.options.every((option) =>
+      option.translations.every((translation) =>
+        Boolean(translation.matchContent),
+      ),
+    );
+    if (count < 2 || count > 20 || !completeTargets) {
+      throw new AdminContentError(
+        "INVALID_STRUCTURE",
+        400,
+        "A matching question needs 2-20 complete localized pairs",
+        { options: ["MATCHING_REQUIRES_COMPLETE_LOCALIZED_PAIRS"] },
+      );
+    }
+  }
+  if (input.type === "ORDERING" && (count < 2 || count > 20)) {
+    throw new AdminContentError(
+      "INVALID_STRUCTURE",
+      400,
+      "An ordering question needs 2-20 steps",
+      { options: ["ORDERING_REQUIRES_TWO_TO_TWENTY_STEPS"] },
     );
   }
 }

@@ -278,7 +278,9 @@ export class DrizzleImportRepository implements ImportRepository {
           await tx.insert(questionOptionTranslations).values(
             option.translations.map((translation) => ({
               optionId,
-              ...translation,
+              locale: translation.locale,
+              content: translation.content,
+              matchTargetContent: translation.matchContent ?? null,
               createdAt: now,
               updatedAt: now,
             })),
@@ -357,6 +359,7 @@ export class DrizzleImportRepository implements ImportRepository {
             optionId: questionOptionTranslations.optionId,
             locale: questionOptionTranslations.locale,
             content: questionOptionTranslations.content,
+            matchTargetContent: questionOptionTranslations.matchTargetContent,
             questionId: questionOptions.questionId,
           })
           .from(questionOptionTranslations)
@@ -390,15 +393,15 @@ export class DrizzleImportRepository implements ImportRepository {
       const options = optionRows
         .filter((option) => option.questionId === row.questionId)
         .sort((a, b) => a.displayOrder - b.displayOrder)
-        .slice(0, 8);
+        .slice(0, 20);
       const mediaIds = mediaRows
         .filter((media) => media.questionId === row.questionId)
         .map((media) => media.mediaAssetId)
         .join(";");
 
-      const optionColumns = Array.from({ length: 8 }, (_, index) => {
+      const optionColumns = Array.from({ length: 20 }, (_, index) => {
         const option = options[index];
-        if (!option) return ["", "", "", ""];
+        if (!option) return ["", "", "", "", "", ""];
         const optionTranslations = optionTranslationRows.filter(
           (translation) => translation.optionId === option.id,
         );
@@ -408,6 +411,8 @@ export class DrizzleImportRepository implements ImportRepository {
           option.label,
           optionVi?.content ?? "",
           optionEn?.content ?? "",
+          optionVi?.matchTargetContent ?? "",
+          optionEn?.matchTargetContent ?? "",
           option.isCorrect ? "TRUE" : "FALSE",
         ];
       }).flat();

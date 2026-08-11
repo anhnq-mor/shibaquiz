@@ -10,7 +10,10 @@ import { formatDateTime } from "@/i18n/format";
 import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
-import { getAttemptService, getMediaAccessService } from "@/server/content/runtime";
+import {
+  getAttemptService,
+  getMediaAccessService,
+} from "@/server/content/runtime";
 
 export const dynamic = "force-dynamic";
 
@@ -169,7 +172,9 @@ export default async function AttemptResultPage({
                     return (
                       <figure key={item.id}>
                         <audio controls src={url} />
-                        {item.caption && <figcaption>{item.caption}</figcaption>}
+                        {item.caption && (
+                          <figcaption>{item.caption}</figcaption>
+                        )}
                       </figure>
                     );
                   }
@@ -182,26 +187,95 @@ export default async function AttemptResultPage({
                 })}
               </div>
             )}
-            <ul className="option-list">
-              {question.question.options.map((option) => {
-                const isSelected = question.selectedOptionIds.includes(
-                  option.id,
-                );
-                const isCorrectOption =
-                  "isCorrect" in option ? option.isCorrect : undefined;
-                const optionClass = isCorrectOption
-                  ? "correct"
-                  : isSelected && isCorrectOption === false
-                    ? "incorrect"
-                    : "";
-                return (
-                  <li key={option.id} className={optionClass}>
-                    {option.content}
-                    {isSelected && ` — ${messages.result.yourAnswerLabel}`}
-                  </li>
-                );
-              })}
-            </ul>
+            {question.question.type === "MATCHING" &&
+            question.answer.kind === "MATCHING" ? (
+              <ul className="option-list">
+                {question.question.options.map((option) => {
+                  const submittedTargetId =
+                    question.answer.kind === "MATCHING"
+                      ? question.answer.pairs.find(
+                          (pair) => pair.leftOptionId === option.id,
+                        )?.rightOptionId
+                      : undefined;
+                  const submittedTarget =
+                    question.question.matchingTargets.find(
+                      (target) => target.id === submittedTargetId,
+                    );
+                  const correctTarget =
+                    "correctMatchTargetId" in option
+                      ? question.question.matchingTargets.find(
+                          (target) => target.id === option.correctMatchTargetId,
+                        )
+                      : undefined;
+                  return (
+                    <li
+                      key={option.id}
+                      className={
+                        submittedTargetId ===
+                        ("correctMatchTargetId" in option
+                          ? option.correctMatchTargetId
+                          : undefined)
+                          ? "correct"
+                          : "incorrect"
+                      }
+                    >
+                      {option.content} → {submittedTarget?.content ?? "—"}
+                      {correctTarget && submittedTargetId !== correctTarget.id
+                        ? ` · ${messages.result.correctAnswerLabel}: ${correctTarget.content}`
+                        : ""}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : question.question.type === "ORDERING" &&
+              question.answer.kind === "ORDERING" ? (
+              <div>
+                <p>
+                  {messages.result.yourAnswerLabel}:{" "}
+                  {question.answer.orderedOptionIds
+                    .map(
+                      (id) =>
+                        question.question.options.find(
+                          (option) => option.id === id,
+                        )?.content,
+                    )
+                    .filter(Boolean)
+                    .join(" → ") || "—"}
+                </p>
+                <p>
+                  {messages.result.correctAnswerLabel}:{" "}
+                  {[...question.question.options]
+                    .sort((left, right) =>
+                      "correctOrder" in left && "correctOrder" in right
+                        ? left.correctOrder - right.correctOrder
+                        : 0,
+                    )
+                    .map((option) => option.content)
+                    .join(" → ")}
+                </p>
+              </div>
+            ) : (
+              <ul className="option-list">
+                {question.question.options.map((option) => {
+                  const isSelected = question.selectedOptionIds.includes(
+                    option.id,
+                  );
+                  const isCorrectOption =
+                    "isCorrect" in option ? option.isCorrect : undefined;
+                  const optionClass = isCorrectOption
+                    ? "correct"
+                    : isSelected && isCorrectOption === false
+                      ? "incorrect"
+                      : "";
+                  return (
+                    <li key={option.id} className={optionClass}>
+                      {option.content}
+                      {isSelected && ` — ${messages.result.yourAnswerLabel}`}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
             {"explanation" in question.question && (
               <p>
                 <em>{question.question.explanation}</em>

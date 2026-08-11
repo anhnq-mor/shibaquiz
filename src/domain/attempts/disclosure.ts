@@ -10,6 +10,9 @@ export interface StoredQuestionOption {
   label: string;
   content: string;
   isCorrect: boolean;
+  correctOrder?: number;
+  matchTargetId?: string | null;
+  matchTargetContent?: string | null;
 }
 
 export interface StoredMediaReference {
@@ -24,13 +27,14 @@ export interface StoredMediaReference {
 }
 
 export interface StoredQuestionSnapshot {
-  schemaVersion: 1;
+  schemaVersion: 1 | 2;
   locale: Locale;
   sourceQuestionVersion: number;
   type: QuestionType;
   content: string;
   explanation: string;
   options: StoredQuestionOption[];
+  matchingTargetOrder?: string[];
   media: StoredMediaReference[];
 }
 
@@ -43,6 +47,7 @@ interface BaseQuestionDto {
     label: string;
     content: string;
   }>;
+  matchingTargets: Array<{ id: string; content: string }>;
   media: Array<{
     id: string;
     type: "IMAGE" | "AUDIO" | "VIDEO";
@@ -65,6 +70,8 @@ export interface RevealedQuestionDto extends BaseQuestionDto {
     label: string;
     content: string;
     isCorrect: boolean;
+    correctOrder: number;
+    correctMatchTargetId: string | null;
   }>;
 }
 
@@ -98,6 +105,18 @@ export function toQuestionDto(
     locale: snapshot.locale,
     type: snapshot.type,
     content: snapshot.content,
+    matchingTargets: (snapshot.matchingTargetOrder ?? [])
+      .map((id) => {
+        const option = snapshot.options.find(
+          (candidate) => candidate.matchTargetId === id,
+        );
+        return option?.matchTargetContent
+          ? { id, content: option.matchTargetContent }
+          : null;
+      })
+      .filter(
+        (target): target is { id: string; content: string } => target !== null,
+      ),
     media: snapshot.media.map(
       ({ id, type, mimeType, altText, caption, transcript }) => ({
         id,
@@ -126,11 +145,18 @@ export function toQuestionDto(
     ...shared,
     disclosure: "REVEALED",
     explanation: snapshot.explanation,
-    options: snapshot.options.map(({ id, label, content, isCorrect }) => ({
-      id,
-      label,
-      content,
-      isCorrect,
-    })),
+    options: snapshot.options.map(
+      (
+        { id, label, content, isCorrect, correctOrder, matchTargetId },
+        index,
+      ) => ({
+        id,
+        label,
+        content,
+        isCorrect,
+        correctOrder: correctOrder ?? index,
+        correctMatchTargetId: matchTargetId ?? null,
+      }),
+    ),
   };
 }
