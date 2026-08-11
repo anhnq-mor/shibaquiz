@@ -99,7 +99,6 @@ export class DrizzleContentTranslationRepository implements ContentTranslationRe
                 or(
                   isNull(questionTranslations.questionId),
                   sql`btrim(${questionTranslations.content}) = ''`,
-                  sql`btrim(${questionTranslations.explanation}) = ''`,
                 ),
               ),
             ),

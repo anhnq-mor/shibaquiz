@@ -186,7 +186,12 @@ export interface AdminCatalog {
     validRowsLabel: string;
     errorRowsLabel: string;
     rowNumberLabel: string;
+    rowExternalIdLabel: string;
     rowErrorsLabel: string;
+    errorRowNumbersLabel: string;
+    questionContentRequiredError: string;
+    optionContentRequiredError: string;
+    matchTargetRequiredError: string;
     confirmAction: string;
     backAction: string;
     committing: string;
@@ -343,7 +348,7 @@ const vi: AdminCatalog = {
     typeMatching: "Ghép cặp",
     typeOrdering: "Sắp xếp thứ tự",
     content: "Nội dung câu hỏi",
-    explanation: "Giải thích",
+    explanation: "Giải thích (tùy chọn)",
     options: "Lựa chọn",
     optionLabel: "Nhãn",
     optionText: "Nội dung lựa chọn",
@@ -438,7 +443,15 @@ const vi: AdminCatalog = {
     validRowsLabel: "Dòng hợp lệ",
     errorRowsLabel: "Dòng lỗi",
     rowNumberLabel: "Dòng",
+    rowExternalIdLabel: "Mã ngoài",
     rowErrorsLabel: "Lỗi",
+    errorRowNumbersLabel: "Dòng cần sửa",
+    questionContentRequiredError:
+      "Cần nhập nội dung câu hỏi ở ít nhất một ngôn ngữ",
+    optionContentRequiredError:
+      "Cần nhập nội dung đáp án ở ít nhất một ngôn ngữ",
+    matchTargetRequiredError:
+      "Cần nhập nội dung ghép cặp ở ít nhất một ngôn ngữ",
     confirmAction: "Xác nhận nhập",
     backAction: "Quay lại",
     committing: "Đang ghi dữ liệu…",
@@ -601,7 +614,7 @@ const en: AdminCatalog = {
     typeMatching: "Matching",
     typeOrdering: "Ordering",
     content: "Question content",
-    explanation: "Explanation",
+    explanation: "Explanation (optional)",
     options: "Options",
     optionLabel: "Label",
     optionText: "Option content",
@@ -695,7 +708,15 @@ const en: AdminCatalog = {
     validRowsLabel: "Valid rows",
     errorRowsLabel: "Error rows",
     rowNumberLabel: "Row",
+    rowExternalIdLabel: "External ID",
     rowErrorsLabel: "Errors",
+    errorRowNumbersLabel: "Rows to fix",
+    questionContentRequiredError:
+      "Question content is required in at least one language",
+    optionContentRequiredError:
+      "Option content is required in at least one language",
+    matchTargetRequiredError:
+      "Matching target content is required in at least one language",
     confirmAction: "Confirm import",
     backAction: "Back",
     committing: "Committing…",

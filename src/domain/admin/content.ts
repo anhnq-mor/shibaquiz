@@ -32,7 +32,7 @@ const namedTranslationSchema = z.object({
 const questionTranslationSchema = z.object({
   locale: localeSchema,
   content: trimmed(1, 10_000),
-  explanation: trimmed(1, 20_000),
+  explanation: trimmed(0, 20_000).default(""),
 });
 
 const optionTranslationSchema = z.object({

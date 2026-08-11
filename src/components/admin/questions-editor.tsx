@@ -716,7 +716,6 @@ export function QuestionsEditor({
                 onChange={(event) =>
                   setForm({ ...form, viExplanation: event.target.value })
                 }
-                required
                 maxLength={20000}
               />
             </label>
@@ -755,7 +754,6 @@ export function QuestionsEditor({
                 onChange={(event) =>
                   setForm({ ...form, enExplanation: event.target.value })
                 }
-                required={englishRequired}
                 disabled={!englishRequired}
                 maxLength={20000}
               />

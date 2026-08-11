@@ -36,6 +36,13 @@
       "when": 1786436856358,
       "tag": "0004_known_xorn",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1786440322301,
+      "tag": "0005_clear_magus",
+      "breakpoints": true
     }
   ]
 }

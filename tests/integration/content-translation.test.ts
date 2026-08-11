@@ -196,7 +196,7 @@ describe("content translation completeness gate", () => {
       questionId: ids.question,
       locale: "en",
       content: "English question?",
-      explanation: "English explanation.",
+      explanation: "",
     });
     await database.insert(schema.questionOptionTranslations).values({
       optionId: ids.optionB,

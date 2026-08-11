@@ -152,6 +152,26 @@ describe("import preview", () => {
     expect(summary.rows[1]?.status).toBe("ERROR");
   });
 
+  it("reports the CSV row, external ID, and missing option columns", async () => {
+    const buffer = toCsvBuffer([
+      csvRow({
+        external_id: "ROW-DETAIL-1",
+        option_1_content_vi: "",
+        option_1_content_en: "",
+      }),
+    ]);
+    const summary = await repository.previewImport(buffer, "CSV", examId);
+
+    expect(summary.rows[0]).toEqual({
+      rowNumber: 2,
+      status: "ERROR",
+      externalId: "ROW-DETAIL-1",
+      errors: [
+        "option_1_content_vi/option_1_content_en: at least one option content value is required",
+      ],
+    });
+  });
+
   it("accepts a READY media reference and rejects a non-existent one", async () => {
     const buffer = toCsvBuffer([
       csvRow({ media_ids: readyMediaId }),
@@ -176,6 +196,34 @@ describe("import preview", () => {
 });
 
 describe("import commit", () => {
+  it("persists an empty explanation when the optional columns are blank", async () => {
+    const externalId = "NO-EXPLANATION";
+    const buffer = toCsvBuffer([
+      csvRow({
+        external_id: externalId,
+        explanation_vi: "",
+        explanation_en: "",
+      }),
+    ]);
+
+    await expect(
+      repository.commitImport(buffer, "CSV", examId, adminId, new Date()),
+    ).resolves.toEqual({ createdCount: 1, updatedCount: 0 });
+
+    const imported = (
+      await database
+        .select({ id: schema.questions.id })
+        .from(schema.questions)
+        .where(eq(schema.questions.externalId, externalId))
+        .limit(1)
+    )[0]!;
+    const translations = await database
+      .select({ explanation: schema.questionTranslations.explanation })
+      .from(schema.questionTranslations)
+      .where(eq(schema.questionTranslations.questionId, imported.id));
+    expect(translations).toEqual([{ explanation: "" }, { explanation: "" }]);
+  });
+
   it("atomically creates every valid row", async () => {
     const before = await questionCount();
     const buffer = toCsvBuffer([

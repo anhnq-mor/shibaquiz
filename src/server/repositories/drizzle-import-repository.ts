@@ -134,6 +134,7 @@ export class DrizzleImportRepository implements ImportRepository {
         return {
           rowNumber: outcome.rowNumber,
           status: "ERROR",
+          externalId: outcome.externalId,
           errors: [
             `A deleted question already exists with external_id "${outcome.externalId}"`,
           ],
@@ -181,6 +182,7 @@ export class DrizzleImportRepository implements ImportRepository {
         "Import contains invalid rows; nothing was committed",
         errorRows.map((row) => ({
           rowNumber: row.rowNumber,
+          externalId: row.externalId,
           errors: row.errors,
         })),
       );

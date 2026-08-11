@@ -5,6 +5,7 @@ import {
   allocateLargestRemainder,
   assertQuestionCorrectness,
   assertUniqueTestStructure,
+  saveQuestionSchema,
   type SaveQuestionInput,
   type SaveTestInput,
 } from "@/domain/admin/content";
@@ -62,6 +63,21 @@ function test(overrides: Partial<SaveTestInput> = {}): SaveTestInput {
 }
 
 describe("assertQuestionCorrectness", () => {
+  it("accepts a question translation without an explanation and normalizes it to an empty string", () => {
+    const input = question();
+    const translation = { ...input.translations[0] } as Partial<
+      (typeof input.translations)[number]
+    >;
+    delete translation.explanation;
+
+    const parsed = saveQuestionSchema.parse({
+      ...input,
+      translations: [translation],
+    });
+
+    expect(parsed.translations[0]?.explanation).toBe("");
+  });
+
   it("accepts a single-choice question with exactly one correct option", () => {
     expect(() => assertQuestionCorrectness(question())).not.toThrow();
   });

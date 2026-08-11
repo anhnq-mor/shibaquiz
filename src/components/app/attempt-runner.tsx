@@ -614,12 +614,14 @@ export function AttemptRunner({
             </p>
           )}
 
-          {revealed && "explanation" in current.question && (
-            <div>
-              <h3>{messages.attempt.explanationLabel}</h3>
-              <p>{current.question.explanation}</p>
-            </div>
-          )}
+          {revealed &&
+            "explanation" in current.question &&
+            current.question.explanation && (
+              <div>
+                <h3>{messages.attempt.explanationLabel}</h3>
+                <p>{current.question.explanation}</p>
+              </div>
+            )}
 
           <div className="attempt-toolbar">
             <span

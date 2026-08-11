@@ -1,0 +1,2 @@
+ALTER TABLE "question_translations" DROP CONSTRAINT "question_translation_explanation_length";--> statement-breakpoint
+ALTER TABLE "question_translations" ADD CONSTRAINT "question_translation_explanation_length" CHECK (char_length("question_translations"."explanation") <= 20000);

@@ -214,7 +214,7 @@ Tiêu chí chấp nhận:
 
 ### FR-11 — Admin quản lý câu hỏi
 
-- Trường bắt buộc: kỳ thi, chủ đề, loại, nội dung localized, cấu trúc trả lời hợp lệ và explanation localized.
+- Trường bắt buộc: kỳ thi, chủ đề, loại, nội dung localized và cấu trúc trả lời hợp lệ. Explanation localized là tùy chọn (0–20.000 ký tự).
 - `SINGLE_CHOICE`: 2–6 lựa chọn, đúng một đáp án đúng.
 - `MULTIPLE_CHOICE`: 2–20 lựa chọn, ít nhất hai đáp án đúng và ít nhất một đáp án sai.
 - `TRUE_FALSE`: đúng hai lựa chọn Đúng/Sai và đúng một đáp án đúng.
@@ -240,7 +240,7 @@ Luồng import gồm bốn bước:
 
 1. Tải file hoặc tải template mẫu.
 2. Parse và preview tối đa 100 dòng đầu.
-3. Validate toàn bộ file, hiển thị lỗi theo sheet/dòng/cột.
+3. Validate toàn bộ file, hiển thị lỗi theo sheet/dòng/cột; mỗi dòng lỗi kèm `external_id` (nếu có) và toàn bộ lỗi cần sửa.
 4. Chỉ commit khi không có lỗi nghiêm trọng và admin xác nhận.
 
 Yêu cầu:
@@ -253,7 +253,7 @@ Yêu cầu:
 - Sinh báo cáo số dòng tạo mới/cập nhật/bỏ qua/lỗi.
 - Escape dữ liệu khi export CSV để giảm nguy cơ CSV formula injection.
 - Các cột nội dung dùng hậu tố locale `_vi`/`_en`. Dòng có thể được lưu `DRAFT` khi chỉ có ngôn ngữ chính; chỉ được `PUBLISHED` cho locale đã đủ toàn bộ trường bắt buộc.
-- Trong riêng luồng import, nếu một ô localized `_vi` hoặc `_en` để trống nhưng ô tương ứng ở ngôn ngữ còn lại có dữ liệu, hệ thống sao chép nguyên văn dữ liệu đó sang ô thiếu trước khi validation. Quy tắc áp dụng độc lập cho question content, explanation, option content và matching target; nếu cả hai ô tương ứng đều trống thì import vẫn lỗi.
+- Trong riêng luồng import, nếu một ô localized `_vi` hoặc `_en` để trống nhưng ô tương ứng ở ngôn ngữ còn lại có dữ liệu, hệ thống sao chép nguyên văn dữ liệu đó sang ô thiếu trước khi validation. Quy tắc áp dụng độc lập cho question content, explanation, option content và matching target. Nếu cả hai ô đều trống, chỉ các trường bắt buộc mới làm import lỗi; explanation được chuẩn hóa thành chuỗi rỗng.
 - Spreadsheet không chứa binary hoặc URL media tùy ý. Cột `media_ids` chỉ tham chiếu các asset `READY` đã upload vào thư viện và admin có quyền sử dụng.
 
 Schema import chuẩn:
@@ -268,7 +268,7 @@ Schema import chuẩn:
 | `option_a_vi` ... `option_h_vi`        |    ✓*    | Ít nhất A và B cho tiếng Việt; tối đa 8 lựa chọn                             |
 | `option_a_en` ... `option_h_en`        |    ✓*    | Cùng option identity với bản Việt; bắt buộc khi publish English              |
 | `correct_options`                      |    ✓     | Danh sách chữ cái phân cách bằng `                                           | `, ví dụ `A | C`  |
-| `explanation_vi`, `explanation_en`     |    ✓*    | 1–20.000 ký tự; bắt buộc cho locale được publish                             |
+| `explanation_vi`, `explanation_en`     |    —     | Tùy chọn, 0–20.000 ký tự; nếu chỉ có một locale thì tự điền sang locale kia  |
 | `media_ids`                            |    —     | Danh sách asset ID trạng thái `READY`, phân cách bằng `                      | `           |
 | `status`                               |    —     | Mặc định `DRAFT`; `PUBLISHED` chỉ nếu dòng hợp lệ                            |
 | `tags`                                 |    —     | Phân cách bằng `                                                             | `           |
@@ -308,7 +308,7 @@ Tiêu chí chấp nhận:
 
 - User chuyển toàn bộ UI giữa Việt/Anh và preference được giữ sau lần đăng nhập tiếp theo.
 - Cùng một câu hỏi hiển thị đúng bản dịch theo locale nhưng dùng chung loại câu, option identity và đáp án đúng.
-- Không publish/bật locale English cho kỳ thi nếu còn câu hỏi bắt buộc thiếu `question`, option hoặc explanation tiếng Anh.
+- Không publish/bật locale English cho kỳ thi nếu còn câu hỏi bắt buộc thiếu `question` hoặc option tiếng Anh; explanation có thể để trống.
 
 ### FR-16 — Media trong nội dung câu hỏi
 

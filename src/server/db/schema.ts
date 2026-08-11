@@ -302,7 +302,7 @@ export const questionTranslations = pgTable(
     ),
     check(
       "question_translation_explanation_length",
-      sql`char_length(${table.explanation}) between 1 and 20000`,
+      sql`char_length(${table.explanation}) <= 20000`,
     ),
   ],
 );

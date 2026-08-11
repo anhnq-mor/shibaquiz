@@ -276,11 +276,12 @@ export default async function AttemptResultPage({
                 })}
               </ul>
             )}
-            {"explanation" in question.question && (
-              <p>
-                <em>{question.question.explanation}</em>
-              </p>
-            )}
+            {"explanation" in question.question &&
+              question.question.explanation && (
+                <p>
+                  <em>{question.question.explanation}</em>
+                </p>
+              )}
             {question.question.disclosure === "REVEALED" && (
               <CommentThread
                 locale={locale}

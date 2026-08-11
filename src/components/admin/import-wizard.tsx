@@ -12,8 +12,15 @@ import type { AdminCatalog } from "@/i18n/admin-catalogs";
 type Exam = AdminContentWorkspace["exams"][number];
 
 type PreviewRow =
-  | { rowNumber: number; status: "VALID" }
-  | { rowNumber: number; status: "ERROR"; errors: string[] };
+  | { rowNumber: number; status: "VALID"; externalId: string | null }
+  | {
+      rowNumber: number;
+      status: "ERROR";
+      externalId: string | null;
+      errors: string[];
+    };
+
+type PreviewErrorRow = Extract<PreviewRow, { status: "ERROR" }>;
 
 interface ImportSummary {
   totalRows: number;
@@ -23,6 +30,20 @@ interface ImportSummary {
 }
 
 type Step = "select" | "preview" | "result";
+
+function localizedRowError(error: string, messages: AdminCatalog): string {
+  const columns = error.split(":", 1)[0] ?? "";
+  if (error.endsWith("at least one question content value is required")) {
+    return `${columns}: ${messages.imports.questionContentRequiredError}`;
+  }
+  if (error.endsWith("at least one option content value is required")) {
+    return `${columns}: ${messages.imports.optionContentRequiredError}`;
+  }
+  if (error.endsWith("at least one matching target value is required")) {
+    return `${columns}: ${messages.imports.matchTargetRequiredError}`;
+  }
+  return error;
+}
 
 export function ImportWizard({
   locale,
@@ -43,6 +64,10 @@ export function ImportWizard({
     createdCount: number;
     updatedCount: number;
   } | null>(null);
+  const previewErrorRows: PreviewErrorRow[] =
+    summary?.rows.filter(
+      (row): row is PreviewErrorRow => row.status === "ERROR",
+    ) ?? [];
 
   function withLocale(path: string): string {
     return `${path}${path.includes("?") ? "&" : "?"}locale=${locale}`;
@@ -70,6 +95,16 @@ export function ImportWizard({
       );
       const data = await response.json();
       if (!response.ok) {
+        if (Array.isArray(data?.rows) && summary) {
+          const commitErrorRows = data.rows as PreviewErrorRow[];
+          setSummary({
+            ...summary,
+            validCount: Math.max(0, summary.totalRows - commitErrorRows.length),
+            errorCount: commitErrorRows.length,
+            rows: commitErrorRows,
+          });
+          setStep("preview");
+        }
         throw new Error(data?.message ?? messages.common.requestFailed);
       }
       setSummary(data as ImportSummary);
@@ -207,7 +242,9 @@ export function ImportWizard({
             {summary.errorCount > 0 && (
               <>
                 <p className="form-message error" role="alert">
-                  {messages.imports.fixErrorsNotice}
+                  {messages.imports.fixErrorsNotice}{" "}
+                  {messages.imports.errorRowNumbersLabel}:{" "}
+                  {previewErrorRows.map((row) => row.rowNumber).join(", ")}.
                 </p>
                 <div className="admin-table-wrapper">
                   <table className="admin-table">
@@ -216,22 +253,30 @@ export function ImportWizard({
                         <th scope="col" className="admin-cell-nowrap">
                           {messages.imports.rowNumberLabel}
                         </th>
+                        <th scope="col" className="admin-cell-nowrap">
+                          {messages.imports.rowExternalIdLabel}
+                        </th>
                         <th scope="col">{messages.imports.rowErrorsLabel}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {summary.rows
-                        .filter((row) => row.status === "ERROR")
-                        .map((row) => (
-                          <tr key={row.rowNumber}>
-                            <td className="admin-cell-nowrap">
-                              {row.rowNumber}
-                            </td>
-                            <td>
-                              {"errors" in row ? row.errors.join("; ") : ""}
-                            </td>
-                          </tr>
-                        ))}
+                      {previewErrorRows.map((row) => (
+                        <tr key={row.rowNumber}>
+                          <td className="admin-cell-nowrap">{row.rowNumber}</td>
+                          <td className="admin-cell-nowrap">
+                            {row.externalId ?? "—"}
+                          </td>
+                          <td>
+                            <ul>
+                              {row.errors.map((rowError, index) => (
+                                <li key={`${row.rowNumber}-${index}`}>
+                                  {localizedRowError(rowError, messages)}
+                                </li>
+                              ))}
+                            </ul>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

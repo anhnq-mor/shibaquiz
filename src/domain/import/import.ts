@@ -75,7 +75,12 @@ export type ImportRowOutcome =
       externalId: string | null;
       input: SaveQuestionInput;
     }
-  | { rowNumber: number; status: "ERROR"; errors: string[] };
+  | {
+      rowNumber: number;
+      status: "ERROR";
+      externalId: string | null;
+      errors: string[];
+    };
 
 function parseBoolean(value: string | undefined): boolean {
   return ["true", "1", "yes", "x", "correct"].includes(
@@ -137,14 +142,19 @@ export function buildImportRowInput(
     raw.explanation_vi,
     raw.explanation_en,
   );
-  if (content.vi && explanation.vi) {
+  if (!content.vi) {
+    errors.push(
+      "content_vi/content_en: at least one question content value is required",
+    );
+  }
+  if (content.vi) {
     translations.push({
       locale: "vi",
       content: content.vi,
       explanation: explanation.vi,
     });
   }
-  if (content.en && explanation.en) {
+  if (content.en) {
     translations.push({
       locale: "en",
       content: content.en,
@@ -166,6 +176,16 @@ export function buildImportRowInput(
       raw[`option_${slot}_match_vi`],
       raw[`option_${slot}_match_en`],
     );
+    if (!optionContent.vi) {
+      errors.push(
+        `option_${slot}_content_vi/option_${slot}_content_en: at least one option content value is required`,
+      );
+    }
+    if (type === "MATCHING" && !matchContent.vi) {
+      errors.push(
+        `option_${slot}_match_vi/option_${slot}_match_en: at least one matching target value is required`,
+      );
+    }
     if (optionContent.vi) {
       optionTranslations.push({
         locale: "vi",
@@ -189,7 +209,7 @@ export function buildImportRowInput(
   }
 
   if (errors.length > 0 || !topicId) {
-    return { rowNumber, status: "ERROR", errors };
+    return { rowNumber, status: "ERROR", externalId, errors };
   }
 
   const candidate: SaveQuestionInput = {
@@ -209,6 +229,7 @@ export function buildImportRowInput(
     return {
       rowNumber,
       status: "ERROR",
+      externalId,
       errors: parsed.error.issues.map(
         (issue) => `${issue.path.join(".") || "row"}: ${issue.message}`,
       ),
@@ -226,6 +247,7 @@ export function buildImportRowInput(
     return {
       rowNumber,
       status: "ERROR",
+      externalId,
       errors: [
         `Missing required translation for locale(s): ${missingLocales.join(", ")}`,
       ],
@@ -242,6 +264,7 @@ export function buildImportRowInput(
       return {
         rowNumber,
         status: "ERROR",
+        externalId,
         errors: [
           `Option "${option.label}" is missing translation for locale(s): ${missingOptionLocales.join(", ")}`,
         ],
@@ -255,6 +278,7 @@ export function buildImportRowInput(
     return {
       rowNumber,
       status: "ERROR",
+      externalId,
       errors: [
         error instanceof Error ? error.message : "Invalid option correctness",
       ],
@@ -276,7 +300,11 @@ export class ImportError extends Error {
     public readonly code: "NOT_FOUND" | "INVALID_STRUCTURE" | "CONFLICT",
     public readonly status: number,
     message: string,
-    public readonly rows?: Array<{ rowNumber: number; errors: string[] }>,
+    public readonly rows?: Array<{
+      rowNumber: number;
+      externalId: string | null;
+      errors: string[];
+    }>,
   ) {
     super(message);
     this.name = "ImportError";

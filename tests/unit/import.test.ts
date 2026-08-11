@@ -99,6 +99,22 @@ describe("buildImportRowInput", () => {
     }
   });
 
+  it("accepts a row when explanation is blank in both languages", () => {
+    const outcome = buildImportRowInput(
+      validRow({ explanation_vi: "", explanation_en: "" }),
+      2,
+      baseContext(),
+    );
+
+    expect(outcome.status).toBe("VALID");
+    if (outcome.status === "VALID") {
+      expect(outcome.input.translations).toEqual([
+        { locale: "vi", content: "1 + 1 = ?", explanation: "" },
+        { locale: "en", content: "1 + 1 = ?", explanation: "" },
+      ]);
+    }
+  });
+
   it("rejects an unknown topic_slug", () => {
     const outcome = buildImportRowInput(
       validRow({ topic_slug: "nope" }),
@@ -148,6 +164,33 @@ describe("buildImportRowInput", () => {
       baseContext(),
     );
     expect(outcome.status).toBe("ERROR");
+    if (outcome.status === "ERROR") {
+      expect(outcome.externalId).toBeNull();
+      expect(outcome.errors).toContain(
+        "content_vi/content_en: at least one question content value is required",
+      );
+    }
+  });
+
+  it("reports the exact option columns and external ID for missing option content", () => {
+    const outcome = buildImportRowInput(
+      validRow({
+        external_id: "Q-MISSING-OPTION",
+        option_1_content_vi: "",
+        option_1_content_en: "",
+      }),
+      171,
+      baseContext(),
+    );
+
+    expect(outcome).toEqual({
+      rowNumber: 171,
+      status: "ERROR",
+      externalId: "Q-MISSING-OPTION",
+      errors: [
+        "option_1_content_vi/option_1_content_en: at least one option content value is required",
+      ],
+    });
   });
 
   it("rejects a single-choice row without exactly one correct option", () => {
