@@ -10,8 +10,24 @@ import {
   type FormEvent,
   type RefObject,
 } from "react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Flag,
+  ListChecks,
+  LogOut,
+  RotateCcw,
+  Send,
+  SkipForward,
+  Trash2,
+} from "lucide-react";
 
 import { appApiRequest } from "@/components/app/app-api";
+import { RouteLink } from "@/components/route-link";
 import {
   type AttemptQuestionState,
   type AttemptTakingView,
@@ -73,6 +89,7 @@ export function AttemptRunner({
   const mobileNavDialogRef = useRef<HTMLDialogElement>(null);
   const topbarRef = useRef<HTMLDivElement>(null);
   const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const inFlightSaves = useRef<Record<string, Promise<boolean>>>({});
   const pendingSaveCount = useRef(0);
   const autoSubmitted = useRef(false);
 
@@ -149,40 +166,66 @@ export function AttemptRunner({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
+  const performSave = useCallback(
+    async (
+      attemptQuestionId: string,
+      answer: AttemptAnswer,
+      isFlagged: boolean,
+    ): Promise<boolean> => {
+      try {
+        const updated = await appApiRequest<AttemptQuestionState>(
+          `/api/attempts/${initial.attemptId}/answers/${attemptQuestionId}`,
+          locale,
+          { body: { answer, isFlagged }, silent: true },
+        );
+        setQuestions((list) =>
+          list.map((question) =>
+            question.attemptQuestionId === attemptQuestionId
+              ? updated
+              : question,
+          ),
+        );
+        setSaveStatus((state) => ({ ...state, [attemptQuestionId]: "saved" }));
+        return true;
+      } catch {
+        setSaveStatus((state) => ({ ...state, [attemptQuestionId]: "error" }));
+        return false;
+      } finally {
+        pendingSaveCount.current = Math.max(0, pendingSaveCount.current - 1);
+      }
+    },
+    [initial.attemptId, locale],
+  );
+
+  const sendSave = useCallback(
+    (
+      attemptQuestionId: string,
+      answer: AttemptAnswer,
+      isFlagged: boolean,
+    ): Promise<boolean> => {
+      const request = performSave(attemptQuestionId, answer, isFlagged);
+      inFlightSaves.current[attemptQuestionId] = request;
+      void request.finally(() => {
+        if (inFlightSaves.current[attemptQuestionId] === request) {
+          delete inFlightSaves.current[attemptQuestionId];
+        }
+      });
+      return request;
+    },
+    [performSave],
+  );
+
   const persistAnswer = useCallback(
     (attemptQuestionId: string, answer: AttemptAnswer, isFlagged: boolean) => {
       window.clearTimeout(saveTimers.current[attemptQuestionId]);
       pendingSaveCount.current += 1;
       setSaveStatus((state) => ({ ...state, [attemptQuestionId]: "saving" }));
-      saveTimers.current[attemptQuestionId] = setTimeout(async () => {
-        try {
-          const updated = await appApiRequest<AttemptQuestionState>(
-            `/api/attempts/${initial.attemptId}/answers/${attemptQuestionId}`,
-            locale,
-            { body: { answer, isFlagged } },
-          );
-          setQuestions((list) =>
-            list.map((question) =>
-              question.attemptQuestionId === attemptQuestionId
-                ? updated
-                : question,
-            ),
-          );
-          setSaveStatus((state) => ({
-            ...state,
-            [attemptQuestionId]: "saved",
-          }));
-        } catch {
-          setSaveStatus((state) => ({
-            ...state,
-            [attemptQuestionId]: "error",
-          }));
-        } finally {
-          pendingSaveCount.current = Math.max(0, pendingSaveCount.current - 1);
-        }
+      saveTimers.current[attemptQuestionId] = setTimeout(() => {
+        delete saveTimers.current[attemptQuestionId];
+        void sendSave(attemptQuestionId, answer, isFlagged);
       }, 500);
     },
-    [initial.attemptId, locale],
+    [sendSave],
   );
 
   function selectOption(optionId: string) {
@@ -287,10 +330,26 @@ export function AttemptRunner({
   }
 
   async function checkCurrentAnswer() {
+    if (isAnswerEmpty(current.answer)) return;
+    const attemptQuestionId = current.attemptQuestionId;
+    if (saveTimers.current[attemptQuestionId] !== undefined) {
+      window.clearTimeout(saveTimers.current[attemptQuestionId]);
+      delete saveTimers.current[attemptQuestionId];
+      const saved = await sendSave(
+        attemptQuestionId,
+        current.answer,
+        current.isFlagged,
+      );
+      if (!saved) return;
+    } else if (inFlightSaves.current[attemptQuestionId]) {
+      const saved = await inFlightSaves.current[attemptQuestionId];
+      if (!saved) return;
+    }
     try {
       const updated = await appApiRequest<AttemptQuestionState>(
         `/api/attempts/${initial.attemptId}/questions/${current.attemptQuestionId}/check`,
         locale,
+        { silent: true },
       );
       setQuestions((list) =>
         list.map((question) =>
@@ -379,11 +438,23 @@ export function AttemptRunner({
             {formatDuration(remainingSeconds)}
           </span>
         )}
+        <RouteLink
+          href={
+            (initial.examSlug
+              ? `/${locale}/exams/${initial.examSlug}`
+              : `/${locale}/exams`) as Route
+          }
+          className="button button-secondary"
+        >
+          <LogOut size={16} aria-hidden />
+          {messages.attempt.exitAction}
+        </RouteLink>
         <button
           type="button"
-          className="button button-secondary"
+          className="button button-danger"
           onClick={() => abandonDialogRef.current?.showModal()}
         >
+          <Trash2 size={16} aria-hidden />
           {messages.attempt.abandonAction}
         </button>
         <button
@@ -392,6 +463,7 @@ export function AttemptRunner({
           onClick={() => submitDialogRef.current?.showModal()}
           disabled={submitPending}
         >
+          <Send size={16} aria-hidden />
           {messages.attempt.submitAction}
         </button>
       </div>
@@ -417,6 +489,7 @@ export function AttemptRunner({
           className="button button-secondary"
           onClick={() => mobileNavDialogRef.current?.showModal()}
         >
+          <ListChecks size={16} aria-hidden />
           {messages.attempt.navigatorOpenAction}
         </button>
       </div>
@@ -439,6 +512,11 @@ export function AttemptRunner({
               className="button button-secondary"
               onClick={toggleFlag}
             >
+              <Flag
+                size={16}
+                aria-hidden
+                fill={current.isFlagged ? "currentColor" : "none"}
+              />
               {current.isFlagged
                 ? messages.attempt.unflagAction
                 : messages.attempt.flagAction}
@@ -526,6 +604,7 @@ export function AttemptRunner({
                     disabled={Boolean(current.checkedAt) || index === 0}
                     onClick={() => moveOrder(index, -1)}
                   >
+                    <ArrowUp size={16} aria-hidden />
                     {messages.attempt.moveUpAction}
                   </button>
                   <button
@@ -536,6 +615,7 @@ export function AttemptRunner({
                     }
                     onClick={() => moveOrder(index, 1)}
                   >
+                    <ArrowDown size={16} aria-hidden />
                     {messages.attempt.moveDownAction}
                   </button>
                 </div>
@@ -548,6 +628,7 @@ export function AttemptRunner({
                     className="button button-secondary"
                     onClick={saveCurrentOrder}
                   >
+                    <Check size={16} aria-hidden />
                     {messages.attempt.saveOrderAction}
                   </button>
                 )}
@@ -594,6 +675,12 @@ export function AttemptRunner({
                         disabled={Boolean(current.checkedAt)}
                         onChange={() => selectOption(option.id)}
                       />
+                      {(current.type === "SINGLE_CHOICE" ||
+                        current.type === "MULTIPLE_CHOICE") && (
+                        <span className="option-label" aria-hidden="true">
+                          {option.label}
+                        </span>
+                      )}
                       <span>{option.content}</span>
                     </label>
                   </li>
@@ -643,6 +730,7 @@ export function AttemptRunner({
                       )
                     }
                   >
+                    <RotateCcw size={16} aria-hidden />
                     {messages.attempt.retryAction}
                   </button>
                 </>
@@ -654,14 +742,17 @@ export function AttemptRunner({
               disabled={currentIndex === 0}
               onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}
             >
+              <ChevronLeft size={16} aria-hidden />
               {messages.attempt.previousAction}
             </button>
             {initial.mode === "PRACTICE_IMMEDIATE" && !current.checkedAt && (
               <button
                 type="button"
                 className="button button-primary"
+                disabled={isAnswerEmpty(current.answer)}
                 onClick={checkCurrentAnswer}
               >
+                <Check size={16} aria-hidden />
                 {messages.attempt.checkAction}
               </button>
             )}
@@ -676,6 +767,7 @@ export function AttemptRunner({
               }
             >
               {messages.attempt.nextAction}
+              <ChevronRight size={16} aria-hidden />
             </button>
           </div>
         </section>
@@ -737,6 +829,7 @@ export function AttemptRunner({
         body={messages.attempt.abandonConfirmBody}
         confirmLabel={messages.attempt.abandonConfirmConfirm}
         cancelLabel={messages.attempt.abandonConfirmCancel}
+        destructive
         onConfirm={() => {
           abandonDialogRef.current?.close();
           void abandonAttempt();
@@ -771,7 +864,7 @@ function AttemptQuestionMedia({
             const access = await appApiRequest<{ url: string }>(
               `/api/attempts/${attemptId}/questions/${attemptQuestionId}/media/${item.id}`,
               locale,
-              { method: "GET" },
+              { method: "GET", silent: true },
             );
             return [item.id, access.url] as const;
           }),
@@ -934,6 +1027,7 @@ function AttemptNavigator({
           inputMode="numeric"
         />
         <button type="submit" className="button button-secondary">
+          <ArrowRight size={16} aria-hidden />
           {messages.attempt.jumpToQuestionAction}
         </button>
       </form>
@@ -975,6 +1069,7 @@ function AttemptNavigator({
           className="button button-secondary attempt-nav-jump"
           onClick={() => onSelect(firstUnansweredIndex)}
         >
+          <SkipForward size={16} aria-hidden />
           {messages.attempt.jumpToUnansweredAction}
         </button>
       )}
@@ -990,6 +1085,7 @@ function ConfirmDialog({
   confirmLabel,
   cancelLabel,
   onConfirm,
+  destructive,
 }: {
   dialogRef: RefObject<HTMLDialogElement | null>;
   titleId: string;
@@ -998,6 +1094,7 @@ function ConfirmDialog({
   confirmLabel: string;
   cancelLabel: string;
   onConfirm: () => void;
+  destructive?: boolean;
 }) {
   return (
     <dialog
@@ -1014,9 +1111,14 @@ function ConfirmDialog({
         <div className="admin-form-actions">
           <button
             type="button"
-            className="button button-primary"
+            className={`button ${destructive ? "button-danger" : "button-primary"}`}
             onClick={onConfirm}
           >
+            {destructive ? (
+              <Trash2 size={16} aria-hidden />
+            ) : (
+              <Check size={16} aria-hidden />
+            )}
             {confirmLabel}
           </button>
           <button

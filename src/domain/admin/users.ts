@@ -34,7 +34,8 @@ export interface AdminUserSummary {
 
 export class AdminUserError extends Error {
   constructor(
-    public readonly code: "NOT_FOUND" | "LAST_ADMIN_GUARD" | "INVALID_STRUCTURE",
+    public readonly code:
+      "NOT_FOUND" | "LAST_ADMIN_GUARD" | "INVALID_STRUCTURE",
     public readonly status: number,
     message: string,
   ) {

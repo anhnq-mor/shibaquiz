@@ -30,24 +30,14 @@ export interface QuizCatalog {
     viewAction: string;
     backToList: string;
     localeFallbackNotice: string;
-    topicsHeading: string;
     testsHeading: string;
     topicQuestionsCount: string;
     testDurationMinutes: string;
     testNoTimeLimit: string;
     testPassingScore: string;
-    tableTopicName: string;
-    tableQuestionCount: string;
     tableTestName: string;
     tableDuration: string;
     tablePassingScore: string;
-    startHeading: string;
-    scopeLabel: string;
-    scopeTopicHint: string;
-    scopeFullTestHint: string;
-    scopeQuestionBankHint: string;
-    selectTopicLabel: string;
-    selectTestLabel: string;
     modeLabel: string;
     modeStudyHint: string;
     modePracticeImmediateHint: string;
@@ -57,6 +47,14 @@ export interface QuizCatalog {
     startError: string;
     noTopicsError: string;
     noTestsError: string;
+    topicsGridHeading: string;
+    inProgressNotice: string;
+    continueAttemptAction: string;
+    selectAction: string;
+    chooseModeHeading: string;
+    selectedLabel: string;
+    immediateCheckLabel: string;
+    immediateCheckHint: string;
   };
   attempt: {
     loadError: string;
@@ -100,6 +98,7 @@ export interface QuizCatalog {
     submitConfirmBody: string;
     submitConfirmConfirm: string;
     submitConfirmCancel: string;
+    exitAction: string;
     abandonAction: string;
     abandonConfirmTitle: string;
     abandonConfirmBody: string;
@@ -188,7 +187,7 @@ const vi: QuizCatalog = {
     statusExpired: "Hết giờ",
     statusAbandoned: "Đã bỏ",
     modeStudy: "Ôn tập",
-    modePracticeImmediate: "Thi từng câu",
+    modePracticeImmediate: "Thực hành",
     modeExamDeferred: "Thi cuối bài",
     scopeTopic: "Theo chủ đề",
     scopeFullTest: "Đề hoàn chỉnh",
@@ -206,33 +205,32 @@ const vi: QuizCatalog = {
     backToList: "Về danh sách kỳ thi",
     localeFallbackNotice:
       "Kỳ thi này chưa bật tiếng Anh; nội dung dưới đây hiển thị bằng ngôn ngữ chính của kỳ thi.",
-    topicsHeading: "Chủ đề",
     testsHeading: "Đề thi",
     topicQuestionsCount: "{count} câu đã publish",
     testDurationMinutes: "{minutes} phút",
     testNoTimeLimit: "Không giới hạn thời gian",
     testPassingScore: "Điểm đạt {percent}%",
-    tableTopicName: "Chủ đề",
-    tableQuestionCount: "Số câu đã publish",
     tableTestName: "Đề thi",
     tableDuration: "Thời gian",
     tablePassingScore: "Điểm đạt",
-    startHeading: "Bắt đầu luyện tập",
-    scopeLabel: "Phạm vi",
-    scopeTopicHint: "Luyện các câu trong một chủ đề.",
-    scopeFullTestHint: "Làm một đề thi đã cấu hình sẵn.",
-    scopeQuestionBankHint: "Luyện toàn bộ câu đã publish của kỳ thi.",
-    selectTopicLabel: "Chọn chủ đề",
-    selectTestLabel: "Chọn đề thi",
     modeLabel: "Chế độ làm bài",
     modeStudyHint: "Hiện đáp án và giải thích ngay khi mở câu.",
-    modePracticeImmediateHint: "Kiểm tra từng câu, khóa lại sau khi kiểm tra.",
+    modePracticeImmediateHint: "Tự kiểm tra đáp án trong lúc làm bài.",
     modeExamDeferredHint: "Không hiện đáp án cho đến khi nộp toàn bài.",
     startAction: "Bắt đầu",
     startWorking: "Đang khởi tạo…",
     startError: "Không thể bắt đầu. Vui lòng thử lại.",
     noTopicsError: "Kỳ thi này chưa có chủ đề nào để luyện tập.",
     noTestsError: "Kỳ thi này chưa có đề thi nào để làm.",
+    topicsGridHeading: "Các chủ đề trong kỳ thi",
+    inProgressNotice: "Bạn có bài làm đang dở cho kỳ thi này.",
+    continueAttemptAction: "Tiếp tục làm bài",
+    selectAction: "Chọn",
+    chooseModeHeading: "Chọn chế độ làm bài",
+    selectedLabel: "Đã chọn",
+    immediateCheckLabel: "Cho phép kiểm tra đáp án ngay sau mỗi câu",
+    immediateCheckHint:
+      "Nếu tắt, bạn chỉ xem được đáp án sau khi nộp toàn bộ bài.",
   },
   attempt: {
     loadError: "Không thể tải bài làm. Vui lòng thử lại.",
@@ -276,6 +274,7 @@ const vi: QuizCatalog = {
     submitConfirmBody: "Bạn có chắc muốn nộp bài ngay bây giờ?",
     submitConfirmConfirm: "Nộp bài",
     submitConfirmCancel: "Tiếp tục làm bài",
+    exitAction: "Thoát",
     abandonAction: "Bỏ và làm lại",
     abandonConfirmTitle: "Bỏ bài làm này?",
     abandonConfirmBody:
@@ -365,7 +364,7 @@ const en: QuizCatalog = {
     statusExpired: "Expired",
     statusAbandoned: "Abandoned",
     modeStudy: "Study",
-    modePracticeImmediate: "Practice (immediate)",
+    modePracticeImmediate: "Practice",
     modeExamDeferred: "Exam (deferred)",
     scopeTopic: "By topic",
     scopeFullTest: "Full test",
@@ -383,28 +382,18 @@ const en: QuizCatalog = {
     backToList: "Back to exam list",
     localeFallbackNotice:
       "English isn't enabled for this exam yet; content below is shown in the exam's primary language.",
-    topicsHeading: "Topics",
     testsHeading: "Tests",
     topicQuestionsCount: "{count} published questions",
     testDurationMinutes: "{minutes} minutes",
     testNoTimeLimit: "No time limit",
     testPassingScore: "Passing score {percent}%",
-    tableTopicName: "Topic",
-    tableQuestionCount: "Published questions",
     tableTestName: "Test",
     tableDuration: "Duration",
     tablePassingScore: "Passing score",
-    startHeading: "Start practicing",
-    scopeLabel: "Scope",
-    scopeTopicHint: "Practice the questions in a single topic.",
-    scopeFullTestHint: "Take a pre-configured test.",
-    scopeQuestionBankHint: "Practice every published question in this exam.",
-    selectTopicLabel: "Select a topic",
-    selectTestLabel: "Select a test",
     modeLabel: "Mode",
     modeStudyHint:
       "Show the answer and explanation as soon as you open a question.",
-    modePracticeImmediateHint: "Check each question; it locks once checked.",
+    modePracticeImmediateHint: "Check your answers while taking the attempt.",
     modeExamDeferredHint:
       "Answers stay hidden until you submit the whole attempt.",
     startAction: "Start",
@@ -412,6 +401,15 @@ const en: QuizCatalog = {
     startError: "Couldn't start this attempt. Please try again.",
     noTopicsError: "This exam has no topics to practice yet.",
     noTestsError: "This exam has no tests to take yet.",
+    selectAction: "Select",
+    chooseModeHeading: "Choose how to take it",
+    selectedLabel: "Selected",
+    immediateCheckLabel: "Allow checking the answer right after each question",
+    immediateCheckHint:
+      "If off, you'll only see answers after submitting the whole attempt.",
+    topicsGridHeading: "Topics in this exam",
+    inProgressNotice: "You have an unfinished attempt for this exam.",
+    continueAttemptAction: "Continue attempt",
   },
   attempt: {
     loadError: "Couldn't load this attempt. Please try again.",
@@ -456,6 +454,7 @@ const en: QuizCatalog = {
     submitConfirmBody: "Are you sure you want to submit now?",
     submitConfirmConfirm: "Submit",
     submitConfirmCancel: "Keep working",
+    exitAction: "Exit",
     abandonAction: "Discard and restart",
     abandonConfirmTitle: "Discard this attempt?",
     abandonConfirmBody:

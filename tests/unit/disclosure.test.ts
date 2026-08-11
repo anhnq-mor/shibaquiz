@@ -83,6 +83,25 @@ describe("question answer disclosure", () => {
   });
 
   it.each(["SUBMITTED", "EXPIRED"] as const)(
+    "reveals an unchecked immediate-practice answer once the attempt is %s",
+    (attemptStatus) => {
+      const result = toQuestionDto(
+        snapshot,
+        context({ mode: "PRACTICE_IMMEDIATE", attemptStatus }),
+      );
+      expect(result.disclosure).toBe("REVEALED");
+    },
+  );
+
+  it("keeps an unchecked immediate-practice answer hidden while still in progress", () => {
+    const result = toQuestionDto(
+      snapshot,
+      context({ mode: "PRACTICE_IMMEDIATE", attemptStatus: "IN_PROGRESS" }),
+    );
+    expect(result.disclosure).toBe("HIDDEN");
+  });
+
+  it.each(["SUBMITTED", "EXPIRED"] as const)(
     "reveals deferred answers after %s",
     (attemptStatus) => {
       expect(

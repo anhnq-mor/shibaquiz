@@ -14,7 +14,13 @@
   --green-700: #2f7255;
   --green-100: #dcebdd;
   --gold-500: #d8963e;
+  --gold-100: #fbeecd;
+  --gold-800: #8a5a12;
+  --red-800: #8a2c1d;
+  --red-700: #b3271e;
+  --red-100: #f8cfc7;
   --focus: #125fd4;
+  --focus-100: rgb(18 95 212 / 12%);
   --shadow: 0 24px 70px rgb(34 62 47 / 12%);
   --radius-sm: 0.75rem;
   --radius-md: 1.25rem;
@@ -775,6 +781,11 @@ button:focus-visible {
   opacity: 0.65;
 }
 
+.button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .form-message {
   margin: 0;
   padding: 0.75rem 0.9rem;
@@ -907,11 +918,35 @@ h1 {
   min-height: 3rem;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   padding: 0.65rem 1.15rem;
   border: 1px solid var(--green-800);
   border-radius: 999px;
   font-weight: 750;
   text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.button svg {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.button:hover {
+  box-shadow: 0 0.4rem 0.9rem rgb(24 32 27 / 12%);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .button-primary {
@@ -930,6 +965,26 @@ h1 {
 
 .button-secondary:hover {
   background: var(--green-100);
+}
+
+.button-danger {
+  border-color: var(--red-700);
+  background: transparent;
+  color: var(--red-700);
+}
+
+.button-danger:hover {
+  background: var(--red-100);
+  color: var(--red-800);
+}
+
+.button-danger.button-primary {
+  background: var(--red-700);
+  color: white;
+}
+
+.button-danger.button-primary:hover {
+  background: var(--red-800);
 }
 
 .hero-art {
@@ -1175,6 +1230,9 @@ h1 {
 }
 
 .status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   background: var(--green-100);
@@ -1183,9 +1241,35 @@ h1 {
   font-weight: 750;
 }
 
-.status-pill.muted {
+.status-pill svg {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.status-pill.muted,
+.status-pill-neutral {
   background: var(--surface-soft);
   color: var(--ink-700);
+}
+
+.status-pill-positive {
+  background: var(--green-100);
+  color: var(--green-800);
+}
+
+.status-pill-info {
+  background: var(--focus-100);
+  color: var(--focus);
+}
+
+.status-pill-warning {
+  background: var(--gold-100);
+  color: var(--gold-800);
+}
+
+.status-pill-negative {
+  background: var(--red-100);
+  color: var(--red-800);
 }
 
 .site-footer {
@@ -1336,8 +1420,21 @@ h1 {
 }
 
 .admin-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--ink-700);
   text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.admin-nav a svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.admin-nav a:hover {
+  color: var(--green-800);
 }
 
 .admin-nav a[aria-current="page"] {
@@ -1472,6 +1569,67 @@ h1 {
   font-size: 2rem;
 }
 
+.topic-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+}
+
+.topic-card {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.topic-card strong {
+  display: block;
+  font-weight: 800;
+}
+
+.topic-card-title {
+  display: flex !important;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--green-800);
+}
+
+.topic-card span {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--ink-700);
+  font-size: 0.85rem;
+}
+
+.topic-card-button {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.topic-card-button:hover {
+  border-color: var(--green-700);
+}
+
+.topic-card-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.topic-card-button.is-selected {
+  border-color: var(--green-700);
+  background: var(--green-100);
+}
+
+.admin-table tbody tr.is-selected > td {
+  background: var(--green-100);
+}
+
 .admin-layout {
   display: grid;
   gap: 1.5rem;
@@ -1563,6 +1721,10 @@ h1 {
 .admin-table td.admin-cell-nowrap,
 .admin-table th.admin-cell-nowrap {
   white-space: nowrap;
+}
+
+.admin-table tbody tr {
+  transition: background-color 0.15s ease;
 }
 
 .admin-table tbody tr:hover {
@@ -1776,8 +1938,21 @@ dialog.admin-dialog::backdrop {
 }
 
 .app-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--ink-700);
   text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.app-nav a svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.app-nav a:hover {
+  color: var(--green-800);
 }
 
 .app-nav a[aria-current="page"] {
@@ -1803,6 +1978,13 @@ dialog.admin-dialog::backdrop {
   margin: 0;
   color: var(--ink-700);
   max-width: 60ch;
+}
+
+a:has(svg):not(.button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  vertical-align: middle;
 }
 
 .exam-grid {
@@ -1875,6 +2057,14 @@ dialog.admin-dialog::backdrop {
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 700;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.choice-card:hover {
+  border-color: var(--green-700);
+  background: var(--surface-soft);
 }
 
 .choice-card:has(input:checked) {
@@ -1919,6 +2109,7 @@ dialog.admin-dialog::backdrop {
   margin-inline-end: auto;
   font-family: var(--font-display);
   font-size: 1.3rem;
+  font-weight: 800;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1933,8 +2124,8 @@ dialog.admin-dialog::backdrop {
 }
 
 .timer-badge.low {
-  background: #fbe4e0;
-  color: #8a2c1d;
+  background: var(--red-100);
+  color: var(--red-800);
 }
 
 .save-indicator {
@@ -1944,7 +2135,7 @@ dialog.admin-dialog::backdrop {
 }
 
 .save-indicator.error {
-  color: #b3271e;
+  color: var(--red-700);
 }
 
 .attempt-layout {
@@ -2026,6 +2217,7 @@ dialog.admin-dialog::backdrop {
 .attempt-question-heading h2 {
   margin: 0;
   font-size: 1.1rem;
+  font-weight: 800;
   color: var(--ink-700);
 }
 
@@ -2085,19 +2277,42 @@ dialog.admin-dialog::backdrop {
   flex: none;
 }
 
-.option-list li label:has(input:checked) {
+.option-list li:not(.correct):not(.incorrect) label:has(input:checked) {
   border-radius: var(--radius-sm);
   background: var(--green-100);
+}
+
+.option-label {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.85rem;
 }
 
 .option-list li.correct {
   border-color: var(--green-700);
   background: var(--green-100);
+  font-weight: 700;
+}
+
+.option-list li.correct .option-label {
+  border-color: var(--green-700);
 }
 
 .option-list li.incorrect {
-  border-color: #b3271e;
-  background: #fbe4e0;
+  border-color: var(--red-700);
+  background: var(--red-100);
+}
+
+.option-list li.incorrect .option-label {
+  border-color: var(--red-700);
 }
 
 .attempt-toolbar {

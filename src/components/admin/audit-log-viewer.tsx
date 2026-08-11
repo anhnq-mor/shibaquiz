@@ -64,7 +64,9 @@ export function AuditLogViewer({
                   <td className="admin-cell-nowrap">
                     {formatDateTime(entry.createdAt, locale)}
                   </td>
-                  <td>{entry.actorDisplayName ?? messages.audit.systemActor}</td>
+                  <td>
+                    {entry.actorDisplayName ?? messages.audit.systemActor}
+                  </td>
                   <td>{entry.action}</td>
                   <td>{entry.entityType}</td>
                   <td className="admin-cell-nowrap">{entry.entityId}</td>

@@ -1,6 +1,7 @@
 import type { Route } from "next";
 import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
+import { History } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
 import { CommentThread } from "@/components/app/comment-thread";
@@ -85,7 +86,13 @@ export default async function AttemptResultPage({
             <div className="admin-stat-card">
               <dt>{messages.result.passLabel}</dt>
               <dd>
-                <span className="status-pill">
+                <span
+                  className={`status-pill ${
+                    result.passed
+                      ? "status-pill-positive"
+                      : "status-pill-negative"
+                  }`}
+                >
                   {result.passed
                     ? messages.result.passLabel
                     : messages.result.failLabel}
@@ -269,6 +276,12 @@ export default async function AttemptResultPage({
                       : "";
                   return (
                     <li key={option.id} className={optionClass}>
+                      {(question.question.type === "SINGLE_CHOICE" ||
+                        question.question.type === "MULTIPLE_CHOICE") && (
+                        <span className="option-label" aria-hidden="true">
+                          {option.label}
+                        </span>
+                      )}
                       {option.content}
                       {isSelected && ` — ${messages.result.yourAnswerLabel}`}
                     </li>
@@ -302,6 +315,7 @@ export default async function AttemptResultPage({
           href={`/${locale}/history` as Route}
           className="button button-secondary"
         >
+          <History size={16} aria-hidden />
           {messages.result.backToHistory}
         </Link>
       </div>

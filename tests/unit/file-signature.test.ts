@@ -11,9 +11,9 @@ function bytes(...values: number[]): Uint8Array {
 
 describe("matchesDeclaredSignature", () => {
   it("accepts a real JPEG header", () => {
-    expect(matchesDeclaredSignature(bytes(0xff, 0xd8, 0xff, 0xe0), "image/jpeg")).toBe(
-      true,
-    );
+    expect(
+      matchesDeclaredSignature(bytes(0xff, 0xd8, 0xff, 0xe0), "image/jpeg"),
+    ).toBe(true);
   });
 
   it("accepts a real PNG header", () => {
@@ -27,7 +27,18 @@ describe("matchesDeclaredSignature", () => {
 
   it("accepts a real WEBP header (RIFF....WEBP)", () => {
     const buffer = bytes(
-      0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50,
+      0x52,
+      0x49,
+      0x46,
+      0x46,
+      0,
+      0,
+      0,
+      0,
+      0x57,
+      0x45,
+      0x42,
+      0x50,
     );
     expect(matchesDeclaredSignature(buffer, "image/webp")).toBe(true);
   });
@@ -45,9 +56,9 @@ describe("matchesDeclaredSignature", () => {
     expect(
       matchesDeclaredSignature(bytes(0x49, 0x44, 0x33, 0x04), "audio/mpeg"),
     ).toBe(true);
-    expect(matchesDeclaredSignature(bytes(0xff, 0xfb, 0x90), "audio/mpeg")).toBe(
-      true,
-    );
+    expect(
+      matchesDeclaredSignature(bytes(0xff, 0xfb, 0x90), "audio/mpeg"),
+    ).toBe(true);
   });
 
   it("accepts an ISO base media file (ftyp box) for mp4 audio and video", () => {
@@ -73,9 +84,9 @@ describe("matchesDeclaredSignature", () => {
   });
 
   it("rejects bytes that don't match the declared MIME type", () => {
-    expect(matchesDeclaredSignature(bytes(0x00, 0x01, 0x02), "image/jpeg")).toBe(
-      false,
-    );
+    expect(
+      matchesDeclaredSignature(bytes(0x00, 0x01, 0x02), "image/jpeg"),
+    ).toBe(false);
     expect(
       matchesDeclaredSignature(
         bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a),
@@ -91,7 +102,9 @@ describe("matchesDeclaredSignature", () => {
   });
 
   it("rejects a truncated buffer shorter than the signature", () => {
-    expect(matchesDeclaredSignature(bytes(0x89, 0x50), "image/png")).toBe(false);
+    expect(matchesDeclaredSignature(bytes(0x89, 0x50), "image/png")).toBe(
+      false,
+    );
   });
 
   it("exposes the sniff length used to fetch header bytes", () => {

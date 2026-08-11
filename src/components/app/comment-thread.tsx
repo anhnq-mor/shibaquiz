@@ -1,6 +1,16 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import {
+  Check,
+  ChevronDown,
+  MessageCircle,
+  Pencil,
+  Send,
+  ShieldAlert,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { appApiRequest, AppApiRequestError } from "@/components/app/app-api";
 import type { CommentSummary } from "@/domain/comments/comments";
@@ -80,9 +90,13 @@ export function CommentThread({
     setError(null);
     setPosting(true);
     try {
-      const comment = await appApiRequest<CommentSummary>("/api/comments", locale, {
-        body: { questionId, content: newContent.trim() },
-      });
+      const comment = await appApiRequest<CommentSummary>(
+        "/api/comments",
+        locale,
+        {
+          body: { questionId, content: newContent.trim() },
+        },
+      );
       setItems((current) => [comment, ...current]);
       setNewContent("");
     } catch (err) {
@@ -138,7 +152,12 @@ export function CommentThread({
 
   return (
     <div className="comment-thread">
-      <button type="button" className="button button-secondary" onClick={toggleExpand}>
+      <button
+        type="button"
+        className="button button-secondary"
+        onClick={toggleExpand}
+      >
+        <MessageCircle size={16} aria-hidden />
         {expanded ? messages.comments.hideAction : messages.comments.showAction}
       </button>
 
@@ -157,8 +176,15 @@ export function CommentThread({
                 required
               />
             </label>
-            <button type="submit" className="button button-primary" disabled={posting}>
-              {posting ? messages.comments.posting : messages.comments.postAction}
+            <button
+              type="submit"
+              className="button button-primary"
+              disabled={posting}
+            >
+              <Send size={16} aria-hidden />
+              {posting
+                ? messages.comments.posting
+                : messages.comments.postAction}
             </button>
           </form>
 
@@ -203,6 +229,7 @@ export function CommentThread({
                           disabled={savingEdit}
                           onClick={() => saveEdit(comment.id)}
                         >
+                          <Check size={16} aria-hidden />
                           {messages.comments.saveAction}
                         </button>
                         <button
@@ -210,6 +237,7 @@ export function CommentThread({
                           className="button button-secondary"
                           onClick={() => setEditingId(null)}
                         >
+                          <X size={16} aria-hidden />
                           {messages.comments.cancelAction}
                         </button>
                       </div>
@@ -227,13 +255,15 @@ export function CommentThread({
                             className="button button-secondary"
                             onClick={() => startEdit(comment)}
                           >
+                            <Pencil size={16} aria-hidden />
                             {messages.comments.editAction}
                           </button>
                           <button
                             type="button"
-                            className="button button-secondary"
+                            className="button button-danger"
                             onClick={() => deleteOwn(comment.id)}
                           >
+                            <Trash2 size={16} aria-hidden />
                             {messages.comments.deleteAction}
                           </button>
                         </>
@@ -244,6 +274,7 @@ export function CommentThread({
                         className="button button-secondary"
                         onClick={() => moderate(comment.id)}
                       >
+                        <ShieldAlert size={16} aria-hidden />
                         {messages.comments.moderateAction}
                       </button>
                     )}
@@ -260,6 +291,7 @@ export function CommentThread({
               disabled={loading}
               onClick={loadMore}
             >
+              <ChevronDown size={16} aria-hidden />
               {messages.comments.loadMoreAction}
             </button>
           )}

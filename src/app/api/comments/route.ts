@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { commentListQuerySchema, createCommentSchema } from "@/domain/comments/comments";
+import {
+  commentListQuerySchema,
+  createCommentSchema,
+} from "@/domain/comments/comments";
 import { requireUser } from "@/server/auth/authorization";
 import { getCommentService } from "@/server/content/runtime";
 import { localeFromQuery } from "@/server/http/admin-http";

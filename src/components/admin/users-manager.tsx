@@ -1,6 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import {
+  ChevronDown,
+  Filter,
+  KeyRound,
+  Lock,
+  ShieldMinus,
+  ShieldPlus,
+  Unlock,
+} from "lucide-react";
 
 import {
   adminApiRequest,
@@ -149,6 +158,7 @@ export function UsersManager({
             className="button button-secondary"
             onClick={() => reload()}
           >
+            <Filter size={16} aria-hidden />
             {messages.common.apply}
           </button>
         </div>
@@ -191,14 +201,26 @@ export function UsersManager({
                     <td>{user.email}</td>
                     <td>{user.displayName}</td>
                     <td className="admin-cell-nowrap">
-                      <span className="status-pill">
+                      <span
+                        className={`status-pill ${
+                          user.role === "ADMIN"
+                            ? "status-pill-warning"
+                            : "status-pill-neutral"
+                        }`}
+                      >
                         {user.role === "ADMIN"
                           ? messages.users.roleAdmin
                           : messages.users.roleUser}
                       </span>
                     </td>
                     <td className="admin-cell-nowrap">
-                      <span className="status-pill">
+                      <span
+                        className={`status-pill ${
+                          user.status === "LOCKED"
+                            ? "status-pill-negative"
+                            : "status-pill-positive"
+                        }`}
+                      >
                         {user.status === "LOCKED"
                           ? messages.users.statusLocked
                           : messages.users.statusActive}
@@ -213,7 +235,11 @@ export function UsersManager({
                       <div className="admin-row-actions">
                         <button
                           type="button"
-                          className="button button-secondary"
+                          className={
+                            user.status === "LOCKED"
+                              ? "button button-secondary"
+                              : "button button-danger"
+                          }
                           disabled={busy || isSelf}
                           onClick={() =>
                             runAction(
@@ -225,11 +251,18 @@ export function UsersManager({
                                 adminApiRequest(
                                   `/api/admin/users/${user.id}/lock`,
                                   locale,
-                                  { body: { locked: user.status !== "LOCKED" } },
+                                  {
+                                    body: { locked: user.status !== "LOCKED" },
+                                  },
                                 ),
                             )
                           }
                         >
+                          {user.status === "LOCKED" ? (
+                            <Unlock size={16} aria-hidden />
+                          ) : (
+                            <Lock size={16} aria-hidden />
+                          )}
                           {user.status === "LOCKED"
                             ? messages.users.unlockAction
                             : messages.users.lockAction}
@@ -251,13 +284,20 @@ export function UsersManager({
                                   {
                                     body: {
                                       role:
-                                        user.role === "ADMIN" ? "USER" : "ADMIN",
+                                        user.role === "ADMIN"
+                                          ? "USER"
+                                          : "ADMIN",
                                     },
                                   },
                                 ),
                             )
                           }
                         >
+                          {user.role === "ADMIN" ? (
+                            <ShieldMinus size={16} aria-hidden />
+                          ) : (
+                            <ShieldPlus size={16} aria-hidden />
+                          )}
                           {user.role === "ADMIN"
                             ? messages.users.demoteAction
                             : messages.users.promoteAction}
@@ -279,6 +319,7 @@ export function UsersManager({
                             )
                           }
                         >
+                          <KeyRound size={16} aria-hidden />
                           {messages.users.resetPasswordAction}
                         </button>
                       </div>
@@ -301,7 +342,10 @@ export function UsersManager({
               disabled={loadingMore}
               onClick={loadMore}
             >
-              {loadingMore ? messages.media.processing : messages.common.loadMore}
+              <ChevronDown size={16} aria-hidden />
+              {loadingMore
+                ? messages.media.processing
+                : messages.common.loadMore}
             </button>
           </div>
         )}

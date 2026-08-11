@@ -1,8 +1,10 @@
 import type { Route } from "next";
 import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
+import { ChevronDown, Filter, Play, RotateCcw, Eye } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
+import { attemptStatusTone } from "@/components/app/status-tone";
 import {
   attemptModes,
   attemptStatuses,
@@ -154,12 +156,14 @@ export default async function HistoryPage({
         </label>
         <div className="filter-form-actions">
           <button type="submit" className="button button-primary">
+            <Filter size={16} aria-hidden />
             {messages.history.filterApply}
           </button>
           <Link
             href={`/${locale}/history` as Route}
             className="button button-secondary"
           >
+            <RotateCcw size={16} aria-hidden />
             {messages.history.filterReset}
           </Link>
         </div>
@@ -204,7 +208,9 @@ export default async function HistoryPage({
                     {modeLabel(item.mode, messages)}
                   </td>
                   <td className="admin-cell-nowrap">
-                    <span className="status-pill">
+                    <span
+                      className={`status-pill ${attemptStatusTone(item.status)}`}
+                    >
                       {statusLabel(item.status, messages)}
                     </span>
                   </td>
@@ -227,6 +233,7 @@ export default async function HistoryPage({
                         href={`/${locale}/attempts/${item.attemptId}` as Route}
                         className="button button-secondary"
                       >
+                        <Play size={16} aria-hidden />
                         {messages.history.continueAction}
                       </Link>
                     ) : item.status !== "ABANDONED" ? (
@@ -236,6 +243,7 @@ export default async function HistoryPage({
                         }
                         className="button button-secondary"
                       >
+                        <Eye size={16} aria-hidden />
                         {messages.history.viewAction}
                       </Link>
                     ) : null}
@@ -252,6 +260,7 @@ export default async function HistoryPage({
           href={`/${locale}/history?${nextQuery.toString()}` as Route}
           className="button button-secondary"
         >
+          <ChevronDown size={16} aria-hidden />
           {messages.history.loadMore}
         </Link>
       )}

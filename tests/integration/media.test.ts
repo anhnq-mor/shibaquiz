@@ -18,7 +18,11 @@ import {
 } from "@/server/repositories/drizzle-media-repository";
 
 const megabyte = 1024 * 1024;
-const limits = { IMAGE: 5 * megabyte, AUDIO: 25 * megabyte, VIDEO: 100 * megabyte };
+const limits = {
+  IMAGE: 5 * megabyte,
+  AUDIO: 25 * megabyte,
+  VIDEO: 100 * megabyte,
+};
 
 const JPEG_HEADER = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0]);
 const PNG_HEADER = new Uint8Array([
@@ -32,7 +36,9 @@ class FakeMediaStorage implements MediaStorage {
   >();
   private counter = 0;
 
-  async createSignedUpload(request: CreateUploadRequest): Promise<SignedUpload> {
+  async createSignedUpload(
+    request: CreateUploadRequest,
+  ): Promise<SignedUpload> {
     this.counter += 1;
     const objectKey = `media/fake-${this.counter}`;
     this.objects.set(objectKey, {
@@ -273,7 +279,9 @@ describe("media library lifecycle", () => {
 
     await expect(
       libraryRepository.deleteAsset(asset.id, new Date()),
-    ).rejects.toSatisfy((error) => isMediaError(error) && error.code === "CONFLICT");
+    ).rejects.toSatisfy(
+      (error) => isMediaError(error) && error.code === "CONFLICT",
+    );
 
     await database
       .delete(schema.questionMedia)
@@ -363,7 +371,9 @@ describe("attempt media access", () => {
         "m1",
         adminId,
       ),
-    ).rejects.toSatisfy((error) => isMediaError(error) && error.code === "NOT_FOUND");
+    ).rejects.toSatisfy(
+      (error) => isMediaError(error) && error.code === "NOT_FOUND",
+    );
 
     await expect(
       accessRepository.getAttemptMediaAccessUrl(
@@ -371,6 +381,8 @@ describe("attempt media access", () => {
         "not-in-snapshot",
         otherUserId,
       ),
-    ).rejects.toSatisfy((error) => isMediaError(error) && error.code === "NOT_FOUND");
+    ).rejects.toSatisfy(
+      (error) => isMediaError(error) && error.code === "NOT_FOUND",
+    );
   });
 });

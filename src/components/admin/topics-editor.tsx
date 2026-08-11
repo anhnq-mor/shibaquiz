@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, type FormEvent } from "react";
+import { Check, Pencil, Plus, X } from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
+import { contentStatusTone } from "@/components/admin/status-tone";
 import {
   adminApiRequest,
   AdminApiRequestError,
@@ -144,6 +146,7 @@ export function TopicsEditor({
             className="button button-primary"
             onClick={() => openDialog(null)}
           >
+            <Plus size={16} aria-hidden />
             {messages.topics.newAction}
           </button>
         </div>
@@ -173,7 +176,9 @@ export function TopicsEditor({
                   <td>{topic.slug}</td>
                   <td className="admin-cell-nowrap">{topic.displayOrder}</td>
                   <td className="admin-cell-nowrap">
-                    <span className="status-pill">
+                    <span
+                      className={`status-pill ${contentStatusTone(topic.status)}`}
+                    >
                       {
                         {
                           DRAFT: messages.common.statusDraft,
@@ -190,6 +195,7 @@ export function TopicsEditor({
                         className="button button-secondary"
                         onClick={() => openDialog(topic)}
                       >
+                        <Pencil size={16} aria-hidden />
                         {messages.common.edit}
                       </button>
                     </div>
@@ -352,6 +358,7 @@ export function TopicsEditor({
               className="button button-primary"
               disabled={pending || !form.examId}
             >
+              <Check size={16} aria-hidden />
               {pending ? messages.common.saving : messages.common.save}
             </button>
             <button
@@ -359,6 +366,7 @@ export function TopicsEditor({
               className="button button-secondary"
               onClick={() => dialogRef.current?.close()}
             >
+              <X size={16} aria-hidden />
               {messages.common.cancel}
             </button>
           </div>

@@ -1,6 +1,7 @@
 import type { Route } from "next";
 import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
+import { ChevronDown, Eye, Search } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
 import { isLocale } from "@/domain/common/locale";
@@ -53,6 +54,7 @@ export default async function ExamsPage({
           placeholder={messages.exams.searchLabel}
         />
         <button type="submit" className="button button-primary">
+          <Search size={16} aria-hidden />
           {messages.exams.searchAction}
         </button>
       </form>
@@ -83,6 +85,7 @@ export default async function ExamsPage({
                 href={`/${locale}/exams/${exam.slug}` as Route}
                 className="button button-secondary"
               >
+                <Eye size={16} aria-hidden />
                 {messages.exams.viewAction}
               </Link>
             </article>
@@ -95,6 +98,7 @@ export default async function ExamsPage({
           href={`/${locale}/exams?${nextQuery.toString()}` as Route}
           className="button button-secondary"
         >
+          <ChevronDown size={16} aria-hidden />
           {messages.history.loadMore}
         </Link>
       )}

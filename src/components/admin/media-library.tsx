@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { Eye, Filter, Pencil, Trash2, Upload } from "lucide-react";
 
 import { apiFetch } from "@/components/api-activity";
 import { AdminDialog } from "@/components/admin/admin-dialog";
@@ -36,6 +37,15 @@ function statusLabel(messages: AdminCatalog, status: MediaStatus): string {
     READY: messages.media.statusReady,
     QUARANTINED: messages.media.statusQuarantined,
     DELETED: messages.media.statusDeleted,
+  }[status];
+}
+
+function statusTone(status: MediaStatus): string {
+  return {
+    PENDING: "status-pill-warning",
+    READY: "status-pill-positive",
+    QUARANTINED: "status-pill-negative",
+    DELETED: "status-pill-neutral",
   }[status];
 }
 
@@ -273,6 +283,7 @@ export function MediaLibrary({
               disabled={uploading}
               onClick={() => fileInputRef.current?.click()}
             >
+              <Upload size={16} aria-hidden />
               {uploading
                 ? messages.media.uploading
                 : messages.media.uploadAction}
@@ -332,6 +343,7 @@ export function MediaLibrary({
             className="button button-secondary"
             onClick={() => reload()}
           >
+            <Filter size={16} aria-hidden />
             {messages.common.apply}
           </button>
         </div>
@@ -375,7 +387,7 @@ export function MediaLibrary({
                     {formatSize(asset.sizeBytes)}
                   </td>
                   <td className="admin-cell-nowrap">
-                    <span className="status-pill">
+                    <span className={`status-pill ${statusTone(asset.status)}`}>
                       {statusLabel(messages, asset.status)}
                     </span>
                   </td>
@@ -390,6 +402,7 @@ export function MediaLibrary({
                           className="button button-secondary"
                           onClick={() => handlePreview(asset)}
                         >
+                          <Eye size={16} aria-hidden />
                           {messages.media.preview}
                         </button>
                       )}
@@ -398,13 +411,15 @@ export function MediaLibrary({
                         className="button button-secondary"
                         onClick={() => openDialog(asset)}
                       >
+                        <Pencil size={16} aria-hidden />
                         {messages.media.editTranslations}
                       </button>
                       <button
                         type="button"
-                        className="button button-secondary"
+                        className="button button-danger"
                         onClick={() => handleDelete(asset)}
                       >
+                        <Trash2 size={16} aria-hidden />
                         {messages.common.delete}
                       </button>
                     </div>

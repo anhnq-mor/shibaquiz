@@ -17,10 +17,7 @@ export async function POST(request: Request) {
     assertTrustedOrigin(request);
     const admin = await requireAdmin();
     const input = await parseJson(request, createUploadSchema);
-    const result = await getMediaLibraryService().createUpload(
-      input,
-      admin.id,
-    );
+    const result = await getMediaLibraryService().createUpload(input, admin.id);
     return NextResponse.json(result);
   } catch (error) {
     return mediaErrorResponse(error, locale);

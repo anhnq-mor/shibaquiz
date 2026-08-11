@@ -31,7 +31,11 @@ export class CommentService {
       now,
     });
     if (attempt > RATE_LIMIT_MAX_COMMENTS) {
-      throw new CommentError("RATE_LIMITED", 429, "Too many comments; slow down");
+      throw new CommentError(
+        "RATE_LIMITED",
+        429,
+        "Too many comments; slow down",
+      );
     }
     return this.repository.create(input, userId, now);
   }
@@ -49,7 +53,12 @@ export class CommentService {
     return this.repository.softDeleteOwn(commentId, userId, now);
   }
 
-  moderate(commentId: string, adminId: string, reason: string, now = new Date()) {
+  moderate(
+    commentId: string,
+    adminId: string,
+    reason: string,
+    now = new Date(),
+  ) {
     return this.repository.moderate(commentId, adminId, reason, now);
   }
 }

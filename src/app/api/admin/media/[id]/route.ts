@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { mediaIdParamSchema, updateMediaTranslationsSchema } from "@/domain/media/media";
+import {
+  mediaIdParamSchema,
+  updateMediaTranslationsSchema,
+} from "@/domain/media/media";
 import { requireAdmin } from "@/server/auth/authorization";
 import { getMediaLibraryService } from "@/server/content/runtime";
 import { localeFromQuery } from "@/server/http/admin-http";

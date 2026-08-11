@@ -2,8 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
+import { contentStatusTone } from "@/components/admin/status-tone";
 import {
   adminApiRequest,
   AdminApiRequestError,
@@ -425,6 +435,7 @@ export function QuestionsEditor({
             className="button button-primary"
             onClick={() => openDialog(null)}
           >
+            <Plus size={16} aria-hidden />
             {messages.questions.newAction}
           </button>
         </div>
@@ -550,7 +561,9 @@ export function QuestionsEditor({
                     {questionTypeLabel(question.type)}
                   </td>
                   <td className="admin-cell-nowrap">
-                    <span className="status-pill">
+                    <span
+                      className={`status-pill ${contentStatusTone(question.status)}`}
+                    >
                       {
                         {
                           DRAFT: messages.common.statusDraft,
@@ -569,14 +582,16 @@ export function QuestionsEditor({
                         onClick={() => openDialog(question)}
                         disabled={Boolean(question.deletedAt)}
                       >
+                        <Pencil size={16} aria-hidden />
                         {messages.common.edit}
                       </button>
                       {!question.deletedAt && (
                         <button
                           type="button"
-                          className="button button-secondary"
+                          className="button button-danger"
                           onClick={() => void deleteQuestion(question)}
                         >
+                          <Trash2 size={16} aria-hidden />
                           {messages.common.delete}
                         </button>
                       )}
@@ -874,6 +889,7 @@ export function QuestionsEditor({
                       onClick={() => moveOption(index, -1)}
                       disabled={index === 0}
                     >
+                      <ArrowUp size={16} aria-hidden />
                       {messages.common.moveUp}
                     </button>
                     <button
@@ -882,18 +898,20 @@ export function QuestionsEditor({
                       onClick={() => moveOption(index, 1)}
                       disabled={index === form.options.length - 1}
                     >
+                      <ArrowDown size={16} aria-hidden />
                       {messages.common.moveDown}
                     </button>
                   </div>
                 )}
                 <button
                   type="button"
-                  className="button button-secondary"
+                  className="button button-danger"
                   onClick={() => removeOption(index)}
                   disabled={
                     form.options.length <= 2 || form.type === "TRUE_FALSE"
                   }
                 >
+                  <Trash2 size={16} aria-hidden />
                   {messages.questions.removeOption}
                 </button>
               </div>
@@ -907,6 +925,7 @@ export function QuestionsEditor({
                 form.options.length >= (form.type === "SINGLE_CHOICE" ? 6 : 20)
               }
             >
+              <Plus size={16} aria-hidden />
               {messages.questions.addOption}
             </button>
           </fieldset>
@@ -943,6 +962,7 @@ export function QuestionsEditor({
                             onClick={() => moveMedia(selectedIndex, -1)}
                             disabled={selectedIndex === 0}
                           >
+                            <ArrowUp size={16} aria-hidden />
                             {messages.common.moveUp}
                           </button>
                           <button
@@ -953,6 +973,7 @@ export function QuestionsEditor({
                               selectedIndex === form.mediaIds.length - 1
                             }
                           >
+                            <ArrowDown size={16} aria-hidden />
                             {messages.common.moveDown}
                           </button>
                         </div>
@@ -984,6 +1005,7 @@ export function QuestionsEditor({
               className="button button-primary"
               disabled={pending || !form.examId || !form.topicId}
             >
+              <Check size={16} aria-hidden />
               {pending ? messages.common.saving : messages.common.save}
             </button>
             <button
@@ -991,6 +1013,7 @@ export function QuestionsEditor({
               className="button button-secondary"
               onClick={() => dialogRef.current?.close()}
             >
+              <X size={16} aria-hidden />
               {messages.common.cancel}
             </button>
           </div>

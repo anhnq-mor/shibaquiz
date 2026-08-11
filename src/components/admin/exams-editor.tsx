@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
+import { Check, Globe, Pencil, Plus, X } from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
+import { contentStatusTone } from "@/components/admin/status-tone";
 import {
   adminApiRequest,
   AdminApiRequestError,
@@ -185,6 +187,7 @@ export function ExamsEditor({
             className="button button-primary"
             onClick={() => openDialog(null)}
           >
+            <Plus size={16} aria-hidden />
             {messages.exams.newAction}
           </button>
         </div>
@@ -220,7 +223,9 @@ export function ExamsEditor({
                       .join(", ")}
                   </td>
                   <td className="admin-cell-nowrap">
-                    <span className="status-pill">
+                    <span
+                      className={`status-pill ${contentStatusTone(exam.status)}`}
+                    >
                       {
                         {
                           DRAFT: messages.common.statusDraft,
@@ -237,6 +242,7 @@ export function ExamsEditor({
                         className="button button-secondary"
                         onClick={() => openDialog(exam)}
                       >
+                        <Pencil size={16} aria-hidden />
                         {messages.common.edit}
                       </button>
                     </div>
@@ -399,6 +405,7 @@ export function ExamsEditor({
               className="button button-primary"
               disabled={pending}
             >
+              <Check size={16} aria-hidden />
               {pending ? messages.common.saving : messages.common.save}
             </button>
             <button
@@ -406,6 +413,7 @@ export function ExamsEditor({
               className="button button-secondary"
               onClick={() => dialogRef.current?.close()}
             >
+              <X size={16} aria-hidden />
               {messages.common.cancel}
             </button>
           </div>
@@ -419,6 +427,7 @@ export function ExamsEditor({
               onClick={enableEnglish}
               disabled={localePending}
             >
+              <Globe size={16} aria-hidden />
               {localePending
                 ? messages.exams.enableEnglishWorking
                 : messages.exams.enableEnglish}

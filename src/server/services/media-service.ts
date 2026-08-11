@@ -9,7 +9,11 @@ import type {
 export class MediaLibraryService {
   constructor(private readonly repository: MediaLibraryRepository) {}
 
-  createUpload(input: CreateUploadInput, actorUserId: string, now = new Date()) {
+  createUpload(
+    input: CreateUploadInput,
+    actorUserId: string,
+    now = new Date(),
+  ) {
     return this.repository.createUpload(input, actorUserId, now);
   }
 

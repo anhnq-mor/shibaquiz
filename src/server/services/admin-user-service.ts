@@ -15,7 +15,12 @@ export class AdminUserService {
     return this.repository.findById(userId);
   }
 
-  setRole(userId: string, role: UserRole, actorUserId: string, now = new Date()) {
+  setRole(
+    userId: string,
+    role: UserRole,
+    actorUserId: string,
+    now = new Date(),
+  ) {
     return this.repository.setRole(userId, role, actorUserId, now);
   }
 
@@ -33,6 +38,10 @@ export class AdminUserService {
     actorUserId: string,
     now = new Date(),
   ) {
-    return this.repository.recordPasswordResetTriggered(userId, actorUserId, now);
+    return this.repository.recordPasswordResetTriggered(
+      userId,
+      actorUserId,
+      now,
+    );
   }
 }

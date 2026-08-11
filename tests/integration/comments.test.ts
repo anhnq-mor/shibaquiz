@@ -108,7 +108,11 @@ describe("comment creation", () => {
       );
     }
     await expect(
-      service.postComment({ questionId, content: "one too many" }, otherUserId, now),
+      service.postComment(
+        { questionId, content: "one too many" },
+        otherUserId,
+        now,
+      ),
     ).rejects.toSatisfy(
       (error) => isCommentError(error) && error.code === "RATE_LIMITED",
     );

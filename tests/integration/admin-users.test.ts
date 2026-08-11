@@ -83,7 +83,9 @@ describe("listUsers", () => {
   it("finds a user by id", async () => {
     const found = await repository.findById(regularUserId);
     expect(found?.email).toBe("regular-user@example.com");
-    expect(await repository.findById("b0000000-0000-4000-8000-000000000000")).toBeNull();
+    expect(
+      await repository.findById("b0000000-0000-4000-8000-000000000000"),
+    ).toBeNull();
   });
 });
 

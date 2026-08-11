@@ -89,7 +89,11 @@ export function mayRevealAnswer(context: DisclosureContext): boolean {
   }
 
   if (context.mode === "PRACTICE_IMMEDIATE") {
-    return context.checkedAt !== null;
+    return (
+      context.checkedAt !== null ||
+      context.attemptStatus === "SUBMITTED" ||
+      context.attemptStatus === "EXPIRED"
+    );
   }
 
   return (

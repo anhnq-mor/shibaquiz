@@ -66,7 +66,11 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
 
   async findById(userId: string): Promise<AdminUserSummary | null> {
     const row = (
-      await this.database.select().from(users).where(eq(users.id, userId)).limit(1)
+      await this.database
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1)
     )[0];
     return row ? toSummary(row) : null;
   }
@@ -84,7 +88,12 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
         .where(and(eq(users.role, "ADMIN"), eq(users.status, "ACTIVE")))
         .for("update");
       const target = (
-        await tx.select().from(users).where(eq(users.id, userId)).limit(1).for("update")
+        await tx
+          .select()
+          .from(users)
+          .where(eq(users.id, userId))
+          .limit(1)
+          .for("update")
       )[0];
       if (!target) {
         throw new AdminUserError("NOT_FOUND", 404, "User not found");
@@ -129,7 +138,12 @@ export class DrizzleAdminUserRepository implements AdminUserRepository {
             .for("update")
         : [];
       const target = (
-        await tx.select().from(users).where(eq(users.id, userId)).limit(1).for("update")
+        await tx
+          .select()
+          .from(users)
+          .where(eq(users.id, userId))
+          .limit(1)
+          .for("update")
       )[0];
       if (!target) {
         throw new AdminUserError("NOT_FOUND", 404, "User not found");

@@ -2,8 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  Eye,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
+import { contentStatusTone } from "@/components/admin/status-tone";
 import {
   adminApiRequest,
   AdminApiRequestError,
@@ -304,6 +315,7 @@ export function TestsEditor({
             className="button button-primary"
             onClick={() => openDialog(null)}
           >
+            <Plus size={16} aria-hidden />
             {messages.tests.newAction}
           </button>
         </div>
@@ -341,7 +353,9 @@ export function TestsEditor({
                   </td>
                   <td className="admin-cell-nowrap">{test.questionCount}</td>
                   <td className="admin-cell-nowrap">
-                    <span className="status-pill">
+                    <span
+                      className={`status-pill ${contentStatusTone(test.status)}`}
+                    >
                       {
                         {
                           DRAFT: messages.common.statusDraft,
@@ -358,6 +372,7 @@ export function TestsEditor({
                         className="button button-secondary"
                         onClick={() => openDialog(test)}
                       >
+                        <Pencil size={16} aria-hidden />
                         {messages.common.edit}
                       </button>
                     </div>
@@ -590,22 +605,25 @@ export function TestsEditor({
                       className="button button-secondary"
                       onClick={() => moveFixedQuestion(index, -1)}
                       disabled={index === 0}
+                      aria-label={messages.common.moveUp}
                     >
-                      ↑
+                      <ArrowUp size={16} aria-hidden />
                     </button>
                     <button
                       type="button"
                       className="button button-secondary"
                       onClick={() => moveFixedQuestion(index, 1)}
                       disabled={index === form.fixedQuestionIds.length - 1}
+                      aria-label={messages.common.moveDown}
                     >
-                      ↓
+                      <ArrowDown size={16} aria-hidden />
                     </button>
                     <button
                       type="button"
-                      className="button button-secondary"
+                      className="button button-danger"
                       onClick={() => toggleFixedQuestion(questionId, false)}
                     >
+                      <Trash2 size={16} aria-hidden />
                       {messages.common.delete}
                     </button>
                   </div>
@@ -671,9 +689,10 @@ export function TestsEditor({
                   </label>
                   <button
                     type="button"
-                    className="button button-secondary"
+                    className="button button-danger"
                     onClick={() => removeDynamicRule(index)}
                   >
+                    <Trash2 size={16} aria-hidden />
                     {messages.common.delete}
                   </button>
                 </div>
@@ -684,6 +703,7 @@ export function TestsEditor({
                 onClick={addDynamicRule}
                 disabled={form.dynamicRules.length >= examTopics.length}
               >
+                <Plus size={16} aria-hidden />
                 {messages.tests.dynamicRulesHeading}
               </button>
               <p className="admin-hint">
@@ -699,6 +719,7 @@ export function TestsEditor({
               onClick={() => void runPreview()}
               disabled={previewPending || !form.examId}
             >
+              <Eye size={16} aria-hidden />
               {previewPending
                 ? messages.common.saving
                 : messages.tests.previewAction}
@@ -755,6 +776,7 @@ export function TestsEditor({
               className="button button-primary"
               disabled={pending || !form.examId}
             >
+              <Check size={16} aria-hidden />
               {pending ? messages.common.saving : messages.common.save}
             </button>
             <button
@@ -762,6 +784,7 @@ export function TestsEditor({
               className="button button-secondary"
               onClick={() => dialogRef.current?.close()}
             >
+              <X size={16} aria-hidden />
               {messages.common.cancel}
             </button>
           </div>

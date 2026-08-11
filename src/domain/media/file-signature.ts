@@ -1,4 +1,8 @@
-function matchesAt(bytes: Uint8Array, offset: number, pattern: number[]): boolean {
+function matchesAt(
+  bytes: Uint8Array,
+  offset: number,
+  pattern: number[],
+): boolean {
   if (bytes.length < offset + pattern.length) return false;
   return pattern.every((value, index) => bytes[offset + index] === value);
 }
@@ -23,11 +27,11 @@ const signatureCheckers: Record<string, (bytes: Uint8Array) => boolean> = {
     matchesAt(bytes, 0, [0x49, 0x44, 0x33]) || // ID3 tag
     (bytes[0] === 0xff && (bytes[1] ?? 0) & 0xe0) === 0xe0, // MPEG frame sync
   "audio/mp4": isIsoBaseMediaFile,
-  "audio/aac": (bytes) => bytes[0] === 0xff && ((bytes[1] ?? 0) & 0xf0) === 0xf0,
+  "audio/aac": (bytes) =>
+    bytes[0] === 0xff && ((bytes[1] ?? 0) & 0xf0) === 0xf0,
   "audio/ogg": (bytes) => matchesAt(bytes, 0, [0x4f, 0x67, 0x67, 0x53]),
   "video/mp4": isIsoBaseMediaFile,
-  "video/webm": (bytes) =>
-    matchesAt(bytes, 0, [0x1a, 0x45, 0xdf, 0xa3]),
+  "video/webm": (bytes) => matchesAt(bytes, 0, [0x1a, 0x45, 0xdf, 0xa3]),
 };
 
 export const SIGNATURE_SNIFF_BYTE_LENGTH = 32;

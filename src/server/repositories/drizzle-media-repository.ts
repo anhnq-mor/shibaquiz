@@ -13,7 +13,10 @@ import {
   type MediaLibraryRepository,
   type UpdateMediaTranslationsInput,
 } from "@/domain/media/media";
-import { validateMediaDeclaration, type MediaLimits } from "@/domain/media/media-policy";
+import {
+  validateMediaDeclaration,
+  type MediaLimits,
+} from "@/domain/media/media-policy";
 import type { MediaStorage } from "@/domain/media/media-storage";
 import type { Database } from "@/server/db/client";
 import {
@@ -169,7 +172,9 @@ export class DrizzleMediaLibraryRepository implements MediaLibraryRepository {
     await this.database.insert(auditLogs).values({
       actorUserId,
       action:
-        nextStatus === "READY" ? "MEDIA_ASSET_READY" : "MEDIA_ASSET_QUARANTINED",
+        nextStatus === "READY"
+          ? "MEDIA_ASSET_READY"
+          : "MEDIA_ASSET_QUARANTINED",
       entityType: "MEDIA_ASSET",
       entityId: mediaAssetId,
       metadata: { type: asset.type, mimeType: asset.mimeType },
