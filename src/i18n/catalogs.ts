@@ -16,6 +16,9 @@ export interface MessageCatalog {
     status: string;
     login: string;
     register: string;
+    exams: string;
+    history: string;
+    account: string;
     switchToVietnamese: string;
     switchToEnglish: string;
   };
@@ -65,6 +68,9 @@ const vi: MessageCatalog = {
     status: "Tiến độ",
     login: "Đăng nhập",
     register: "Đăng ký",
+    exams: "Kỳ thi",
+    history: "Lịch sử",
+    account: "Tài khoản",
     switchToVietnamese: "Chuyển sang Tiếng Việt",
     switchToEnglish: "Switch to English",
   },
@@ -120,6 +126,9 @@ const en: MessageCatalog = {
     status: "Progress",
     login: "Sign in",
     register: "Register",
+    exams: "Exams",
+    history: "History",
+    account: "Account",
     switchToVietnamese: "Chuyển sang Tiếng Việt",
     switchToEnglish: "Switch to English",
   },

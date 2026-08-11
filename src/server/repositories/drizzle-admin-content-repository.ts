@@ -17,6 +17,8 @@ import {
   auditLogs,
   exams,
   examTranslations,
+  mediaAssets,
+  questionMedia,
   questionOptions,
   questionOptionTranslations,
   questions,
@@ -183,6 +185,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
       testTranslationRows,
       fixedRows,
       ruleRows,
+      questionMediaRows,
     ] = await Promise.all([
       this.database.select().from(exams).orderBy(asc(exams.code)),
       this.database.select().from(examTranslations),
@@ -208,6 +211,17 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         .from(testQuestions)
         .orderBy(asc(testQuestions.testId), asc(testQuestions.displayOrder)),
       this.database.select().from(testTopicRules),
+      this.database
+        .select({
+          questionId: questionMedia.questionId,
+          mediaAssetId: questionMedia.mediaAssetId,
+          displayOrder: questionMedia.displayOrder,
+          originalFileName: mediaAssets.originalFileName,
+          status: mediaAssets.status,
+        })
+        .from(questionMedia)
+        .innerJoin(mediaAssets, eq(mediaAssets.id, questionMedia.mediaAssetId))
+        .orderBy(asc(questionMedia.questionId), asc(questionMedia.displayOrder)),
     ]);
 
     return {
@@ -266,6 +280,14 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
             translations: optionTranslationRows
               .filter((translation) => translation.optionId === option.id)
               .map(({ locale, content }) => ({ locale, content })),
+          })),
+        media: questionMediaRows
+          .filter((row) => row.questionId === question.id)
+          .map((row) => ({
+            mediaAssetId: row.mediaAssetId,
+            displayOrder: row.displayOrder,
+            originalFileName: row.originalFileName,
+            status: row.status,
           })),
       })),
       tests: testRows.map((test) => ({
@@ -678,6 +700,9 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           await transaction
             .delete(questionOptions)
             .where(eq(questionOptions.questionId, id));
+          await transaction
+            .delete(questionMedia)
+            .where(eq(questionMedia.questionId, id));
         }
 
         await transaction.insert(questionTranslations).values(
@@ -711,6 +736,36 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
             })),
           );
         }
+        if (input.mediaIds.length > 0) {
+          const readyAssets = await transaction
+            .select({ id: mediaAssets.id })
+            .from(mediaAssets)
+            .where(
+              and(
+                inArray(mediaAssets.id, input.mediaIds),
+                eq(mediaAssets.status, "READY"),
+                isNull(mediaAssets.deletedAt),
+              ),
+            );
+          if (readyAssets.length !== input.mediaIds.length) {
+            throw new AdminContentError(
+              "INVALID_STRUCTURE",
+              400,
+              "Media references must be READY assets",
+              { mediaIds: ["MEDIA_NOT_READY"] },
+            );
+          }
+          await transaction.insert(questionMedia).values(
+            input.mediaIds.map((mediaAssetId, displayOrder) => ({
+              questionId: id,
+              mediaAssetId,
+              displayOrder,
+              createdAt: now,
+              updatedAt: now,
+            })),
+          );
+        }
+
         await transaction.insert(auditLogs).values({
           actorUserId,
           action: existing
@@ -725,6 +780,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
             status: input.status,
             optionCount: input.options.length,
             localeCount: input.translations.length,
+            mediaCount: input.mediaIds.length,
           },
           createdAt: now,
         });

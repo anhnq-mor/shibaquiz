@@ -60,6 +60,7 @@ function questionInput(
         translations: [{ locale: "vi", content: "Lựa chọn B" }],
       },
     ],
+    mediaIds: [],
     ...overrides,
   };
 }

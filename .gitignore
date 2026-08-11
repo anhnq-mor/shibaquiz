@@ -14,3 +14,6 @@ coverage/
 
 # generated local data must never be deployed as persistence
 data/
+
+# local-only mock fixtures (contains plaintext test credentials)
+MOCK_DATA.md

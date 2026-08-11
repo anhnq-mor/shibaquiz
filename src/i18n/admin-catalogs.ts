@@ -7,6 +7,10 @@ export interface AdminCatalog {
     topics: string;
     questions: string;
     tests: string;
+    media: string;
+    imports: string;
+    users: string;
+    audit: string;
     backToSite: string;
   };
   forbidden: {
@@ -54,6 +58,10 @@ export interface AdminCatalog {
     selectExam: string;
     selectTopic: string;
     actions: string;
+    apply: string;
+    loadMore: string;
+    moveUp: string;
+    moveDown: string;
   };
   exams: {
     title: string;
@@ -97,6 +105,9 @@ export interface AdminCatalog {
     filterStatus: string;
     filterAll: string;
     version: string;
+    mediaHeading: string;
+    mediaEmpty: string;
+    mediaLimitReached: string;
   };
   tests: {
     title: string;
@@ -124,6 +135,108 @@ export interface AdminCatalog {
     previewAvailable: string;
     previewInsufficient: string;
   };
+  media: {
+    title: string;
+    description: string;
+    uploadAction: string;
+    uploading: string;
+    processing: string;
+    listHeading: string;
+    fileName: string;
+    type: string;
+    typeImage: string;
+    typeAudio: string;
+    typeVideo: string;
+    sizeBytes: string;
+    status: string;
+    statusPending: string;
+    statusReady: string;
+    statusQuarantined: string;
+    statusDeleted: string;
+    referencedBy: string;
+    filterType: string;
+    filterStatus: string;
+    filterAll: string;
+    filterKeyword: string;
+    preview: string;
+    altText: string;
+    caption: string;
+    transcript: string;
+    editTranslations: string;
+    deleteBlocked: string;
+    uploadFailed: string;
+    unsupportedType: string;
+    tooLarge: string;
+  };
+  imports: {
+    title: string;
+    description: string;
+    selectExamLabel: string;
+    chooseFileLabel: string;
+    downloadTemplateAction: string;
+    exportAction: string;
+    previewAction: string;
+    previewHeading: string;
+    totalRowsLabel: string;
+    validRowsLabel: string;
+    errorRowsLabel: string;
+    rowNumberLabel: string;
+    rowErrorsLabel: string;
+    confirmAction: string;
+    backAction: string;
+    committing: string;
+    commitSuccessHeading: string;
+    createdCountLabel: string;
+    updatedCountLabel: string;
+    backToQuestions: string;
+    noFileError: string;
+    fixErrorsNotice: string;
+    previewing: string;
+    startOverAction: string;
+  };
+  users: {
+    title: string;
+    description: string;
+    searchLabel: string;
+    filterRole: string;
+    filterStatus: string;
+    filterAll: string;
+    roleUser: string;
+    roleAdmin: string;
+    statusActive: string;
+    statusLocked: string;
+    tableEmail: string;
+    tableName: string;
+    tableRole: string;
+    tableStatus: string;
+    tableLastLogin: string;
+    never: string;
+    lockAction: string;
+    unlockAction: string;
+    promoteAction: string;
+    demoteAction: string;
+    resetPasswordAction: string;
+    resetPasswordSent: string;
+    confirmLock: string;
+    confirmUnlock: string;
+    confirmPromote: string;
+    confirmDemote: string;
+    confirmResetPassword: string;
+    lastAdminGuardError: string;
+    actionFailed: string;
+  };
+  audit: {
+    title: string;
+    description: string;
+    listHeading: string;
+    tableActor: string;
+    tableAction: string;
+    tableEntityType: string;
+    tableEntityId: string;
+    tableMetadata: string;
+    tableWhen: string;
+    systemActor: string;
+  };
 }
 
 const vi: AdminCatalog = {
@@ -133,6 +246,10 @@ const vi: AdminCatalog = {
     topics: "Chủ đề",
     questions: "Câu hỏi",
     tests: "Đề thi",
+    media: "Media",
+    imports: "Nhập câu hỏi",
+    users: "Người dùng",
+    audit: "Nhật ký",
     backToSite: "Về trang chính",
   },
   forbidden: {
@@ -180,6 +297,10 @@ const vi: AdminCatalog = {
     selectExam: "Chọn kỳ thi",
     selectTopic: "Chọn chủ đề",
     actions: "Thao tác",
+    apply: "Áp dụng",
+    loadMore: "Tải thêm",
+    moveUp: "Lên",
+    moveDown: "Xuống",
   },
   exams: {
     title: "Kỳ thi",
@@ -226,6 +347,9 @@ const vi: AdminCatalog = {
     filterStatus: "Trạng thái",
     filterAll: "Tất cả",
     version: "Phiên bản",
+    mediaHeading: "Media đính kèm (tối đa 5, chỉ tệp Sẵn sàng)",
+    mediaEmpty: "Chưa có media nào ở trạng thái Sẵn sàng. Hãy tải lên trong trang Media.",
+    mediaLimitReached: "Đã chọn tối đa 5 tệp media.",
   },
   tests: {
     title: "Đề thi",
@@ -254,6 +378,113 @@ const vi: AdminCatalog = {
     previewAvailable: "Số câu sẵn có",
     previewInsufficient: "Ngân hàng câu hỏi không đủ",
   },
+  media: {
+    title: "Media",
+    description:
+      "Quản lý hình ảnh, âm thanh và video dùng cho câu hỏi. Chỉ tệp ở trạng thái Sẵn sàng mới có thể gắn vào câu hỏi.",
+    uploadAction: "Tải lên tệp",
+    uploading: "Đang tải lên…",
+    processing: "Đang xử lý…",
+    listHeading: "Danh sách media",
+    fileName: "Tên tệp",
+    type: "Loại",
+    typeImage: "Hình ảnh",
+    typeAudio: "Âm thanh",
+    typeVideo: "Video",
+    sizeBytes: "Kích thước",
+    status: "Trạng thái",
+    statusPending: "Đang chờ",
+    statusReady: "Sẵn sàng",
+    statusQuarantined: "Bị cách ly",
+    statusDeleted: "Đã xóa",
+    referencedBy: "Số câu hỏi sử dụng",
+    filterType: "Loại",
+    filterStatus: "Trạng thái",
+    filterAll: "Tất cả",
+    filterKeyword: "Tìm theo tên tệp",
+    preview: "Xem trước",
+    altText: "Văn bản thay thế (alt)",
+    caption: "Chú thích",
+    transcript: "Bản ghi lời (transcript)",
+    editTranslations: "Sửa bản dịch",
+    deleteBlocked: "Không thể xóa: tệp vẫn được câu hỏi sử dụng.",
+    uploadFailed: "Tải lên thất bại.",
+    unsupportedType: "Loại tệp này không được hỗ trợ.",
+    tooLarge: "Tệp vượt quá kích thước cho phép.",
+  },
+  imports: {
+    title: "Nhập câu hỏi",
+    description:
+      "Nhập câu hỏi từ tệp CSV hoặc XLSX (UTF-8). Xem trước và kiểm tra toàn bộ dữ liệu trước khi ghi; nếu có dòng lỗi, sẽ không có gì được ghi vào hệ thống.",
+    selectExamLabel: "Chọn kỳ thi",
+    chooseFileLabel: "Chọn tệp CSV hoặc XLSX",
+    downloadTemplateAction: "Tải tệp mẫu",
+    exportAction: "Xuất câu hỏi hiện có (CSV)",
+    previewAction: "Xem trước",
+    previewHeading: "Kết quả xem trước",
+    totalRowsLabel: "Tổng số dòng",
+    validRowsLabel: "Dòng hợp lệ",
+    errorRowsLabel: "Dòng lỗi",
+    rowNumberLabel: "Dòng",
+    rowErrorsLabel: "Lỗi",
+    confirmAction: "Xác nhận nhập",
+    backAction: "Quay lại",
+    committing: "Đang ghi dữ liệu…",
+    commitSuccessHeading: "Nhập thành công",
+    createdCountLabel: "Số câu hỏi mới",
+    updatedCountLabel: "Số câu hỏi đã cập nhật",
+    backToQuestions: "Về danh sách câu hỏi",
+    noFileError: "Vui lòng chọn kỳ thi và một tệp.",
+    fixErrorsNotice:
+      "Có dòng lỗi. Hãy sửa tệp và xem trước lại; không có gì được ghi vào hệ thống.",
+    previewing: "Đang xem trước…",
+    startOverAction: "Nhập tệp khác",
+  },
+  users: {
+    title: "Người dùng",
+    description:
+      "Tìm kiếm, khóa/mở khóa, đổi quyền và gửi email đặt lại mật khẩu cho người dùng.",
+    searchLabel: "Tìm theo email hoặc tên",
+    filterRole: "Quyền",
+    filterStatus: "Trạng thái",
+    filterAll: "Tất cả",
+    roleUser: "Người dùng",
+    roleAdmin: "Quản trị viên",
+    statusActive: "Đang hoạt động",
+    statusLocked: "Đã khóa",
+    tableEmail: "Email",
+    tableName: "Tên hiển thị",
+    tableRole: "Quyền",
+    tableStatus: "Trạng thái",
+    tableLastLogin: "Đăng nhập gần nhất",
+    never: "Chưa từng",
+    lockAction: "Khóa",
+    unlockAction: "Mở khóa",
+    promoteAction: "Cấp quyền quản trị",
+    demoteAction: "Hạ quyền",
+    resetPasswordAction: "Gửi email đặt lại mật khẩu",
+    resetPasswordSent: "Đã gửi email đặt lại mật khẩu (nếu tài khoản tồn tại).",
+    confirmLock: "Khóa tài khoản này? Mọi phiên đăng nhập sẽ bị thu hồi.",
+    confirmUnlock: "Mở khóa tài khoản này?",
+    confirmPromote: "Cấp quyền quản trị viên cho người dùng này?",
+    confirmDemote: "Hạ quyền quản trị viên của người dùng này xuống người dùng thường?",
+    confirmResetPassword: "Gửi email đặt lại mật khẩu cho người dùng này?",
+    lastAdminGuardError:
+      "Không thể khóa hoặc hạ quyền quản trị viên cuối cùng còn hoạt động.",
+    actionFailed: "Thao tác thất bại. Vui lòng thử lại.",
+  },
+  audit: {
+    title: "Nhật ký kiểm toán",
+    description: "Xem lại các hành động quản trị đã được ghi lại (đã ẩn dữ liệu nhạy cảm).",
+    listHeading: "Danh sách sự kiện",
+    tableActor: "Người thực hiện",
+    tableAction: "Hành động",
+    tableEntityType: "Loại đối tượng",
+    tableEntityId: "Mã đối tượng",
+    tableMetadata: "Chi tiết",
+    tableWhen: "Thời gian",
+    systemActor: "Hệ thống",
+  },
 };
 
 const en: AdminCatalog = {
@@ -263,6 +494,10 @@ const en: AdminCatalog = {
     topics: "Topics",
     questions: "Questions",
     tests: "Tests",
+    media: "Media",
+    imports: "Import",
+    users: "Users",
+    audit: "Audit log",
     backToSite: "Back to site",
   },
   forbidden: {
@@ -310,6 +545,10 @@ const en: AdminCatalog = {
     selectExam: "Select an exam",
     selectTopic: "Select a topic",
     actions: "Actions",
+    apply: "Apply",
+    loadMore: "Load more",
+    moveUp: "Up",
+    moveDown: "Down",
   },
   exams: {
     title: "Exams",
@@ -357,6 +596,9 @@ const en: AdminCatalog = {
     filterStatus: "Status",
     filterAll: "All",
     version: "Version",
+    mediaHeading: "Attached media (max 5, Ready only)",
+    mediaEmpty: "No Ready media assets yet. Upload one on the Media page.",
+    mediaLimitReached: "Already selected the maximum of 5 media assets.",
   },
   tests: {
     title: "Tests",
@@ -384,6 +626,112 @@ const en: AdminCatalog = {
     previewQuestionCount: "Allocated questions",
     previewAvailable: "Available questions",
     previewInsufficient: "Question bank is insufficient",
+  },
+  media: {
+    title: "Media",
+    description:
+      "Manage images, audio, and video used in questions. Only Ready assets can be attached to a question.",
+    uploadAction: "Upload file",
+    uploading: "Uploading…",
+    processing: "Processing…",
+    listHeading: "Media list",
+    fileName: "File name",
+    type: "Type",
+    typeImage: "Image",
+    typeAudio: "Audio",
+    typeVideo: "Video",
+    sizeBytes: "Size",
+    status: "Status",
+    statusPending: "Pending",
+    statusReady: "Ready",
+    statusQuarantined: "Quarantined",
+    statusDeleted: "Deleted",
+    referencedBy: "Used by questions",
+    filterType: "Type",
+    filterStatus: "Status",
+    filterAll: "All",
+    filterKeyword: "Search by file name",
+    preview: "Preview",
+    altText: "Alt text",
+    caption: "Caption",
+    transcript: "Transcript",
+    editTranslations: "Edit translations",
+    deleteBlocked: "Can't delete: this file is still used by a question.",
+    uploadFailed: "Upload failed.",
+    unsupportedType: "This file type is not supported.",
+    tooLarge: "The file exceeds the allowed size.",
+  },
+  imports: {
+    title: "Import questions",
+    description:
+      "Import questions from a UTF-8 CSV or XLSX file. Preview and fully validate the data before committing; if any row has an error, nothing is written.",
+    selectExamLabel: "Select exam",
+    chooseFileLabel: "Choose a CSV or XLSX file",
+    downloadTemplateAction: "Download template",
+    exportAction: "Export existing questions (CSV)",
+    previewAction: "Preview",
+    previewHeading: "Preview result",
+    totalRowsLabel: "Total rows",
+    validRowsLabel: "Valid rows",
+    errorRowsLabel: "Error rows",
+    rowNumberLabel: "Row",
+    rowErrorsLabel: "Errors",
+    confirmAction: "Confirm import",
+    backAction: "Back",
+    committing: "Committing…",
+    commitSuccessHeading: "Import succeeded",
+    createdCountLabel: "Questions created",
+    updatedCountLabel: "Questions updated",
+    backToQuestions: "Back to question list",
+    noFileError: "Select an exam and a file.",
+    fixErrorsNotice:
+      "The file has invalid rows. Fix them and preview again; nothing was committed.",
+    previewing: "Previewing…",
+    startOverAction: "Import another file",
+  },
+  users: {
+    title: "Users",
+    description:
+      "Search, lock/unlock, change roles, and send password reset emails to users.",
+    searchLabel: "Search by email or name",
+    filterRole: "Role",
+    filterStatus: "Status",
+    filterAll: "All",
+    roleUser: "User",
+    roleAdmin: "Admin",
+    statusActive: "Active",
+    statusLocked: "Locked",
+    tableEmail: "Email",
+    tableName: "Display name",
+    tableRole: "Role",
+    tableStatus: "Status",
+    tableLastLogin: "Last login",
+    never: "Never",
+    lockAction: "Lock",
+    unlockAction: "Unlock",
+    promoteAction: "Grant admin",
+    demoteAction: "Revoke admin",
+    resetPasswordAction: "Send password reset email",
+    resetPasswordSent: "Password reset email sent (if the account exists).",
+    confirmLock: "Lock this account? All active sessions will be revoked.",
+    confirmUnlock: "Unlock this account?",
+    confirmPromote: "Grant this user admin access?",
+    confirmDemote: "Revoke this user's admin access?",
+    confirmResetPassword: "Send a password reset email to this user?",
+    lastAdminGuardError: "Cannot lock or demote the last remaining active admin.",
+    actionFailed: "The action failed. Please try again.",
+  },
+  audit: {
+    title: "Audit log",
+    description: "Review logged admin actions (sensitive data is redacted).",
+    listHeading: "Event list",
+    tableActor: "Actor",
+    tableAction: "Action",
+    tableEntityType: "Entity type",
+    tableEntityId: "Entity ID",
+    tableMetadata: "Details",
+    tableWhen: "When",
+    systemActor: "System",
   },
 };
 

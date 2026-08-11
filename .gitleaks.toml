@@ -1,0 +1,14 @@
+title = "ShibaQuiz gitleaks config"
+
+[extend]
+useDefault = true
+
+# Test fixtures intentionally use fake credentials (e.g. throwaway passwords,
+# "not-a-real-password-hash" strings, example.com emails). Never place a real
+# secret under tests/.
+[allowlist]
+paths = [
+  '''^tests/.*''',
+  '''^\.next/.*''',
+  '''^node_modules/.*''',
+]

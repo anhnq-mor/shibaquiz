@@ -5,8 +5,11 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { isLocale } from "@/domain/common/locale";
 import { getMessages } from "@/i18n/catalogs";
+import { getCurrentUser } from "@/server/auth/authorization";
 
 const principleIcons = ["01", "02", "03"] as const;
+
+export const dynamic = "force-dynamic";
 
 export default async function HomePage({
   params,
@@ -19,6 +22,7 @@ export default async function HomePage({
   }
 
   const messages = getMessages(locale);
+  const user = await getCurrentUser();
   const principles = [
     [messages.principles.databaseTitle, messages.principles.databaseBody],
     [messages.principles.mediaTitle, messages.principles.mediaBody],
@@ -30,7 +34,11 @@ export default async function HomePage({
       <a className="skip-link" href="#main-content">
         {messages.a11y.skipToContent}
       </a>
-      <SiteHeader locale={locale} messages={messages} />
+      <SiteHeader
+        locale={locale}
+        messages={messages}
+        signedIn={Boolean(user)}
+      />
       <main id="main-content">
         <section className="hero page-shell" aria-labelledby="hero-title">
           <div className="hero-copy">

@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { QuestionsEditor } from "@/components/admin/questions-editor";
 import { isLocale } from "@/domain/common/locale";
 import { getAdminMessages } from "@/i18n/admin-catalogs";
-import { getAdminContentService } from "@/server/content/runtime";
+import {
+  getAdminContentService,
+  getMediaLibraryService,
+} from "@/server/content/runtime";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +18,10 @@ export default async function AdminQuestionsPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const messages = getAdminMessages(locale);
-  const workspace = await getAdminContentService().getWorkspace();
+  const [workspace, readyMedia] = await Promise.all([
+    getAdminContentService().getWorkspace(),
+    getMediaLibraryService().listLibrary({ status: "READY", limit: 100 }),
+  ]);
 
   return (
     <>
@@ -29,6 +35,7 @@ export default async function AdminQuestionsPage({
         exams={workspace.exams}
         topics={workspace.topics}
         questions={workspace.questions}
+        readyMedia={readyMedia.items}
       />
     </>
   );

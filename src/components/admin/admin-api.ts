@@ -16,7 +16,7 @@ export class AdminApiRequestError extends Error {
 export async function adminApiRequest<T>(
   path: string,
   locale: Locale,
-  init?: { method?: "POST" | "DELETE"; body?: unknown },
+  init?: { method?: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown },
 ): Promise<T> {
   const url = `${path}${path.includes("?") ? "&" : "?"}locale=${locale}`;
   const method = init?.method ?? "POST";

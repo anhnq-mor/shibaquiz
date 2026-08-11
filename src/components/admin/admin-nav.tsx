@@ -24,6 +24,10 @@ export function AdminNav({
       label: messages.nav.questions,
     },
     { href: `/${locale}/admin/tests` as Route, label: messages.nav.tests },
+    { href: `/${locale}/admin/media` as Route, label: messages.nav.media },
+    { href: `/${locale}/admin/import` as Route, label: messages.nav.imports },
+    { href: `/${locale}/admin/users` as Route, label: messages.nav.users },
+    { href: `/${locale}/admin/audit` as Route, label: messages.nav.audit },
   ];
 
   return (

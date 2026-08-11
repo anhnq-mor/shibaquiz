@@ -1,3 +1,4 @@
+import type { QuestionType } from "@/domain/admin/content";
 import type { Locale } from "@/domain/common/locale";
 
 export type AttemptMode = "STUDY" | "PRACTICE_IMMEDIATE" | "EXAM_DEFERRED";
@@ -26,6 +27,7 @@ export interface StoredQuestionSnapshot {
   schemaVersion: 1;
   locale: Locale;
   sourceQuestionVersion: number;
+  type: QuestionType;
   content: string;
   explanation: string;
   options: StoredQuestionOption[];
@@ -34,6 +36,7 @@ export interface StoredQuestionSnapshot {
 
 interface BaseQuestionDto {
   locale: Locale;
+  type: QuestionType;
   content: string;
   options: Array<{
     id: string;
@@ -93,6 +96,7 @@ export function toQuestionDto(
 ): QuestionDto {
   const shared = {
     locale: snapshot.locale,
+    type: snapshot.type,
     content: snapshot.content,
     media: snapshot.media.map(
       ({ id, type, mimeType, altText, caption, transcript }) => ({

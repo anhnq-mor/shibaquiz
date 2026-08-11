@@ -22,6 +22,11 @@ export interface StoredObjectMetadata {
 export interface MediaStorage {
   createSignedUpload(request: CreateUploadRequest): Promise<SignedUpload>;
   inspect(objectKey: string, version?: string): Promise<StoredObjectMetadata>;
+  readHeadBytes(
+    objectKey: string,
+    length: number,
+    version?: string,
+  ): Promise<Uint8Array>;
   createSignedRead(
     objectKey: string,
     version?: string,

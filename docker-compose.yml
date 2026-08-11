@@ -15,5 +15,39 @@ services:
     volumes:
       - shibaquiz-postgres:/var/lib/postgresql/data
 
+  # S3-compatible object storage for local media development (ADR 0003: no
+  # runtime-filesystem media driver exists, local dev uses a real S3-compatible
+  # service instead of a fake). Not used in production; Vercel/production point
+  # MEDIA_S3_* at a real provider bucket instead.
+  minio:
+    image: minio/minio:RELEASE.2025-04-08T15-41-24Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: shibaquiz
+      MINIO_ROOT_PASSWORD: shibaquiz-local-dev
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - shibaquiz-minio:/data
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-04-08T15-39-49Z
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 shibaquiz shibaquiz-local-dev &&
+      mc mb --ignore-existing local/shibaquiz-media &&
+      mc anonymous set none local/shibaquiz-media
+      "
+
 volumes:
   shibaquiz-postgres:
+  shibaquiz-minio:

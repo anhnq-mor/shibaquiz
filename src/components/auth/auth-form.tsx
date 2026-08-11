@@ -91,13 +91,15 @@ export function AuthForm({
         message?: string;
         delivery?: "console" | "resend";
         verificationRequired?: boolean;
+        user?: { role: "USER" | "ADMIN" };
       };
       if (!response.ok) {
         setResult({ kind: "error", message: body.message ?? "" });
         return;
       }
       if (mode === "login") {
-        router.push(`/${locale}/account` as Route);
+        const destination = body.user?.role === "ADMIN" ? "admin" : "exams";
+        router.push(`/${locale}/${destination}` as Route);
         router.refresh();
         return;
       }

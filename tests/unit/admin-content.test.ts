@@ -36,6 +36,7 @@ function question(
         translations: [{ locale: "vi", content: "B" }],
       },
     ],
+    mediaIds: [],
     ...overrides,
   };
 }

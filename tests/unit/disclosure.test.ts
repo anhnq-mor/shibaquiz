@@ -10,6 +10,7 @@ const snapshot: StoredQuestionSnapshot = {
   schemaVersion: 1,
   locale: "vi",
   sourceQuestionVersion: 3,
+  type: "SINGLE_CHOICE",
   content: "2 + 2 bằng bao nhiêu?",
   explanation: "Hai cộng hai bằng bốn.",
   options: [

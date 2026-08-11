@@ -10,9 +10,11 @@ import { LanguageSwitcher } from "./language-switcher";
 export function SiteHeader({
   locale,
   messages,
+  signedIn = false,
 }: {
   locale: Locale;
   messages: MessageCatalog;
+  signedIn?: boolean;
 }) {
   return (
     <header className="site-header">
@@ -33,15 +35,31 @@ export function SiteHeader({
           <a href="#status">{messages.navigation.status}</a>
         </nav>
         <div className="header-auth-links">
-          <Link href={`/${locale}/login` as Route}>
-            {messages.navigation.login}
-          </Link>
-          <Link
-            className="header-register"
-            href={`/${locale}/register` as Route}
-          >
-            {messages.navigation.register}
-          </Link>
+          {signedIn ? (
+            <>
+              <Link href={`/${locale}/exams` as Route}>
+                {messages.navigation.exams}
+              </Link>
+              <Link
+                className="header-register"
+                href={`/${locale}/history` as Route}
+              >
+                {messages.navigation.history}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href={`/${locale}/login` as Route}>
+                {messages.navigation.login}
+              </Link>
+              <Link
+                className="header-register"
+                href={`/${locale}/register` as Route}
+              >
+                {messages.navigation.register}
+              </Link>
+            </>
+          )}
         </div>
         <LanguageSwitcher locale={locale} messages={messages} />
       </div>

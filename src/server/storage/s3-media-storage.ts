@@ -118,6 +118,24 @@ export class S3MediaStorage implements MediaStorage {
     };
   }
 
+  async readHeadBytes(
+    objectKey: string,
+    length: number,
+    version?: string,
+  ): Promise<Uint8Array> {
+    assertManagedObjectKey(objectKey);
+    const response = await this.client.send(
+      new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: objectKey,
+        Range: `bytes=0-${length - 1}`,
+        ...optionalVersion(version),
+      }),
+    );
+    const bytes = await response.Body?.transformToByteArray();
+    return bytes ?? new Uint8Array(0);
+  }
+
   async createSignedRead(
     objectKey: string,
     version?: string,

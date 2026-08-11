@@ -1,0 +1,279 @@
+import {
+  assertQuestionCorrectness,
+  contentStatuses,
+  questionTypes,
+  saveQuestionSchema,
+  type ContentStatus,
+  type QuestionType,
+  type SaveQuestionInput,
+} from "@/domain/admin/content";
+import type { Locale } from "@/domain/common/locale";
+import type { ImportFormat } from "@/domain/import/spreadsheet";
+
+export const IMPORT_MAX_OPTION_SLOTS = 8;
+
+export const IMPORT_TEMPLATE_HEADERS = [
+  "external_id",
+  "topic_slug",
+  "type",
+  "status",
+  "content_vi",
+  "explanation_vi",
+  "content_en",
+  "explanation_en",
+  "media_ids",
+  ...Array.from({ length: IMPORT_MAX_OPTION_SLOTS }, (_, index) => [
+    `option_${index + 1}_label`,
+    `option_${index + 1}_content_vi`,
+    `option_${index + 1}_content_en`,
+    `option_${index + 1}_correct`,
+  ]).flat(),
+];
+
+const EXAMPLE_OPTIONS = [
+  { label: "A", contentVi: "Lựa chọn A", correct: "TRUE" },
+  { label: "B", contentVi: "Lựa chọn B", correct: "FALSE" },
+];
+
+export function buildImportTemplateRows(): string[][] {
+  const fixedColumns = [
+    "",
+    "sample-topic-slug",
+    "SINGLE_CHOICE",
+    "DRAFT",
+    "Nội dung câu hỏi mẫu?",
+    "Giải thích mẫu.",
+    "",
+    "",
+    "",
+  ];
+  const optionColumns = Array.from(
+    { length: IMPORT_MAX_OPTION_SLOTS },
+    (_, index) => {
+      const example = EXAMPLE_OPTIONS[index];
+      return example
+        ? [example.label, example.contentVi, "", example.correct]
+        : ["", "", "", ""];
+    },
+  ).flat();
+  return [IMPORT_TEMPLATE_HEADERS, [...fixedColumns, ...optionColumns]];
+}
+
+export interface ImportRowContext {
+  examId: string;
+  topicIdBySlug: ReadonlyMap<string, string>;
+  requiredLocales: (status: ContentStatus) => Locale[];
+  readyMediaIds: ReadonlySet<string>;
+}
+
+export type ImportRowOutcome =
+  | {
+      rowNumber: number;
+      status: "VALID";
+      externalId: string | null;
+      input: SaveQuestionInput;
+    }
+  | { rowNumber: number; status: "ERROR"; errors: string[] };
+
+function parseBoolean(value: string | undefined): boolean {
+  return ["true", "1", "yes", "x", "correct"].includes(
+    (value ?? "").trim().toLowerCase(),
+  );
+}
+
+function splitIds(value: string): string[] {
+  return value
+    .split(/[,;]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+export function buildImportRowInput(
+  raw: Record<string, string>,
+  rowNumber: number,
+  context: ImportRowContext,
+): ImportRowOutcome {
+  const errors: string[] = [];
+
+  const externalId = raw.external_id?.trim() || null;
+  const topicSlug = raw.topic_slug?.trim() ?? "";
+  const topicId = context.topicIdBySlug.get(topicSlug);
+  if (!topicId) errors.push(`Unknown topic_slug "${topicSlug}"`);
+
+  const type = (raw.type ?? "").trim().toUpperCase();
+  if (!questionTypes.includes(type as QuestionType)) {
+    errors.push(`Invalid type "${raw.type ?? ""}"`);
+  }
+
+  const status = (raw.status ?? "").trim().toUpperCase() || "DRAFT";
+  if (!contentStatuses.includes(status as ContentStatus)) {
+    errors.push(`Invalid status "${raw.status ?? ""}"`);
+  }
+
+  const mediaIds = raw.media_ids ? splitIds(raw.media_ids) : [];
+  for (const mediaId of mediaIds) {
+    if (!context.readyMediaIds.has(mediaId)) {
+      errors.push(`Media asset ${mediaId} is not a Ready asset`);
+    }
+  }
+
+  const translations: SaveQuestionInput["translations"] = [];
+  const contentVi = raw.content_vi?.trim() ?? "";
+  const explanationVi = raw.explanation_vi?.trim() ?? "";
+  if (contentVi && explanationVi) {
+    translations.push({
+      locale: "vi",
+      content: contentVi,
+      explanation: explanationVi,
+    });
+  }
+  const contentEn = raw.content_en?.trim() ?? "";
+  const explanationEn = raw.explanation_en?.trim() ?? "";
+  if (contentEn && explanationEn) {
+    translations.push({
+      locale: "en",
+      content: contentEn,
+      explanation: explanationEn,
+    });
+  }
+
+  const options: SaveQuestionInput["options"] = [];
+  for (let slot = 1; slot <= IMPORT_MAX_OPTION_SLOTS; slot += 1) {
+    const label = raw[`option_${slot}_label`]?.trim();
+    if (!label) continue;
+    const optionTranslations: SaveQuestionInput["options"][number]["translations"] =
+      [];
+    const optionContentVi = raw[`option_${slot}_content_vi`]?.trim() ?? "";
+    if (optionContentVi) {
+      optionTranslations.push({ locale: "vi", content: optionContentVi });
+    }
+    const optionContentEn = raw[`option_${slot}_content_en`]?.trim() ?? "";
+    if (optionContentEn) {
+      optionTranslations.push({ locale: "en", content: optionContentEn });
+    }
+    options.push({
+      label,
+      isCorrect: parseBoolean(raw[`option_${slot}_correct`]),
+      displayOrder: slot - 1,
+      translations: optionTranslations,
+    });
+  }
+
+  if (errors.length > 0 || !topicId) {
+    return { rowNumber, status: "ERROR", errors };
+  }
+
+  const candidate: SaveQuestionInput = {
+    id: undefined,
+    externalId,
+    examId: context.examId,
+    topicId,
+    type: type as QuestionType,
+    status: status as ContentStatus,
+    translations,
+    options,
+    mediaIds,
+  };
+
+  const parsed = saveQuestionSchema.safeParse(candidate);
+  if (!parsed.success) {
+    return {
+      rowNumber,
+      status: "ERROR",
+      errors: parsed.error.issues.map(
+        (issue) => `${issue.path.join(".") || "row"}: ${issue.message}`,
+      ),
+    };
+  }
+
+  const requiredLocales = context.requiredLocales(parsed.data.status);
+  const presentLocales = new Set(
+    parsed.data.translations.map((translation) => translation.locale),
+  );
+  const missingLocales = requiredLocales.filter(
+    (locale) => !presentLocales.has(locale),
+  );
+  if (missingLocales.length > 0) {
+    return {
+      rowNumber,
+      status: "ERROR",
+      errors: [
+        `Missing required translation for locale(s): ${missingLocales.join(", ")}`,
+      ],
+    };
+  }
+  for (const option of parsed.data.options) {
+    const optionLocales = new Set(
+      option.translations.map((translation) => translation.locale),
+    );
+    const missingOptionLocales = requiredLocales.filter(
+      (locale) => !optionLocales.has(locale),
+    );
+    if (missingOptionLocales.length > 0) {
+      return {
+        rowNumber,
+        status: "ERROR",
+        errors: [
+          `Option "${option.label}" is missing translation for locale(s): ${missingOptionLocales.join(", ")}`,
+        ],
+      };
+    }
+  }
+
+  try {
+    assertQuestionCorrectness(parsed.data);
+  } catch (error) {
+    return {
+      rowNumber,
+      status: "ERROR",
+      errors: [
+        error instanceof Error ? error.message : "Invalid option correctness",
+      ],
+    };
+  }
+
+  return { rowNumber, status: "VALID", externalId, input: parsed.data };
+}
+
+export interface ImportSummary {
+  totalRows: number;
+  validCount: number;
+  errorCount: number;
+  rows: ImportRowOutcome[];
+}
+
+export class ImportError extends Error {
+  constructor(
+    public readonly code: "NOT_FOUND" | "INVALID_STRUCTURE" | "CONFLICT",
+    public readonly status: number,
+    message: string,
+    public readonly rows?: Array<{ rowNumber: number; errors: string[] }>,
+  ) {
+    super(message);
+    this.name = "ImportError";
+  }
+}
+
+export function isImportError(error: unknown): error is ImportError {
+  return (
+    error instanceof Error &&
+    error.name === "ImportError" &&
+    typeof (error as ImportError).code === "string"
+  );
+}
+
+export interface ImportRepository {
+  previewImport(
+    buffer: Uint8Array,
+    format: ImportFormat,
+    examId: string,
+  ): Promise<ImportSummary>;
+  commitImport(
+    buffer: Uint8Array,
+    format: ImportFormat,
+    examId: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<{ createdCount: number; updatedCount: number }>;
+  exportQuestions(examId: string): Promise<string[][]>;
+}

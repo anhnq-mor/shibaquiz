@@ -100,6 +100,14 @@ export const saveQuestionSchema = z.object({
         options.length,
       "Option order must be unique",
     ),
+  mediaIds: z
+    .array(idSchema)
+    .max(5)
+    .refine(
+      (ids) => new Set(ids).size === ids.length,
+      "Media references must be unique",
+    )
+    .default([]),
 });
 
 const testTranslationSchema = namedTranslationSchema;
@@ -174,6 +182,12 @@ export interface AdminContentWorkspace {
     deletedAt: string | null;
     translations: SaveQuestionInput["translations"];
     options: Array<SaveQuestionInput["options"][number] & { id: string }>;
+    media: Array<{
+      mediaAssetId: string;
+      displayOrder: number;
+      originalFileName: string;
+      status: string;
+    }>;
   }>;
   tests: Array<{
     id: string;

@@ -15,11 +15,14 @@ import type {
   QuestionType,
 } from "@/domain/admin/content";
 import type { Locale } from "@/domain/common/locale";
+import type { MediaAssetSummary } from "@/domain/media/media";
 import type { AdminCatalog } from "@/i18n/admin-catalogs";
 
 type Exam = AdminContentWorkspace["exams"][number];
 type Topic = AdminContentWorkspace["topics"][number];
 type Question = AdminContentWorkspace["questions"][number];
+
+const MAX_QUESTION_MEDIA = 5;
 
 interface OptionRow {
   id?: string;
@@ -41,6 +44,7 @@ interface QuestionForm {
   enContent: string;
   enExplanation: string;
   options: OptionRow[];
+  mediaIds: string[];
 }
 
 function nextLabel(existing: string[]): string {
@@ -95,6 +99,11 @@ function formFromQuestion(
             "",
         }))
       : [emptyOption([]), emptyOption(["A"])],
+    mediaIds: question
+      ? [...question.media]
+          .sort((a, b) => a.displayOrder - b.displayOrder)
+          .map((item) => item.mediaAssetId)
+      : [],
   };
 }
 
@@ -104,12 +113,14 @@ export function QuestionsEditor({
   exams,
   topics,
   questions,
+  readyMedia,
 }: {
   locale: Locale;
   messages: AdminCatalog;
   exams: Exam[];
   topics: Topic[];
   questions: Question[];
+  readyMedia: MediaAssetSummary[];
 }) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -217,6 +228,29 @@ export function QuestionsEditor({
     }));
   }
 
+  function toggleMedia(mediaAssetId: string) {
+    setForm((current) => {
+      if (current.mediaIds.includes(mediaAssetId)) {
+        return {
+          ...current,
+          mediaIds: current.mediaIds.filter((id) => id !== mediaAssetId),
+        };
+      }
+      if (current.mediaIds.length >= MAX_QUESTION_MEDIA) return current;
+      return { ...current, mediaIds: [...current.mediaIds, mediaAssetId] };
+    });
+  }
+
+  function moveMedia(index: number, direction: -1 | 1) {
+    setForm((current) => {
+      const target = index + direction;
+      if (target < 0 || target >= current.mediaIds.length) return current;
+      const mediaIds = [...current.mediaIds];
+      [mediaIds[index], mediaIds[target]] = [mediaIds[target]!, mediaIds[index]!];
+      return { ...current, mediaIds };
+    });
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setResult(null);
@@ -259,6 +293,7 @@ export function QuestionsEditor({
           status: form.status,
           translations,
           options,
+          mediaIds: form.mediaIds,
         },
       });
       dialogRef.current?.close();
@@ -695,6 +730,60 @@ export function QuestionsEditor({
             >
               {messages.questions.addOption}
             </button>
+          </fieldset>
+
+          <fieldset className="admin-fieldset">
+            <legend>{messages.questions.mediaHeading}</legend>
+            {readyMedia.length === 0 ? (
+              <p className="admin-empty">{messages.questions.mediaEmpty}</p>
+            ) : (
+              <ul className="admin-media-picker">
+                {readyMedia.map((asset) => {
+                  const selectedIndex = form.mediaIds.indexOf(asset.id);
+                  const isSelected = selectedIndex !== -1;
+                  return (
+                    <li key={asset.id}>
+                      <label className="admin-checkbox-field">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          disabled={
+                            !isSelected &&
+                            form.mediaIds.length >= MAX_QUESTION_MEDIA
+                          }
+                          onChange={() => toggleMedia(asset.id)}
+                        />
+                        <span>{asset.originalFileName}</span>
+                      </label>
+                      {isSelected && (
+                        <div className="admin-row-actions">
+                          <span>{selectedIndex + 1}</span>
+                          <button
+                            type="button"
+                            className="button button-secondary"
+                            onClick={() => moveMedia(selectedIndex, -1)}
+                            disabled={selectedIndex === 0}
+                          >
+                            {messages.common.moveUp}
+                          </button>
+                          <button
+                            type="button"
+                            className="button button-secondary"
+                            onClick={() => moveMedia(selectedIndex, 1)}
+                            disabled={selectedIndex === form.mediaIds.length - 1}
+                          >
+                            {messages.common.moveDown}
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {form.mediaIds.length >= MAX_QUESTION_MEDIA && (
+              <p className="form-message">{messages.questions.mediaLimitReached}</p>
+            )}
           </fieldset>
 
           {result && (
