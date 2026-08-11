@@ -83,6 +83,13 @@ describe("runtime configuration", () => {
     ).toThrow();
   });
 
+  it("allows media to fail closed without storage credentials", () => {
+    expect(
+      loadMediaStorageConfig({ MEDIA_STORAGE_DRIVER: "disabled" })
+        .MEDIA_STORAGE_DRIVER,
+    ).toBe("disabled");
+  });
+
   it("provides a local-only authentication secret", () => {
     const config = loadAuthConfig({
       NODE_ENV: "development",
@@ -111,5 +118,22 @@ describe("runtime configuration", () => {
         EMAIL_PROVIDER: "console",
       }),
     ).toThrow();
+  });
+
+  it("allows production email delivery to be disabled only with verification off", () => {
+    const safeDisabled = {
+      NODE_ENV: "production",
+      APP_URL: "https://quiz.example.com",
+      AUTH_SECRET: "a-production-secret-that-is-long-enough",
+      EMAIL_PROVIDER: "disabled",
+      REQUIRE_EMAIL_VERIFICATION: "false",
+    };
+    expect(loadAuthConfig(safeDisabled).EMAIL_PROVIDER).toBe("disabled");
+    expect(() =>
+      loadAuthConfig({
+        ...safeDisabled,
+        REQUIRE_EMAIL_VERIFICATION: "true",
+      }),
+    ).toThrow(/verification must be disabled/i);
   });
 });

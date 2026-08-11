@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { MediaLimits } from "@/domain/media/media-policy";
+import type { MediaStorage } from "@/domain/media/media-storage";
 import {
   loadAuthConfig,
   loadMediaStorageConfig,
@@ -20,6 +21,7 @@ import {
   DrizzleMediaLibraryRepository,
 } from "@/server/repositories/drizzle-media-repository";
 import { S3MediaStorage } from "@/server/storage/s3-media-storage";
+import { DisabledMediaStorage } from "@/server/storage/disabled-media-storage";
 import { AdminContentService } from "@/server/services/admin-content-service";
 import { AdminUserService } from "@/server/services/admin-user-service";
 import { AttemptService } from "@/server/services/attempt-service";
@@ -28,7 +30,10 @@ import { CommentService } from "@/server/services/comment-service";
 import { ContentTranslationService } from "@/server/services/content-translation-service";
 import { DiscoveryService } from "@/server/services/discovery-service";
 import { ImportService } from "@/server/services/import-service";
-import { MediaAccessService, MediaLibraryService } from "@/server/services/media-service";
+import {
+  MediaAccessService,
+  MediaLibraryService,
+} from "@/server/services/media-service";
 
 const runtimeGlobal = globalThis as typeof globalThis & {
   shibaQuizAdminContentService?: AdminContentService;
@@ -37,7 +42,7 @@ const runtimeGlobal = globalThis as typeof globalThis & {
   shibaQuizAttemptService?: AttemptService;
   shibaQuizMediaLibraryService?: MediaLibraryService;
   shibaQuizMediaAccessService?: MediaAccessService;
-  shibaQuizMediaStorage?: S3MediaStorage;
+  shibaQuizMediaStorage?: MediaStorage;
   shibaQuizImportService?: ImportService;
   shibaQuizCommentService?: CommentService;
   shibaQuizAdminUserService?: AdminUserService;
@@ -53,10 +58,12 @@ function mediaLimitsFromConfig(config: MediaStorageConfig): MediaLimits {
   };
 }
 
-function getMediaStorage(): S3MediaStorage {
-  runtimeGlobal.shibaQuizMediaStorage ??= new S3MediaStorage(
-    loadMediaStorageConfig(),
-  );
+function getMediaStorage(): MediaStorage {
+  const config = loadMediaStorageConfig();
+  runtimeGlobal.shibaQuizMediaStorage ??=
+    config.MEDIA_STORAGE_DRIVER === "disabled"
+      ? new DisabledMediaStorage()
+      : new S3MediaStorage(config);
   return runtimeGlobal.shibaQuizMediaStorage;
 }
 

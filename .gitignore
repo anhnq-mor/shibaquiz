@@ -17,3 +17,5 @@ data/
 
 # local-only mock fixtures (contains plaintext test credentials)
 MOCK_DATA.md
+.vercel
+.env*

@@ -89,7 +89,7 @@ export function AuthForm({
       });
       const body = (await response.json()) as {
         message?: string;
-        delivery?: "console" | "resend";
+        delivery?: "console" | "resend" | "disabled";
         verificationRequired?: boolean;
         user?: { role: "USER" | "ADMIN" };
       };

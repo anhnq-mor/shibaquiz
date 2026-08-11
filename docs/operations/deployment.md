@@ -20,28 +20,35 @@ PGlite and non-S3 media storage once `NODE_ENV=production` or `VERCEL=1`.
   today (`EMAIL_PROVIDER=resend`). The console adapter used in local
   development is rejected in production.
 
+For an initial deployment that intentionally omits these two features, set
+`EMAIL_PROVIDER=disabled`, `REQUIRE_EMAIL_VERIFICATION=false`, and
+`MEDIA_STORAGE_DRIVER=disabled`. Disabled email performs no delivery, so
+verification, resend, forgot-password, and admin reset-email delivery are not
+available. Disabled media returns a localized HTTP 503 from signed upload/read
+operations and never falls back to the database or runtime filesystem.
+
 ## 2. Required environment variables
 
 Set these in the Vercel project's Environment Variables settings (Production
 and Preview as appropriate). See `.env.example` for the full list with
 inline documentation; the ones with no safe default are:
 
-| Variable | Notes |
-| --- | --- |
-| `STORAGE_DRIVER` | `postgres` (PGlite is rejected outside local dev) |
-| `DATABASE_URL` | Connection string from your PostgreSQL provider |
-| `DATABASE_SSL` | `true` if the provider requires SSL |
-| `AUTH_SECRET` | Random string, 32+ characters (`openssl rand -base64 48`) |
-| `APP_URL` | The `https://` URL users open — must match exactly (used for origin validation and email links) |
-| `EMAIL_PROVIDER` | `resend` |
-| `EMAIL_FROM` | A sender address verified with your provider |
-| `EMAIL_API_KEY` | Provider API key |
-| `MEDIA_STORAGE_DRIVER` | `s3` |
-| `MEDIA_S3_REGION` | Provider region (`auto` for R2) |
-| `MEDIA_S3_ENDPOINT` | Provider S3-compatible endpoint URL (omit for real AWS S3) |
-| `MEDIA_S3_BUCKET` | Bucket name |
-| `MEDIA_S3_ACCESS_KEY_ID` / `MEDIA_S3_SECRET_ACCESS_KEY` | Scoped credentials |
-| `MEDIA_S3_FORCE_PATH_STYLE` | `true` for most non-AWS providers, `false` for real AWS S3 |
+| Variable                                                | Notes                                                                                           |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `STORAGE_DRIVER`                                        | `postgres` (PGlite is rejected outside local dev)                                               |
+| `DATABASE_URL`                                          | Connection string from your PostgreSQL provider                                                 |
+| `DATABASE_SSL`                                          | `true` if the provider requires SSL                                                             |
+| `AUTH_SECRET`                                           | Random string, 32+ characters (`openssl rand -base64 48`)                                       |
+| `APP_URL`                                               | The `https://` URL users open — must match exactly (used for origin validation and email links) |
+| `EMAIL_PROVIDER`                                        | `resend`, or `disabled` with verification disabled                                              |
+| `EMAIL_FROM`                                            | A sender address verified with your provider                                                    |
+| `EMAIL_API_KEY`                                         | Provider API key                                                                                |
+| `MEDIA_STORAGE_DRIVER`                                  | `s3`, or `disabled` to fail closed                                                              |
+| `MEDIA_S3_REGION`                                       | Provider region (`auto` for R2)                                                                 |
+| `MEDIA_S3_ENDPOINT`                                     | Provider S3-compatible endpoint URL (omit for real AWS S3)                                      |
+| `MEDIA_S3_BUCKET`                                       | Bucket name                                                                                     |
+| `MEDIA_S3_ACCESS_KEY_ID` / `MEDIA_S3_SECRET_ACCESS_KEY` | Scoped credentials                                                                              |
+| `MEDIA_S3_FORCE_PATH_STYLE`                             | `true` for most non-AWS providers, `false` for real AWS S3                                      |
 
 Everything else (`AUTH_BCRYPT_COST`, `AUTH_SESSION_DAYS`,
 `REQUIRE_EMAIL_VERIFICATION`, `MEDIA_SIGNED_URL_TTL_SECONDS`,

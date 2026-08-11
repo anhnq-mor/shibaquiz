@@ -84,6 +84,7 @@ export class AuthEmailService implements EmailService {
     ignore: string;
     url: string;
   }): Promise<void> {
+    if (this.config.EMAIL_PROVIDER === "disabled") return Promise.resolve();
     if (this.config.EMAIL_PROVIDER === "console") {
       console.info(
         `[ShibaQuiz email] ${input.subject} -> ${input.to}\n${input.url}`,

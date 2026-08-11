@@ -35,7 +35,8 @@ export const updateMediaTranslationsSchema = z.object({
     .min(1)
     .max(2)
     .refine(
-      (values) => new Set(values.map((value) => value.locale)).size === values.length,
+      (values) =>
+        new Set(values.map((value) => value.locale)).size === values.length,
       "Translation locales must be unique",
     ),
 });
@@ -83,7 +84,8 @@ export class MediaError extends Error {
       | "INVALID_STRUCTURE"
       | "UNSUPPORTED_MEDIA_TYPE"
       | "MEDIA_TOO_LARGE"
-      | "CONFLICT",
+      | "CONFLICT"
+      | "FEATURE_DISABLED",
     public readonly status: number,
     message: string,
     public readonly fieldErrors?: Record<string, string[]>,

@@ -87,24 +87,39 @@ const runtimeSchema = z
     }
   });
 
-const mediaStorageSchema = z.object({
-  MEDIA_STORAGE_DRIVER: z.literal("s3").default("s3"),
-  MEDIA_S3_REGION: z.string().min(1).default("auto"),
-  MEDIA_S3_ENDPOINT: z.url().optional(),
-  MEDIA_S3_BUCKET: z.string().min(1),
-  MEDIA_S3_ACCESS_KEY_ID: z.string().min(1),
-  MEDIA_S3_SECRET_ACCESS_KEY: z.string().min(1),
-  MEDIA_S3_FORCE_PATH_STYLE: booleanString,
-  MEDIA_SIGNED_URL_TTL_SECONDS: z.coerce
-    .number()
-    .int()
-    .min(60)
-    .max(900)
-    .default(300),
-  MEDIA_MAX_IMAGE_MB: z.coerce.number().positive().max(25).default(5),
-  MEDIA_MAX_AUDIO_MB: z.coerce.number().positive().max(100).default(25),
-  MEDIA_MAX_VIDEO_MB: z.coerce.number().positive().max(500).default(100),
-});
+const mediaStorageSchema = z
+  .object({
+    MEDIA_STORAGE_DRIVER: z.enum(["s3", "disabled"]).default("s3"),
+    MEDIA_S3_REGION: z.string().min(1).default("auto"),
+    MEDIA_S3_ENDPOINT: z.url().optional(),
+    MEDIA_S3_BUCKET: optionalNonEmptyString(),
+    MEDIA_S3_ACCESS_KEY_ID: optionalNonEmptyString(),
+    MEDIA_S3_SECRET_ACCESS_KEY: optionalNonEmptyString(),
+    MEDIA_S3_FORCE_PATH_STYLE: booleanString,
+    MEDIA_SIGNED_URL_TTL_SECONDS: z.coerce
+      .number()
+      .int()
+      .min(60)
+      .max(900)
+      .default(300),
+    MEDIA_MAX_IMAGE_MB: z.coerce.number().positive().max(25).default(5),
+    MEDIA_MAX_AUDIO_MB: z.coerce.number().positive().max(100).default(25),
+    MEDIA_MAX_VIDEO_MB: z.coerce.number().positive().max(500).default(100),
+  })
+  .superRefine((value, context) => {
+    if (
+      value.MEDIA_STORAGE_DRIVER === "s3" &&
+      (!value.MEDIA_S3_BUCKET ||
+        !value.MEDIA_S3_ACCESS_KEY_ID ||
+        !value.MEDIA_S3_SECRET_ACCESS_KEY)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["MEDIA_STORAGE_DRIVER"],
+        message: "S3 media storage requires bucket and scoped credentials",
+      });
+    }
+  });
 
 const authSchema = z
   .object({
@@ -117,7 +132,9 @@ const authSchema = z
     AUTH_BCRYPT_COST: z.coerce.number().int().min(10).max(15).default(12),
     AUTH_SESSION_DAYS: z.coerce.number().int().min(1).max(30).default(7),
     REQUIRE_EMAIL_VERIFICATION: defaultTrueBooleanString,
-    EMAIL_PROVIDER: z.enum(["console", "resend"]).default("console"),
+    EMAIL_PROVIDER: z
+      .enum(["console", "resend", "disabled"])
+      .default("console"),
     EMAIL_FROM: optionalNonEmptyString(),
     EMAIL_API_KEY: optionalNonEmptyString(),
   })
@@ -135,6 +152,17 @@ const authSchema = z
         code: "custom",
         path: ["EMAIL_PROVIDER"],
         message: "Console email is development/test only",
+      });
+    }
+    if (
+      value.EMAIL_PROVIDER === "disabled" &&
+      value.REQUIRE_EMAIL_VERIFICATION
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["REQUIRE_EMAIL_VERIFICATION"],
+        message:
+          "Email verification must be disabled when email delivery is disabled",
       });
     }
     if (
@@ -156,7 +184,18 @@ export interface RuntimeConfig extends Omit<
   DEFAULT_LOCALE: Locale;
 }
 
-export type MediaStorageConfig = z.output<typeof mediaStorageSchema>;
+type ParsedMediaStorageConfig = z.output<typeof mediaStorageSchema>;
+export type DisabledMediaStorageConfig = ParsedMediaStorageConfig & {
+  MEDIA_STORAGE_DRIVER: "disabled";
+};
+export type S3MediaStorageConfig = ParsedMediaStorageConfig & {
+  MEDIA_STORAGE_DRIVER: "s3";
+  MEDIA_S3_BUCKET: string;
+  MEDIA_S3_ACCESS_KEY_ID: string;
+  MEDIA_S3_SECRET_ACCESS_KEY: string;
+};
+export type MediaStorageConfig =
+  DisabledMediaStorageConfig | S3MediaStorageConfig;
 export type AuthConfig = Omit<z.output<typeof authSchema>, "AUTH_SECRET"> & {
   AUTH_SECRET: string;
 };
@@ -172,7 +211,8 @@ export function loadRuntimeConfig(
 export function loadMediaStorageConfig(
   environment: Environment = process.env,
 ): MediaStorageConfig {
-  return mediaStorageSchema.parse(environment);
+  const parsed = mediaStorageSchema.parse(environment);
+  return parsed as MediaStorageConfig;
 }
 
 export function loadAuthConfig(

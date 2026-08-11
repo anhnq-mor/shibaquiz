@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { validateMediaDeclaration } from "@/domain/media/media-policy";
 import { buildMediaObjectKey } from "@/server/storage/s3-media-storage";
+import { DisabledMediaStorage } from "@/server/storage/disabled-media-storage";
 
 const megabyte = 1024 * 1024;
 const limits = {
@@ -54,5 +55,12 @@ describe("media declaration policy", () => {
     expect(() => buildMediaObjectKey("../../user-file.svg")).toThrow(
       /namespace/,
     );
+  });
+
+  it("fails closed when production media is intentionally disabled", async () => {
+    const storage = new DisabledMediaStorage();
+    await expect(
+      storage.createSignedRead("media/b7f76a8b-6943-45d0-9020-1689b3956710"),
+    ).rejects.toMatchObject({ code: "FEATURE_DISABLED", status: 503 });
   });
 });

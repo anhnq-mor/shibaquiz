@@ -13,7 +13,7 @@ import type {
   SignedUpload,
   StoredObjectMetadata,
 } from "@/domain/media/media-storage";
-import type { MediaStorageConfig } from "@/server/config/env";
+import type { S3MediaStorageConfig } from "@/server/config/env";
 
 const objectKeyPattern =
   /^media\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -44,7 +44,7 @@ export class S3MediaStorage implements MediaStorage {
   private readonly createId: () => string;
 
   constructor(
-    config: MediaStorageConfig,
+    config: S3MediaStorageConfig,
     dependencies: {
       now?: () => Date;
       createId?: () => string;
