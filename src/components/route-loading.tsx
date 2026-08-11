@@ -3,11 +3,7 @@
 import { useParams } from "next/navigation";
 
 import { isLocale } from "@/domain/common/locale";
-
-const labels = {
-  vi: "Đang tải trang…",
-  en: "Loading page…",
-} as const;
+import { ShibaLoading } from "@/components/shiba-loading";
 
 export function RouteLoading() {
   const params = useParams<{ locale?: string | string[] }>();
@@ -20,15 +16,7 @@ export function RouteLoading() {
     <main className="route-loading-shell" aria-busy="true">
       <div className="route-loading-bar" aria-hidden="true" />
       <div className="page-shell route-loading-content" role="status">
-        <div className="route-loading-card">
-          <span className="route-loading-spinner" aria-hidden="true" />
-          <span>{labels[locale]}</span>
-        </div>
-        <div className="route-loading-skeleton" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
+        <ShibaLoading locale={locale} phase="running" />
       </div>
     </main>
   );

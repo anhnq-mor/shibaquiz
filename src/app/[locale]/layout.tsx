@@ -41,13 +41,11 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) {
     notFound();
   }
-  const messages = getMessages(locale);
-
   return (
     <html lang={locale} data-scroll-behavior="smooth">
       <body>
         {children}
-        <ApiLoadingOverlay label={messages.a11y.apiLoading} />
+        <ApiLoadingOverlay locale={locale} />
       </body>
     </html>
   );

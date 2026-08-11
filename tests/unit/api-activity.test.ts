@@ -1,14 +1,22 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   apiFetch,
+  API_COMPLETION_DURATION_MS,
   beginApiActivity,
   getApiActivityCount,
+  getApiActivityPhase,
   subscribeToApiActivity,
 } from "@/components/api-activity";
 
 describe("API activity tracking", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  beforeEach(() => vi.useFakeTimers());
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
 
   it("keeps the loading state active until every concurrent request finishes", () => {
     const snapshots: number[] = [];
@@ -32,5 +40,16 @@ describe("API activity tracking", () => {
 
     await expect(apiFetch("/api/example")).rejects.toThrow("offline");
     expect(getApiActivityCount()).toBe(0);
+  });
+
+  it("briefly exposes a completion phase after the final request", () => {
+    const finish = beginApiActivity();
+    expect(getApiActivityPhase()).toBe("running");
+
+    finish();
+    expect(getApiActivityPhase()).toBe("done");
+
+    vi.advanceTimersByTime(API_COMPLETION_DURATION_MS);
+    expect(getApiActivityPhase()).toBe("idle");
   });
 });

@@ -15,6 +15,8 @@ describe("route navigation feedback", () => {
     "src/app/[locale]/admin/loading.tsx",
     "utf8",
   );
+  const loadingCatalog = readFileSync("src/i18n/loading-catalogs.ts", "utf8");
+  const shibaLoading = readFileSync("src/components/shiba-loading.tsx", "utf8");
   const stylesheet = readFileSync("src/app/globals.css", "utf8");
 
   it("uses Next link status and exposes the busy state", () => {
@@ -30,16 +32,27 @@ describe("route navigation feedback", () => {
   });
 
   it("provides localized status text without blocking the page", () => {
-    expect(loadingFallback).toContain('vi: "Đang tải trang…"');
-    expect(loadingFallback).toContain('en: "Loading page…"');
+    expect(loadingFallback).toContain("ShibaLoading");
+    expect(loadingCatalog).toContain(
+      'missionPrimary: "Shiba nhận nhiệm vụ rồi! 🐕💨"',
+    );
+    expect(loadingCatalog).toContain(
+      'missionPrimary: "Shiba got the mission! 🐕💨"',
+    );
+    expect(shibaLoading).toContain('aria-hidden="true"');
     expect(loadingFallback).not.toContain("position: fixed");
   });
 
   it("provides a localized loading boundary inside the admin shell", () => {
     expect(adminLoadingBoundary).toContain("AdminRouteLoading");
-    expect(adminLoadingFallback).toContain('vi: "Đang tải trang quản trị…"');
-    expect(adminLoadingFallback).toContain('en: "Loading admin page…"');
+    expect(adminLoadingFallback).toContain("ShibaLoading");
     expect(adminLoadingFallback).toContain('role="status"');
     expect(adminLoadingFallback).toContain('aria-live="polite"');
+  });
+
+  it("runs Shiba left to right and respects reduced motion", () => {
+    expect(stylesheet).toContain("@keyframes shiba-run-across");
+    expect(stylesheet).toContain("@keyframes shiba-tail-done");
+    expect(stylesheet).toContain("prefers-reduced-motion: reduce");
   });
 });

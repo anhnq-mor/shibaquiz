@@ -3,32 +3,33 @@
 import { useEffect, useSyncExternalStore } from "react";
 
 import {
-  getApiActivityCount,
+  getApiActivityPhase,
   subscribeToApiActivity,
 } from "@/components/api-activity";
+import { ShibaLoading } from "@/components/shiba-loading";
+import type { Locale } from "@/domain/common/locale";
 
-export function ApiLoadingOverlay({ label }: { label: string }) {
-  const activeRequestCount = useSyncExternalStore(
+export function ApiLoadingOverlay({ locale }: { locale: Locale }) {
+  const phase = useSyncExternalStore(
     subscribeToApiActivity,
-    getApiActivityCount,
-    () => 0,
+    getApiActivityPhase,
+    () => "idle" as const,
   );
-  const visible = activeRequestCount > 0;
+  const busy = phase === "running";
 
   useEffect(() => {
-    if (visible) document.body.setAttribute("aria-busy", "true");
+    if (busy) document.body.setAttribute("aria-busy", "true");
     else document.body.removeAttribute("aria-busy");
 
     return () => document.body.removeAttribute("aria-busy");
-  }, [visible]);
+  }, [busy]);
 
-  if (!visible) return null;
+  if (phase === "idle") return null;
 
   return (
-    <div className="api-loading-overlay">
+    <div className={`api-loading-overlay${phase === "done" ? "is-done" : ""}`}>
       <div className="api-loading-card" role="status" aria-live="polite">
-        <span className="api-loading-spinner" aria-hidden="true" />
-        <span>{label}</span>
+        <ShibaLoading locale={locale} phase={phase} />
       </div>
     </div>
   );

@@ -3,11 +3,7 @@
 import { useParams } from "next/navigation";
 
 import { isLocale } from "@/domain/common/locale";
-
-const labels = {
-  vi: "Đang tải trang quản trị…",
-  en: "Loading admin page…",
-} as const;
+import { ShibaLoading } from "@/components/shiba-loading";
 
 export function AdminRouteLoading() {
   const params = useParams<{ locale?: string | string[] }>();
@@ -20,15 +16,7 @@ export function AdminRouteLoading() {
     <section className="admin-route-loading" aria-busy="true">
       <div className="route-loading-bar" aria-hidden="true" />
       <div className="route-loading-content" role="status" aria-live="polite">
-        <div className="route-loading-card">
-          <span className="route-loading-spinner" aria-hidden="true" />
-          <span>{labels[locale]}</span>
-        </div>
-        <div className="route-loading-skeleton" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
+        <ShibaLoading locale={locale} phase="running" />
       </div>
     </section>
   );
