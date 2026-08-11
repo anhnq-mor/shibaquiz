@@ -193,6 +193,8 @@ export interface AdminCatalog {
     optionContentRequiredError: string;
     matchTargetRequiredError: string;
     confirmAction: string;
+    confirmBlockedAction: string;
+    confirmBlockedHint: string;
     backAction: string;
     committing: string;
     commitSuccessHeading: string;
@@ -453,6 +455,9 @@ const vi: AdminCatalog = {
     matchTargetRequiredError:
       "Cần nhập nội dung ghép cặp ở ít nhất một ngôn ngữ",
     confirmAction: "Xác nhận nhập",
+    confirmBlockedAction: "Sửa dòng lỗi trước khi nhập",
+    confirmBlockedHint:
+      "Không thể nhập khi tệp còn dòng lỗi. Hãy sửa tệp và xem trước lại.",
     backAction: "Quay lại",
     committing: "Đang ghi dữ liệu…",
     commitSuccessHeading: "Nhập thành công",
@@ -718,6 +723,9 @@ const en: AdminCatalog = {
     matchTargetRequiredError:
       "Matching target content is required in at least one language",
     confirmAction: "Confirm import",
+    confirmBlockedAction: "Fix error rows before importing",
+    confirmBlockedHint:
+      "The import cannot continue while the file has error rows. Fix the file and preview it again.",
     backAction: "Back",
     committing: "Committing…",
     commitSuccessHeading: "Import succeeded",

@@ -14,6 +14,7 @@ Generic schema paths such as `options.0.translations` do not tell an administrat
 - Validate missing localized question, option, and matching-target text before the generic schema parser so messages name the corresponding `_vi`/`_en` source columns.
 - The Review UI lists every issue under its row and external ID and announces the row numbers needing correction.
 - If commit-time revalidation returns row errors, return to the Review state and render those errors instead of showing only the generic request message.
+- Keep the selected browser `File` in client state while the file input is unmounted during Review, so Confirm can submit the exact bytes that were previewed. If that state is unavailable, return to file selection with an accessible error instead of silently doing nothing.
 - Keep all validation inside the domain/repository import boundary; the client only presents server results.
 
 ## Consequences

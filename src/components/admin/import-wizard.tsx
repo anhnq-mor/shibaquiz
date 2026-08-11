@@ -56,6 +56,7 @@ export function ImportWizard({
 }) {
   const [examId, setExamId] = useState(exams[0]?.id ?? "");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [step, setStep] = useState<Step>("select");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +82,7 @@ export function ImportWizard({
       setError(messages.imports.noFileError);
       return;
     }
+    setSelectedFile(file);
     setPending(true);
     try {
       const formData = new FormData();
@@ -119,8 +121,12 @@ export function ImportWizard({
   }
 
   async function confirmCommit() {
-    const file = fileInputRef.current?.files?.[0];
-    if (!examId || !file) return;
+    const file = selectedFile;
+    if (!examId || !file) {
+      setError(messages.imports.noFileError);
+      setStep("select");
+      return;
+    }
     setError(null);
     setPending(true);
     try {
@@ -151,6 +157,7 @@ export function ImportWizard({
     setSummary(null);
     setResult(null);
     setError(null);
+    setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -241,7 +248,11 @@ export function ImportWizard({
 
             {summary.errorCount > 0 && (
               <>
-                <p className="form-message error" role="alert">
+                <p
+                  id="import-errors-notice"
+                  className="form-message error"
+                  role="alert"
+                >
                   {messages.imports.fixErrorsNotice}{" "}
                   {messages.imports.errorRowNumbersLabel}:{" "}
                   {previewErrorRows.map((row) => row.rowNumber).join(", ")}.
@@ -301,11 +312,21 @@ export function ImportWizard({
                 type="button"
                 className="button button-primary"
                 disabled={pending || summary.errorCount > 0}
+                aria-describedby={
+                  summary.errorCount > 0 ? "import-errors-notice" : undefined
+                }
+                title={
+                  summary.errorCount > 0
+                    ? messages.imports.confirmBlockedHint
+                    : undefined
+                }
                 onClick={confirmCommit}
               >
                 {pending
                   ? messages.imports.committing
-                  : messages.imports.confirmAction}
+                  : summary.errorCount > 0
+                    ? messages.imports.confirmBlockedAction
+                    : messages.imports.confirmAction}
               </button>
             </div>
           </div>
