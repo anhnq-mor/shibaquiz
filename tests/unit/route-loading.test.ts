@@ -7,6 +7,14 @@ describe("route navigation feedback", () => {
     "src/components/route-loading.tsx",
     "utf8",
   );
+  const adminLoadingFallback = readFileSync(
+    "src/components/admin/admin-route-loading.tsx",
+    "utf8",
+  );
+  const adminLoadingBoundary = readFileSync(
+    "src/app/[locale]/admin/loading.tsx",
+    "utf8",
+  );
   const stylesheet = readFileSync("src/app/globals.css", "utf8");
 
   it("uses Next link status and exposes the busy state", () => {
@@ -25,5 +33,13 @@ describe("route navigation feedback", () => {
     expect(loadingFallback).toContain('vi: "Đang tải trang…"');
     expect(loadingFallback).toContain('en: "Loading page…"');
     expect(loadingFallback).not.toContain("position: fixed");
+  });
+
+  it("provides a localized loading boundary inside the admin shell", () => {
+    expect(adminLoadingBoundary).toContain("AdminRouteLoading");
+    expect(adminLoadingFallback).toContain('vi: "Đang tải trang quản trị…"');
+    expect(adminLoadingFallback).toContain('en: "Loading admin page…"');
+    expect(adminLoadingFallback).toContain('role="status"');
+    expect(adminLoadingFallback).toContain('aria-live="polite"');
   });
 });
