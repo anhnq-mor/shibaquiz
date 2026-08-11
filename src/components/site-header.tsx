@@ -1,5 +1,5 @@
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 
 import { AccountMenu } from "@/components/account-menu";
 import type { AuthenticatedUserDto } from "@/domain/auth/auth";

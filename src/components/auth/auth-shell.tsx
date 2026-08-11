@@ -1,5 +1,5 @@
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 import type { ReactNode } from "react";
 
 import { BrandMark } from "@/components/brand-mark";

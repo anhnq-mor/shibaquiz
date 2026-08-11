@@ -1,7 +1,7 @@
 "use client";
 
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 import { usePathname } from "next/navigation";
 
 import type { Locale } from "@/domain/common/locale";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 

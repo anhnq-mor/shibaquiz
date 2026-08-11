@@ -1,7 +1,7 @@
 "use client";
 
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { LogoutButton } from "@/components/auth/logout-button";

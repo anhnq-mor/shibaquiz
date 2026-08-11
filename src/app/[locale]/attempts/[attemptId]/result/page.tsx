@@ -1,5 +1,5 @@
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/app-shell";

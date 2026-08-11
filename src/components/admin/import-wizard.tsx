@@ -1,7 +1,7 @@
 "use client";
 
 import type { Route } from "next";
-import Link from "next/link";
+import { RouteLink as Link } from "@/components/route-link";
 import { useRef, useState, type FormEvent } from "react";
 
 import { apiFetch } from "@/components/api-activity";
