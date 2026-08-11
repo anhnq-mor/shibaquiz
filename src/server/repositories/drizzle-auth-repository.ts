@@ -13,6 +13,7 @@ import {
   sessions,
   users,
 } from "@/server/db/schema";
+import { rateLimitTimestampParameters } from "@/server/repositories/rate-limit-parameters";
 
 function toCredentialUser(row: typeof users.$inferSelect): CredentialUser {
   return {
@@ -319,6 +320,10 @@ export class DrizzleAuthRepository implements AuthRepository {
   async consumeRateLimit(
     input: Parameters<AuthRepository["consumeRateLimit"]>[0],
   ): Promise<number> {
+    const timestampParameters = rateLimitTimestampParameters(
+      input.now,
+      input.windowExpiresAt,
+    );
     const rows = await this.database
       .insert(rateLimits)
       .values({
@@ -332,9 +337,9 @@ export class DrizzleAuthRepository implements AuthRepository {
         target: rateLimits.keyHash,
         set: {
           action: input.action,
-          windowStartedAt: sql`case when ${rateLimits.expiresAt} <= ${input.now} then ${input.now} else ${rateLimits.windowStartedAt} end`,
-          attemptCount: sql`case when ${rateLimits.expiresAt} <= ${input.now} then 1 else ${rateLimits.attemptCount} + 1 end`,
-          expiresAt: sql`case when ${rateLimits.expiresAt} <= ${input.now} then ${input.windowExpiresAt} else ${rateLimits.expiresAt} end`,
+          windowStartedAt: sql`case when ${rateLimits.expiresAt} <= ${timestampParameters.now} then ${timestampParameters.now} else ${rateLimits.windowStartedAt} end`,
+          attemptCount: sql`case when ${rateLimits.expiresAt} <= ${timestampParameters.now} then 1 else ${rateLimits.attemptCount} + 1 end`,
+          expiresAt: sql`case when ${rateLimits.expiresAt} <= ${timestampParameters.now} then ${timestampParameters.windowExpiresAt} else ${rateLimits.expiresAt} end`,
           updatedAt: input.now,
         },
       })
