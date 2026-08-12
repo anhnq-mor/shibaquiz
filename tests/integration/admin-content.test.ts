@@ -796,7 +796,180 @@ describe("bulk content hard delete", () => {
     ).toBe(true);
   });
 
-  it("blocks deleting an archived topic that still has questions", async () => {
+  it("cascade-deletes an archived exam's topics, tests, and questions", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-exam-cascade",
+        slug: "hard-exam-cascade",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Exam cascade", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-exam-cascade-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    const { id: testId } = await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "FIXED",
+        status: "DRAFT",
+        questionCount: 1,
+        durationMinutes: 30,
+        passingScorePercent: 70,
+        shuffleQuestions: false,
+        shuffleOptions: false,
+        translations: [
+          { locale: "vi", name: "Đề cố định", description: "Mô tả." },
+        ],
+        fixedQuestions: [{ questionId, displayOrder: 0 }],
+        dynamicRules: [],
+      },
+      adminId,
+    );
+    await service.bulkSetExamStatus([examId], "ARCHIVED", adminId);
+
+    const results = await service.bulkDeleteExams([examId], adminId);
+    expect(results).toEqual([{ id: examId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.exams.some((item) => item.id === examId)).toBe(false);
+    expect(workspace.topics.some((item) => item.id === topicId)).toBe(false);
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      false,
+    );
+    expect(workspace.tests.some((item) => item.id === testId)).toBe(false);
+  });
+
+  it("blocks deleting an archived exam when a descendant question still has a comment", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-exam-blocked",
+        slug: "hard-exam-blocked",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Exam blocked", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-exam-blocked-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId, status: "DRAFT" }),
+      adminId,
+    );
+    await database.insert(schema.comments).values({
+      questionId,
+      userId: adminId,
+      content: "Bình luận vẫn còn tồn tại.",
+    });
+    await service.bulkSetExamStatus([examId], "ARCHIVED", adminId);
+
+    const results = await service.bulkDeleteExams([examId], adminId);
+    expect(results).toMatchObject([{ id: examId, ok: false, code: "CONFLICT" }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.exams.some((item) => item.id === examId)).toBe(true);
+    expect(workspace.topics.some((item) => item.id === topicId)).toBe(true);
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      true,
+    );
+  });
+
+  it("cascade-deletes an archived topic's child questions and dynamic-test links", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-topic-cascade",
+        slug: "hard-topic-cascade",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Topic cascade", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-topic-cascade-a",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "DYNAMIC",
+        status: "DRAFT",
+        questionCount: 1,
+        durationMinutes: null,
+        passingScorePercent: 70,
+        shuffleQuestions: false,
+        shuffleOptions: false,
+        translations: [{ locale: "vi", name: "Đề động", description: "Mô tả." }],
+        fixedQuestions: [],
+        dynamicRules: [{ topicId, percentage: 100 }],
+      },
+      adminId,
+    );
+    await service.bulkSetTopicStatus([topicId], "ARCHIVED", adminId);
+
+    const results = await service.bulkDeleteTopics([topicId], adminId);
+    expect(results).toEqual([{ id: topicId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.topics.some((item) => item.id === topicId)).toBe(false);
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      false,
+    );
+
+    const remainingRules = await database
+      .select()
+      .from(schema.testTopicRules)
+      .where(eq(schema.testTopicRules.topicId, topicId));
+    expect(remainingRules).toHaveLength(0);
+  });
+
+  it("blocks deleting an archived topic when a descendant question still has a comment", async () => {
     const examId = await service.saveExam(
       {
         id: undefined,
@@ -821,16 +994,28 @@ describe("bulk content hard delete", () => {
       },
       adminId,
     );
-    await service.saveQuestion(
+    const questionId = await service.saveQuestion(
       questionInput({ examId, topicId, status: "DRAFT" }),
       adminId,
     );
+    await database.insert(schema.comments).values({
+      questionId,
+      userId: adminId,
+      content: "Bình luận vẫn còn tồn tại.",
+    });
     await service.bulkSetTopicStatus([topicId], "ARCHIVED", adminId);
 
     const results = await service.bulkDeleteTopics([topicId], adminId);
     expect(results).toMatchObject([
       { id: topicId, ok: false, code: "CONFLICT" },
     ]);
+
+    // The whole cascade must roll back — the question is still there too.
+    const workspace = await service.getWorkspace();
+    expect(workspace.topics.some((item) => item.id === topicId)).toBe(true);
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      true,
+    );
   });
 
   it("permanently deletes an archived question with no references, cascading its options", async () => {
@@ -872,6 +1057,69 @@ describe("bulk content hard delete", () => {
       .from(schema.questionOptions)
       .where(eq(schema.questionOptions.questionId, questionId));
     expect(remainingOptions).toHaveLength(0);
+  });
+
+  it("unlinks a deleted question from a fixed test's question list", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-unlink",
+        slug: "hard-question-unlink",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Question unlink", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-unlink-topic",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    const { id: testId } = await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "FIXED",
+        status: "DRAFT",
+        questionCount: 1,
+        durationMinutes: 30,
+        passingScorePercent: 70,
+        shuffleQuestions: false,
+        shuffleOptions: false,
+        translations: [
+          { locale: "vi", name: "Đề cố định", description: "Mô tả." },
+        ],
+        fixedQuestions: [{ questionId, displayOrder: 0 }],
+        dynamicRules: [],
+      },
+      adminId,
+    );
+    await service.deleteQuestion(questionId, adminId);
+
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toEqual([{ id: questionId, ok: true }]);
+
+    const remainingLinks = await database
+      .select()
+      .from(schema.testQuestions)
+      .where(eq(schema.testQuestions.questionId, questionId));
+    expect(remainingLinks).toHaveLength(0);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.tests.some((item) => item.id === testId)).toBe(true);
   });
 
   it("blocks deleting an archived question that still has a comment", async () => {

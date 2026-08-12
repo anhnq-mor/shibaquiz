@@ -1396,6 +1396,40 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     });
   }
 
+  private async cascadeDeleteQuestion(
+    tx: MutableExecutor,
+    id: string,
+  ): Promise<number> {
+    const unlinked = await tx
+      .delete(testQuestions)
+      .where(eq(testQuestions.questionId, id))
+      .returning();
+    await tx.delete(questions).where(eq(questions.id, id));
+    return unlinked.length;
+  }
+
+  private async cascadeDeleteTopic(
+    tx: MutableExecutor,
+    id: string,
+  ): Promise<{ ruleCount: number; questionCount: number }> {
+    const removedRules = await tx
+      .delete(testTopicRules)
+      .where(eq(testTopicRules.topicId, id))
+      .returning();
+    const childQuestions = await tx
+      .select({ id: questions.id })
+      .from(questions)
+      .where(eq(questions.topicId, id));
+    for (const question of childQuestions) {
+      await this.cascadeDeleteQuestion(tx, question.id);
+    }
+    await tx.delete(topics).where(eq(topics.id, id));
+    return {
+      ruleCount: removedRules.length,
+      questionCount: childQuestions.length,
+    };
+  }
+
   async bulkDeleteExams(
     ids: string[],
     actorUserId: string,
@@ -1420,13 +1454,33 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           "Only archived records can be permanently deleted",
         );
       }
+
+      const childTopics = await tx
+        .select({ id: topics.id })
+        .from(topics)
+        .where(eq(topics.examId, id));
+      for (const topic of childTopics) {
+        await this.cascadeDeleteTopic(tx, topic.id);
+      }
+      const childTests = await tx
+        .select({ id: quizTests.id })
+        .from(quizTests)
+        .where(eq(quizTests.examId, id));
+      for (const test of childTests) {
+        await tx.delete(quizTests).where(eq(quizTests.id, test.id));
+      }
+
       await tx.delete(exams).where(eq(exams.id, id));
       await tx.insert(auditLogs).values({
         actorUserId,
         action: "CONTENT_EXAM_HARD_DELETED",
         entityType: "EXAM",
         entityId: id,
-        metadata: { status: "ARCHIVED" },
+        metadata: {
+          status: "ARCHIVED",
+          cascadedTopicCount: childTopics.length,
+          cascadedTestCount: childTests.length,
+        },
         createdAt: now,
       });
     });
@@ -1456,13 +1510,16 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           "Only archived records can be permanently deleted",
         );
       }
-      await tx.delete(topics).where(eq(topics.id, id));
+      const cascaded = await this.cascadeDeleteTopic(tx, id);
       await tx.insert(auditLogs).values({
         actorUserId,
         action: "CONTENT_TOPIC_HARD_DELETED",
         entityType: "TOPIC",
         entityId: id,
-        metadata: { status: "ARCHIVED" },
+        metadata: {
+          status: "ARCHIVED",
+          cascadedQuestionCount: cascaded.questionCount,
+        },
         createdAt: now,
       });
     });
@@ -1528,13 +1585,13 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           "Only archived records can be permanently deleted",
         );
       }
-      await tx.delete(questions).where(eq(questions.id, id));
+      const unlinkedTestCount = await this.cascadeDeleteQuestion(tx, id);
       await tx.insert(auditLogs).values({
         actorUserId,
         action: "CONTENT_QUESTION_HARD_DELETED",
         entityType: "QUESTION",
         entityId: id,
-        metadata: { status: "ARCHIVED" },
+        metadata: { status: "ARCHIVED", unlinkedTestCount },
         createdAt: now,
       });
     });
