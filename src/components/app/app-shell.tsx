@@ -1,53 +1,29 @@
-import type { Route } from "next";
-import { RouteLink as Link } from "@/components/route-link";
 import type { ReactNode } from "react";
 
-import { AppNav } from "@/components/app/app-nav";
-import { BrandMark } from "@/components/brand-mark";
-import { LocaleSwitcher } from "@/components/locale-switcher";
-import { LogoutButton } from "@/components/auth/logout-button";
+import { SiteHeader } from "@/components/site-header";
+import type { AuthenticatedUserDto } from "@/domain/auth/auth";
 import type { Locale } from "@/domain/common/locale";
-import type { AuthCatalog } from "@/i18n/auth-catalogs";
-import type { QuizCatalog } from "@/i18n/quiz-catalogs";
+import { getMessages } from "@/i18n/catalogs";
 
 export function AppShell({
   locale,
-  messages,
-  authMessages,
+  user,
   children,
 }: {
   locale: Locale;
-  messages: QuizCatalog;
-  authMessages: AuthCatalog;
+  user: AuthenticatedUserDto;
   children: ReactNode;
 }) {
+  const messages = getMessages(locale);
+
   return (
     <div className="app-shell">
-      <header className="app-topbar">
-        <div className="page-shell app-topbar-inner">
-          <Link
-            href={`/${locale}/exams` as Route}
-            className="brand"
-            aria-label={messages.nav.exams}
-          >
-            <BrandMark />
-            <span>ShibaQuiz</span>
-          </Link>
-          <AppNav locale={locale} messages={messages} />
-          <Link href={`/${locale}` as Route}>{messages.nav.backToSite}</Link>
-          <LocaleSwitcher
-            locale={locale}
-            navigationLabel={messages.nav.exams}
-            vietnameseLabel="Tiếng Việt"
-            englishLabel="English"
-          />
-          <LogoutButton
-            locale={locale}
-            label={authMessages.account.logout}
-            working={authMessages.common.working}
-          />
-        </div>
-      </header>
+      <SiteHeader
+        locale={locale}
+        messages={messages}
+        user={user}
+        showMarketingNav={false}
+      />
       <main className="page-shell app-main">{children}</main>
     </div>
   );

@@ -6,7 +6,6 @@ import { ArrowLeft, BookOpen, Layers, Play } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { historyFilterSchema } from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
-import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import {
@@ -27,7 +26,6 @@ export default async function ExamDetailPage({
   if (!user) redirect(`/${locale}/login` as Route);
 
   const messages = getQuizMessages(locale);
-  const authMessages = getAuthMessages(locale);
   const exam = await getDiscoveryService().getPublishedExamDetail(slug, locale);
   if (!exam) notFound();
 
@@ -39,7 +37,7 @@ export default async function ExamDetailPage({
   const startBase = `/${locale}/exams/${slug}/start`;
 
   return (
-    <AppShell locale={locale} messages={messages} authMessages={authMessages}>
+    <AppShell locale={locale} user={user}>
       <div className="app-page-header">
         <Link href={`/${locale}/exams` as Route}>
           <ArrowLeft size={16} aria-hidden />
@@ -121,7 +119,7 @@ export default async function ExamDetailPage({
               <h2>{messages.exams.testsHeading}</h2>
             </div>
             <div className="admin-table-wrapper">
-              <table className="admin-table">
+              <table className="admin-table admin-table--cards-on-mobile">
                 <thead>
                   <tr>
                     <th scope="col">{messages.exams.tableTestName}</th>
@@ -139,8 +137,13 @@ export default async function ExamDetailPage({
                 <tbody>
                   {exam.tests.map((test) => (
                     <tr key={test.id}>
-                      <td>{test.name}</td>
-                      <td className="admin-cell-nowrap">
+                      <td data-label={messages.exams.tableTestName}>
+                        {test.name}
+                      </td>
+                      <td
+                        className="admin-cell-nowrap"
+                        data-label={messages.exams.tableDuration}
+                      >
                         {test.durationMinutes
                           ? messages.exams.testDurationMinutes.replace(
                               "{minutes}",
@@ -148,13 +151,19 @@ export default async function ExamDetailPage({
                             )
                           : messages.exams.testNoTimeLimit}
                       </td>
-                      <td className="admin-cell-nowrap">
+                      <td
+                        className="admin-cell-nowrap"
+                        data-label={messages.exams.tablePassingScore}
+                      >
                         {messages.exams.testPassingScore.replace(
                           "{percent}",
                           String(test.passingScorePercent),
                         )}
                       </td>
-                      <td className="admin-cell-nowrap">
+                      <td
+                        className="admin-cell-nowrap"
+                        data-label={messages.common.scopeFullTest}
+                      >
                         <Link
                           href={
                             `${startBase}?scope=FULL_TEST&testId=${test.id}` as Route

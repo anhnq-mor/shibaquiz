@@ -5,7 +5,6 @@ import { AppShell } from "@/components/app/app-shell";
 import { AttemptRunner } from "@/components/app/attempt-runner";
 import { isAttemptError } from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
-import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import { getAttemptService } from "@/server/content/runtime";
@@ -23,7 +22,6 @@ export default async function AttemptPage({
   if (!user) redirect(`/${locale}/login` as Route);
 
   const messages = getQuizMessages(locale);
-  const authMessages = getAuthMessages(locale);
 
   let attempt;
   try {
@@ -38,7 +36,7 @@ export default async function AttemptPage({
   }
 
   return (
-    <AppShell locale={locale} messages={messages} authMessages={authMessages}>
+    <AppShell locale={locale} user={user}>
       <AttemptRunner locale={locale} messages={messages} initial={attempt} />
     </AppShell>
   );

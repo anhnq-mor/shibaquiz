@@ -1,13 +1,10 @@
-import type { Route } from "next";
-import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
+import type { Route } from "next";
 
+import { AppShell } from "@/components/app/app-shell";
 import { AuthForm } from "@/components/auth/auth-form";
-import { AuthShell } from "@/components/auth/auth-shell";
-import { LogoutButton } from "@/components/auth/logout-button";
 import { isLocale } from "@/domain/common/locale";
 import { getAuthMessages } from "@/i18n/auth-catalogs";
-import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 
 export const dynamic = "force-dynamic";
@@ -22,41 +19,38 @@ export default async function AccountPage({
   const user = await getCurrentUser();
   if (!user) redirect(`/${locale}/login` as Route);
   const messages = getAuthMessages(locale);
-  const quizMessages = getQuizMessages(locale);
+
   return (
-    <AuthShell
-      locale={locale}
-      messages={messages}
-      path="account"
-      title={messages.account.title}
-      description={`${messages.account.signedInAs} ${user.displayName}`}
-    >
-      <dl className="account-summary">
-        <div>
-          <dt>{messages.common.email}</dt>
-          <dd>{user.email}</dd>
+    <AppShell locale={locale} user={user}>
+      <div className="app-page-header">
+        <h1>{messages.account.title}</h1>
+        <p>
+          {messages.account.signedInAs} {user.displayName}
+        </p>
+      </div>
+
+      <div className="admin-layout">
+        <div className="admin-card">
+          <dl className="account-summary">
+            <div>
+              <dt>{messages.common.email}</dt>
+              <dd>{user.email}</dd>
+            </div>
+            <div>
+              <dt>{messages.account.role}</dt>
+              <dd>{user.role}</dd>
+            </div>
+          </dl>
         </div>
-        <div>
-          <dt>{messages.account.role}</dt>
-          <dd>{user.role}</dd>
+
+        <div className="admin-card">
+          <div className="admin-card-header">
+            <h2>{messages.account.changeTitle}</h2>
+          </div>
+          <p className="admin-hint">{messages.account.changeDescription}</p>
+          <AuthForm mode="change" locale={locale} messages={messages} />
         </div>
-      </dl>
-      <p className="auth-links">
-        <Link href={`/${locale}/exams` as Route}>{quizMessages.nav.exams}</Link>
-        {" · "}
-        <Link href={`/${locale}/history` as Route}>
-          {quizMessages.nav.history}
-        </Link>
-      </p>
-      <hr />
-      <h2 className="auth-subtitle">{messages.account.changeTitle}</h2>
-      <p className="auth-description">{messages.account.changeDescription}</p>
-      <AuthForm mode="change" locale={locale} messages={messages} />
-      <LogoutButton
-        locale={locale}
-        label={messages.account.logout}
-        working={messages.common.working}
-      />
-    </AuthShell>
+      </div>
+    </AppShell>
   );
 }

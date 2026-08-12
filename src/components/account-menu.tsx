@@ -76,17 +76,6 @@ export function AccountMenu({
             <Link href={`/${locale}/account` as Route}>
               {messages.navigation.account}
             </Link>
-            <Link href={`/${locale}/exams` as Route}>
-              {messages.navigation.exams}
-            </Link>
-            <Link href={`/${locale}/history` as Route}>
-              {messages.navigation.history}
-            </Link>
-            {user.role === "ADMIN" && (
-              <Link href={`/${locale}/admin` as Route}>
-                {messages.navigation.admin}
-              </Link>
-            )}
           </nav>
           <LogoutButton
             className="account-menu-logout"

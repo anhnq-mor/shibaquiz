@@ -23,6 +23,8 @@ export interface MessageCatalog {
     admin: string;
     logout: string;
     userMenu: string;
+    appMenu: string;
+    appMenuLabel: string;
     signedInAs: string;
     switchToVietnamese: string;
     switchToEnglish: string;
@@ -82,6 +84,8 @@ const vi: MessageCatalog = {
     admin: "Quản trị",
     logout: "Đăng xuất",
     userMenu: "Mở menu tài khoản",
+    appMenu: "Chức năng",
+    appMenuLabel: "Mở menu chức năng",
     signedInAs: "Đang đăng nhập với",
     switchToVietnamese: "Chuyển sang Tiếng Việt",
     switchToEnglish: "Switch to English",
@@ -158,6 +162,8 @@ const en: MessageCatalog = {
     admin: "Administration",
     logout: "Sign out",
     userMenu: "Open account menu",
+    appMenu: "Menu",
+    appMenuLabel: "Open functions menu",
     signedInAs: "Signed in as",
     switchToVietnamese: "Chuyển sang Tiếng Việt",
     switchToEnglish: "Switch to English",

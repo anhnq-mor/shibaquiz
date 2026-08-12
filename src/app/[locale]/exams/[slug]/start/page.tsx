@@ -10,7 +10,6 @@ import {
 } from "@/components/app/start-attempt-form";
 import { attemptScopes } from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
-import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages, type QuizCatalog } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import { getDiscoveryService } from "@/server/content/runtime";
@@ -74,7 +73,6 @@ export default async function StartAttemptPage({
   if (!user) redirect(`/${locale}/login` as Route);
 
   const messages = getQuizMessages(locale);
-  const authMessages = getAuthMessages(locale);
   const exam = await getDiscoveryService().getPublishedExamDetail(slug, locale);
   if (!exam) notFound();
 
@@ -82,7 +80,7 @@ export default async function StartAttemptPage({
   if (!selection) redirect(`/${locale}/exams/${slug}` as Route);
 
   return (
-    <AppShell locale={locale} messages={messages} authMessages={authMessages}>
+    <AppShell locale={locale} user={user}>
       <div className="app-page-header">
         <Link href={`/${locale}/exams/${slug}` as Route}>
           <ArrowLeft size={16} aria-hidden />

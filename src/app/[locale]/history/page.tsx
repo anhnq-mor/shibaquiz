@@ -12,7 +12,6 @@ import {
 } from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
 import { formatDateTime, formatPercent } from "@/i18n/format";
-import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages, type QuizCatalog } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import {
@@ -77,7 +76,6 @@ export default async function HistoryPage({
   if (!user) redirect(`/${locale}/login` as Route);
 
   const messages = getQuizMessages(locale);
-  const authMessages = getAuthMessages(locale);
 
   const parsedFilters = historyFilterSchema.safeParse({
     examId: query.examId || undefined,
@@ -106,7 +104,7 @@ export default async function HistoryPage({
   if (nextCursor) nextQuery.set("cursor", nextCursor);
 
   return (
-    <AppShell locale={locale} messages={messages} authMessages={authMessages}>
+    <AppShell locale={locale} user={user}>
       <div className="app-page-header">
         <h1>{messages.history.title}</h1>
         <p>{messages.history.description}</p>
@@ -173,7 +171,7 @@ export default async function HistoryPage({
         <p className="admin-empty">{messages.history.empty}</p>
       ) : (
         <div className="admin-table-wrapper">
-          <table className="admin-table">
+          <table className="admin-table admin-table--cards-on-mobile">
             <thead>
               <tr>
                 <th scope="col">{messages.history.tableExam}</th>
@@ -200,34 +198,52 @@ export default async function HistoryPage({
             <tbody>
               {items.map((item) => (
                 <tr key={item.attemptId}>
-                  <td>
+                  <td data-label={messages.history.tableExam}>
                     {item.examName}
                     {item.testName ? ` — ${item.testName}` : ""}
                   </td>
-                  <td className="admin-cell-nowrap">
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.history.tableMode}
+                  >
                     {modeLabel(item.mode, messages)}
                   </td>
-                  <td className="admin-cell-nowrap">
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.history.tableStatus}
+                  >
                     <span
                       className={`status-pill ${attemptStatusTone(item.status)}`}
                     >
                       {statusLabel(item.status, messages)}
                     </span>
                   </td>
-                  <td className="admin-cell-nowrap">
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.history.tableScore}
+                  >
                     {item.scorePercent === null
                       ? "—"
                       : formatPercent(item.scorePercent / 100, locale)}
                   </td>
-                  <td className="admin-cell-nowrap">
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.history.tableStarted}
+                  >
                     {formatDateTime(item.startedAt, locale)}
                   </td>
-                  <td className="admin-cell-nowrap">
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.history.tableDuration}
+                  >
                     {item.durationSeconds === null
                       ? "—"
                       : `${Math.round(item.durationSeconds / 60)}m`}
                   </td>
-                  <td className="admin-cell-nowrap">
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.history.tableActions}
+                  >
                     {item.status === "IN_PROGRESS" ? (
                       <Link
                         href={`/${locale}/attempts/${item.attemptId}` as Route}

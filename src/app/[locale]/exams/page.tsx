@@ -5,7 +5,6 @@ import { ChevronDown, Eye, Search } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
 import { isLocale } from "@/domain/common/locale";
-import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import { getDiscoveryService } from "@/server/content/runtime";
@@ -25,7 +24,6 @@ export default async function ExamsPage({
   if (!user) redirect(`/${locale}/login` as Route);
 
   const messages = getQuizMessages(locale);
-  const authMessages = getAuthMessages(locale);
   const { items, nextCursor } = await getDiscoveryService().listPublishedExams(
     { query: q, cursor, limit: 20 },
     locale,
@@ -36,7 +34,7 @@ export default async function ExamsPage({
   if (nextCursor) nextQuery.set("cursor", nextCursor);
 
   return (
-    <AppShell locale={locale} messages={messages} authMessages={authMessages}>
+    <AppShell locale={locale} user={user}>
       <div className="app-page-header">
         <h1>{messages.exams.listTitle}</h1>
         <p>{messages.exams.listDescription}</p>

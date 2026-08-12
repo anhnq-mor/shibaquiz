@@ -8,7 +8,6 @@ import { CommentThread } from "@/components/app/comment-thread";
 import { isAttemptError } from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
 import { formatDateTime } from "@/i18n/format";
-import { getAuthMessages } from "@/i18n/auth-catalogs";
 import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import {
@@ -36,7 +35,6 @@ export default async function AttemptResultPage({
   if (!user) redirect(`/${locale}/login` as Route);
 
   const messages = getQuizMessages(locale);
-  const authMessages = getAuthMessages(locale);
 
   let result;
   try {
@@ -67,7 +65,7 @@ export default async function AttemptResultPage({
   const mediaUrlById = new Map(mediaUrlEntries);
 
   return (
-    <AppShell locale={locale} messages={messages} authMessages={authMessages}>
+    <AppShell locale={locale} user={user}>
       <div className="app-page-header">
         <h1>{result.examName}</h1>
         <p>{messages.result.title}</p>
@@ -124,7 +122,7 @@ export default async function AttemptResultPage({
           <h2>{messages.result.topicBreakdownHeading}</h2>
         </div>
         <div className="admin-table-wrapper">
-          <table className="admin-table">
+          <table className="admin-table admin-table--cards-on-mobile">
             <thead>
               <tr>
                 <th scope="col">{messages.result.topicBreakdownTopic}</th>
@@ -142,10 +140,27 @@ export default async function AttemptResultPage({
             <tbody>
               {result.topicBreakdown.map((topic) => (
                 <tr key={topic.topicId}>
-                  <td>{topic.topicName}</td>
-                  <td className="admin-cell-nowrap">{topic.correctCount}</td>
-                  <td className="admin-cell-nowrap">{topic.incorrectCount}</td>
-                  <td className="admin-cell-nowrap">{topic.unansweredCount}</td>
+                  <td data-label={messages.result.topicBreakdownTopic}>
+                    {topic.topicName}
+                  </td>
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.result.topicBreakdownCorrect}
+                  >
+                    {topic.correctCount}
+                  </td>
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.result.topicBreakdownIncorrect}
+                  >
+                    {topic.incorrectCount}
+                  </td>
+                  <td
+                    className="admin-cell-nowrap"
+                    data-label={messages.result.topicBreakdownUnanswered}
+                  >
+                    {topic.unansweredCount}
+                  </td>
                 </tr>
               ))}
             </tbody>
