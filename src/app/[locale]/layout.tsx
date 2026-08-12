@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import type { ReactNode } from "react";
 
 import { ApiLoadingOverlay } from "@/components/api-loading-overlay";
+import { ApiProgressBar } from "@/components/api-progress-bar";
 import { isLocale, locales } from "@/domain/common/locale";
 import { getMessages } from "@/i18n/catalogs";
 
@@ -45,6 +46,7 @@ export default async function LocaleLayout({
     <html lang={locale} data-scroll-behavior="smooth">
       <body>
         {children}
+        <ApiProgressBar />
         <ApiLoadingOverlay locale={locale} />
       </body>
     </html>
