@@ -62,6 +62,10 @@ export class ImportService {
     return this.repository.retryJob(jobId, actorUserId, now);
   }
 
+  requestCancel(jobId: string, actorUserId: string, now = new Date()) {
+    return this.repository.requestCancel(jobId, actorUserId, now);
+  }
+
   exportQuestions(examId: string) {
     return this.repository.exportQuestions(examId);
   }

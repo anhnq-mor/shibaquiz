@@ -86,6 +86,8 @@ export const importStatusEnum = pgEnum("import_status", [
   "VALIDATING",
   "VALIDATED",
   "COMMITTING",
+  "CANCELLING",
+  "CANCELLED",
   "COMPLETED",
   "FAILED",
 ]);

@@ -301,6 +301,8 @@ export type ImportJobStatus =
   | "VALIDATING"
   | "VALIDATED"
   | "COMMITTING"
+  | "CANCELLING"
+  | "CANCELLED"
   | "COMPLETED"
   | "FAILED";
 
@@ -383,6 +385,11 @@ export interface ImportRepository {
   listJobs(limit: number): Promise<ImportJobDto[]>;
   getJob(jobId: string): Promise<ImportJobDto | null>;
   retryJob(
+    jobId: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<ImportJobDto>;
+  requestCancel(
     jobId: string,
     actorUserId: string,
     now: Date,

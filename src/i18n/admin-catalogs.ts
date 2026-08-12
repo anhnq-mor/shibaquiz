@@ -223,6 +223,9 @@ export interface AdminCatalog {
     refreshAction: string;
     retryAction: string;
     retrying: string;
+    cancelAction: string;
+    cancelling: string;
+    cancelConfirm: string;
     fileNameLabel: string;
     progressLabel: string;
     resultLabel: string;
@@ -233,6 +236,8 @@ export interface AdminCatalog {
     statusValidating: string;
     statusValidated: string;
     statusCommitting: string;
+    statusCancelling: string;
+    statusCancelled: string;
     statusCompleted: string;
     statusFailed: string;
     jobFailedMessage: string;
@@ -242,6 +247,8 @@ export interface AdminCatalog {
     logFailed: string;
     logRetried: string;
     logRecovered: string;
+    logCancelling: string;
+    logCancelled: string;
   };
   users: {
     title: string;
@@ -528,6 +535,10 @@ const vi: AdminCatalog = {
     refreshAction: "Làm mới",
     retryAction: "Chạy lại",
     retrying: "Đang xếp hàng lại…",
+    cancelAction: "Hủy",
+    cancelling: "Đang hủy…",
+    cancelConfirm:
+      "Dừng job này? Các câu hỏi đã import trước khi dừng vẫn được giữ lại, không bị hoàn tác.",
     fileNameLabel: "Tệp",
     progressLabel: "Tiến độ",
     resultLabel: "Kết quả",
@@ -538,17 +549,22 @@ const vi: AdminCatalog = {
     statusValidating: "Đang kiểm tra",
     statusValidated: "Đang chờ",
     statusCommitting: "Đang ghi dữ liệu",
+    statusCancelling: "Đang dừng…",
+    statusCancelled: "Đã hủy",
     statusCompleted: "Hoàn tất",
     statusFailed: "Thất bại",
     jobFailedMessage:
-      "Job import thất bại khi ghi dữ liệu. Hãy kiểm tra log và thử chạy lại.",
+      "Job import thất bại khi ghi dữ liệu. Các phần đã ghi thành công trước đó vẫn được giữ lại. Hãy kiểm tra log và thử chạy lại.",
     logQueued: "Job đã được kiểm tra và đưa vào hàng đợi.",
-    logStarted: "Worker đã bắt đầu transaction import.",
-    logCompleted: "Transaction import đã hoàn tất thành công.",
-    logFailed: "Transaction import thất bại và không ghi dữ liệu một phần.",
+    logStarted: "Worker đã bắt đầu xử lý import.",
+    logCompleted: "Import đã hoàn tất thành công.",
+    logFailed:
+      "Import thất bại ở một lô dữ liệu; các lô trước đó đã ghi thành công vẫn được giữ lại.",
     logRetried: "Quản trị viên đã đưa job thất bại vào hàng đợi lại.",
     logRecovered:
       "Lease worker hết hạn đã được thu hồi và job được xếp hàng lại.",
+    logCancelling: "Quản trị viên yêu cầu dừng job; sẽ dừng sau lô hiện tại.",
+    logCancelled: "Job đã dừng. Dữ liệu đã ghi trước khi dừng được giữ lại.",
   },
   users: {
     title: "Người dùng",
@@ -838,6 +854,10 @@ const en: AdminCatalog = {
     refreshAction: "Refresh",
     retryAction: "Retry",
     retrying: "Queueing again…",
+    cancelAction: "Cancel",
+    cancelling: "Cancelling…",
+    cancelConfirm:
+      "Stop this job? Questions already imported before stopping are kept, not undone.",
     fileNameLabel: "File",
     progressLabel: "Progress",
     resultLabel: "Result",
@@ -848,16 +868,21 @@ const en: AdminCatalog = {
     statusValidating: "Validating",
     statusValidated: "Queued",
     statusCommitting: "Committing",
+    statusCancelling: "Cancelling…",
+    statusCancelled: "Cancelled",
     statusCompleted: "Completed",
     statusFailed: "Failed",
     jobFailedMessage:
-      "The import job failed while writing data. Review the log and retry.",
+      "The import job failed while writing data. Batches that already committed successfully were kept. Review the log and retry.",
     logQueued: "The validated job was added to the queue.",
-    logStarted: "The worker started the import transaction.",
-    logCompleted: "The import transaction completed successfully.",
-    logFailed: "The import transaction failed without a partial write.",
+    logStarted: "The worker started processing the import.",
+    logCompleted: "The import completed successfully.",
+    logFailed:
+      "The import failed on one batch; earlier batches that already committed were kept.",
     logRetried: "An administrator queued the failed job again.",
     logRecovered: "The expired worker lease was recovered and queued again.",
+    logCancelling: "An administrator requested cancellation; stopping after the current batch.",
+    logCancelled: "The job was cancelled. Data written before cancelling was kept.",
   },
   users: {
     title: "Users",

@@ -1,5 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -7,7 +7,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { toCsv } from "@/domain/import/csv";
 import { IMPORT_TEMPLATE_HEADERS, isImportError } from "@/domain/import/import";
 import * as schema from "@/server/db/schema";
-import { DrizzleImportRepository } from "@/server/repositories/drizzle-import-repository";
+import {
+  DrizzleImportRepository,
+  IMPORT_COMMIT_CHUNK_SIZE,
+} from "@/server/repositories/drizzle-import-repository";
 
 const client = new PGlite();
 const database = drizzle(client, { schema });
@@ -411,6 +414,210 @@ describe("background import jobs", () => {
     expect(recovered?.id).toBe(job.id);
     expect(recovered?.status).toBe("COMPLETED");
     expect(recovered?.logs.map((log) => log.event)).toContain("RECOVERED");
+  });
+});
+
+describe("chunked commit engine", () => {
+  it("commits a multi-chunk import completely and without duplicates", async () => {
+    const rowCount = IMPORT_COMMIT_CHUNK_SIZE + 12;
+    const rows = Array.from({ length: rowCount }, (_, index) =>
+      csvRow({ external_id: `CHUNK-${index + 1}` }),
+    );
+    const job = await repository.enqueueImport(
+      toCsvBuffer(rows),
+      "CSV",
+      examId,
+      "chunked.csv",
+      adminId,
+      new Date("2026-08-12T09:00:00.000Z"),
+    );
+    expect(job.totalRows).toBe(rowCount);
+
+    const completed = await repository.processJob(
+      job.id,
+      new Date("2026-08-12T09:01:00.000Z"),
+    );
+    expect(completed).toMatchObject({
+      status: "COMPLETED",
+      processedRows: rowCount,
+      createdCount: rowCount,
+      updatedCount: 0,
+    });
+
+    const created = await database
+      .select({ externalId: schema.questions.externalId })
+      .from(schema.questions)
+      .where(
+        inArray(
+          schema.questions.externalId,
+          rows.map((_, index) => `CHUNK-${index + 1}`),
+        ),
+      );
+    expect(created).toHaveLength(rowCount);
+  });
+
+  it("fails on the second chunk, keeps the first chunk's rows, and a retry does not duplicate them", async () => {
+    const rowCount = IMPORT_COMMIT_CHUNK_SIZE + 5;
+    const rows = Array.from({ length: rowCount }, (_, index) =>
+      csvRow({ external_id: `RESUME-${index + 1}` }),
+    );
+    const job = await repository.enqueueImport(
+      toCsvBuffer(rows),
+      "CSV",
+      examId,
+      "resume.csv",
+      adminId,
+      new Date("2026-08-12T10:00:00.000Z"),
+    );
+
+    // Corrupt a row inside the second chunk so committing it throws.
+    const staged = await database
+      .select()
+      .from(schema.importJobRows)
+      .where(eq(schema.importJobRows.jobId, job.id));
+    const target = staged.find((row) => row.externalId === "RESUME-52")!;
+    const originalPayload = target.payload;
+    await database
+      .update(schema.importJobRows)
+      .set({
+        payload: {
+          ...originalPayload,
+          topicId: "70000000-0000-4000-8000-000000000099",
+        },
+      })
+      .where(eq(schema.importJobRows.id, target.id));
+
+    const failed = await repository.processJob(
+      job.id,
+      new Date("2026-08-12T10:01:00.000Z"),
+    );
+    expect(failed?.status).toBe("FAILED");
+    expect(failed?.processedRows).toBe(IMPORT_COMMIT_CHUNK_SIZE);
+    expect(failed?.createdCount).toBe(IMPORT_COMMIT_CHUNK_SIZE);
+
+    // Fix the row, then retry — the already-committed first chunk must not
+    // be reprocessed (that would duplicate those questions).
+    await database
+      .update(schema.importJobRows)
+      .set({ payload: originalPayload })
+      .where(eq(schema.importJobRows.id, target.id));
+    await repository.retryJob(
+      job.id,
+      adminId,
+      new Date("2026-08-12T10:02:00.000Z"),
+    );
+    const resumed = await repository.processJob(
+      job.id,
+      new Date("2026-08-12T10:03:00.000Z"),
+    );
+    expect(resumed).toMatchObject({
+      status: "COMPLETED",
+      processedRows: rowCount,
+      createdCount: rowCount,
+    });
+
+    const createdRows = await database
+      .select({ externalId: schema.questions.externalId })
+      .from(schema.questions)
+      .where(
+        inArray(
+          schema.questions.externalId,
+          rows.map((_, index) => `RESUME-${index + 1}`),
+        ),
+      );
+    expect(createdRows).toHaveLength(rowCount);
+  });
+});
+
+describe("import job cancellation", () => {
+  it("cancels a not-yet-started job immediately", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "CANCEL-IMMEDIATE-1" })]),
+      "CSV",
+      examId,
+      "cancel-immediate.csv",
+      adminId,
+      new Date("2026-08-12T11:00:00.000Z"),
+    );
+    const cancelled = await repository.requestCancel(
+      job.id,
+      adminId,
+      new Date("2026-08-12T11:00:10.000Z"),
+    );
+    expect(cancelled.status).toBe("CANCELLED");
+    expect(cancelled.logs.at(-1)?.event).toBe("CANCELLED");
+  });
+
+  it("marks an actively committing job as cancelling", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "CANCEL-RUNNING-1" })]),
+      "CSV",
+      examId,
+      "cancel-running.csv",
+      adminId,
+      new Date("2026-08-12T12:00:00.000Z"),
+    );
+    await database
+      .update(schema.importJobs)
+      .set({
+        status: "COMMITTING",
+        lockedAt: new Date("2026-08-12T12:00:05.000Z"),
+      })
+      .where(eq(schema.importJobs.id, job.id));
+
+    const cancelling = await repository.requestCancel(
+      job.id,
+      adminId,
+      new Date("2026-08-12T12:00:10.000Z"),
+    );
+    expect(cancelling.status).toBe("CANCELLING");
+    expect(cancelling.logs.at(-1)?.event).toBe("CANCELLING");
+  });
+
+  it("rejects cancelling a job that already reached a terminal state", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "CANCEL-TERMINAL-1" })]),
+      "CSV",
+      examId,
+      "cancel-terminal.csv",
+      adminId,
+      new Date("2026-08-12T13:00:00.000Z"),
+    );
+    await repository.processJob(job.id, new Date("2026-08-12T13:00:10.000Z"));
+
+    await expect(
+      repository.requestCancel(
+        job.id,
+        adminId,
+        new Date("2026-08-12T13:00:20.000Z"),
+      ),
+    ).rejects.toSatisfy(
+      (error) => isImportError(error) && error.code === "CONFLICT",
+    );
+  });
+
+  it("recovers a job stuck cancelling behind an expired lease as cancelled", async () => {
+    const job = await repository.enqueueImport(
+      toCsvBuffer([csvRow({ external_id: "CANCEL-RECOVER-1" })]),
+      "CSV",
+      examId,
+      "cancel-recover.csv",
+      adminId,
+      new Date("2026-08-12T14:00:00.000Z"),
+    );
+    await database
+      .update(schema.importJobs)
+      .set({
+        status: "CANCELLING",
+        lockedAt: new Date("2026-08-12T14:00:05.000Z"),
+      })
+      .where(eq(schema.importJobs.id, job.id));
+
+    await repository.processNextJob(new Date("2026-08-12T14:20:00.000Z"));
+
+    const finalJob = await repository.getJob(job.id);
+    expect(finalJob?.status).toBe("CANCELLED");
+    expect(finalJob?.logs.map((log) => log.event)).toContain("CANCELLED");
   });
 });
 

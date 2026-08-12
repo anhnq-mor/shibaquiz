@@ -1,8 +1,8 @@
 import { and, asc, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 
 import type { ContentStatus } from "@/domain/admin/content";
 import {
-  IMPORT_TEMPLATE_HEADERS,
   buildImportRowInput,
   ImportError,
   isImportError,
@@ -13,7 +13,6 @@ import {
   type ImportRowOutcome,
   type ImportSummary,
 } from "@/domain/import/import";
-import { toCsv } from "@/domain/import/csv";
 import {
   parseSpreadsheet,
   type ImportFormat,
@@ -35,6 +34,9 @@ import {
 } from "@/server/db/schema";
 
 type StagedImportRow = typeof importJobRows.$inferSelect;
+type MutableExecutor = Pick<Database, "select" | "insert" | "update" | "delete">;
+
+export const IMPORT_COMMIT_CHUNK_SIZE = 50;
 
 function toIso(value: Date | null): string | null {
   return value?.toISOString() ?? null;
@@ -209,57 +211,189 @@ export class DrizzleImportRepository implements ImportRepository {
     }));
   }
 
-  private async stagedRowsToCsv(rows: StagedImportRow[]): Promise<Uint8Array> {
-    const topicIds = [...new Set(rows.map((row) => row.payload.topicId))];
-    const topicRows = topicIds.length
-      ? await this.database
-          .select({ id: topics.id, slug: topics.slug })
-          .from(topics)
-          .where(inArray(topics.id, topicIds))
-      : [];
-    const topicSlugById = new Map(
-      topicRows.map((topic) => [topic.id, topic.slug]),
-    );
-    const tableRows = rows.map((row) => {
-      const input = row.payload;
-      const vi = input.translations.find((item) => item.locale === "vi");
-      const en = input.translations.find((item) => item.locale === "en");
-      const optionColumns = Array.from({ length: 20 }, (_, index): string[] => {
-        const option = [...input.options].sort(
-          (left, right) => left.displayOrder - right.displayOrder,
-        )[index];
-        if (!option) return ["", "", "", "", "", ""];
-        const optionVi = option.translations.find(
-          (item) => item.locale === "vi",
-        );
-        const optionEn = option.translations.find(
-          (item) => item.locale === "en",
-        );
-        return [
-          option.label,
-          optionVi?.content ?? "",
-          optionEn?.content ?? "",
-          optionVi?.matchContent ?? "",
-          optionEn?.matchContent ?? "",
-          option.isCorrect ? "TRUE" : "FALSE",
-        ];
-      }).flat();
-      return [
-        input.externalId ?? "",
-        topicSlugById.get(input.topicId) ?? "",
-        input.type,
-        input.status,
-        vi?.content ?? "",
-        vi?.explanation ?? "",
-        en?.content ?? "",
-        en?.explanation ?? "",
-        input.mediaIds.join(";"),
-        ...optionColumns,
-      ];
+  private async commitChunk(
+    tx: MutableExecutor,
+    examId: string,
+    actorUserId: string,
+    now: Date,
+    chunkRows: StagedImportRow[],
+  ): Promise<{ created: number; updated: number }> {
+    const externalIds = chunkRows
+      .map((row) => row.externalId)
+      .filter((id): id is string => id !== null);
+    const existingByExternalId = externalIds.length
+      ? new Map(
+          (
+            await tx
+              .select({
+                id: questions.id,
+                externalId: questions.externalId,
+                version: questions.version,
+              })
+              .from(questions)
+              .where(
+                and(
+                  eq(questions.examId, examId),
+                  inArray(questions.externalId, externalIds),
+                ),
+              )
+          ).map((row) => [row.externalId as string, row]),
+        )
+      : new Map<string, { id: string; externalId: string | null; version: number }>();
+
+    const prepared = chunkRows.map((row) => {
+      const existing = row.externalId
+        ? existingByExternalId.get(row.externalId)
+        : undefined;
+      return {
+        row,
+        questionId: existing ? existing.id : randomUUID(),
+        isCreate: !existing,
+        version: existing ? existing.version + 1 : 1,
+      };
     });
-    return new TextEncoder().encode(
-      toCsv([IMPORT_TEMPLATE_HEADERS, ...tableRows]),
+
+    const toCreate = prepared.filter((item) => item.isCreate);
+    const toUpdate = prepared.filter((item) => !item.isCreate);
+
+    if (toCreate.length > 0) {
+      await tx.insert(questions).values(
+        toCreate.map((item) => ({
+          id: item.questionId,
+          externalId: item.row.externalId,
+          examId,
+          topicId: item.row.payload.topicId,
+          type: item.row.payload.type,
+          status: item.row.payload.status,
+          version: 1,
+          createdBy: actorUserId,
+          updatedBy: actorUserId,
+          createdAt: now,
+          updatedAt: now,
+        })),
+      );
+    }
+
+    for (const item of toUpdate) {
+      await tx
+        .update(questions)
+        .set({
+          topicId: item.row.payload.topicId,
+          type: item.row.payload.type,
+          status: item.row.payload.status,
+          version: item.version,
+          updatedBy: actorUserId,
+          updatedAt: now,
+        })
+        .where(eq(questions.id, item.questionId));
+    }
+
+    if (toUpdate.length > 0) {
+      const updateIds = toUpdate.map((item) => item.questionId);
+      await tx
+        .delete(questionTranslations)
+        .where(inArray(questionTranslations.questionId, updateIds));
+      await tx
+        .delete(questionOptions)
+        .where(inArray(questionOptions.questionId, updateIds));
+      await tx
+        .delete(questionMedia)
+        .where(inArray(questionMedia.questionId, updateIds));
+    }
+
+    const translationRows = prepared.flatMap((item) =>
+      item.row.payload.translations.map((translation) => ({
+        questionId: item.questionId,
+        ...translation,
+        createdAt: now,
+        updatedAt: now,
+      })),
     );
+    if (translationRows.length > 0) {
+      await tx.insert(questionTranslations).values(translationRows);
+    }
+
+    const optionRows: Array<{
+      id: string;
+      questionId: string;
+      label: string;
+      isCorrect: boolean;
+      displayOrder: number;
+      createdAt: Date;
+      updatedAt: Date;
+    }> = [];
+    const optionTranslationRows: Array<{
+      optionId: string;
+      locale: "vi" | "en";
+      content: string;
+      matchTargetContent: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    }> = [];
+    for (const item of prepared) {
+      for (const option of item.row.payload.options) {
+        const optionId = randomUUID();
+        optionRows.push({
+          id: optionId,
+          questionId: item.questionId,
+          label: option.label,
+          isCorrect: option.isCorrect,
+          displayOrder: option.displayOrder,
+          createdAt: now,
+          updatedAt: now,
+        });
+        for (const translation of option.translations) {
+          optionTranslationRows.push({
+            optionId,
+            locale: translation.locale,
+            content: translation.content,
+            matchTargetContent: translation.matchContent ?? null,
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+      }
+    }
+    if (optionRows.length > 0) {
+      await tx.insert(questionOptions).values(optionRows);
+    }
+    if (optionTranslationRows.length > 0) {
+      await tx.insert(questionOptionTranslations).values(optionTranslationRows);
+    }
+
+    const mediaRows = prepared.flatMap((item) =>
+      item.row.payload.mediaIds.map((mediaAssetId, displayOrder) => ({
+        questionId: item.questionId,
+        mediaAssetId,
+        displayOrder,
+        createdAt: now,
+        updatedAt: now,
+      })),
+    );
+    if (mediaRows.length > 0) {
+      await tx.insert(questionMedia).values(mediaRows);
+    }
+
+    const auditRows = prepared.map((item) => ({
+      actorUserId,
+      action: item.isCreate
+        ? "CONTENT_QUESTION_CREATED"
+        : "CONTENT_QUESTION_UPDATED",
+      entityType: "QUESTION",
+      entityId: item.questionId,
+      metadata: {
+        examId,
+        topicId: item.row.payload.topicId,
+        importBatch: true,
+        rowNumber: item.row.rowNumber,
+      },
+      createdAt: now,
+    }));
+    if (auditRows.length > 0) {
+      await tx.insert(auditLogs).values(auditRows);
+    }
+
+    return { created: toCreate.length, updated: toUpdate.length };
   }
 
   async enqueueImport(
@@ -401,22 +535,122 @@ export class DrizzleImportRepository implements ImportRepository {
       if (!claimed.examId) {
         throw new ImportError("CONFLICT", 409, "Import job has no exam");
       }
-      const stagedRows = await this.database
-        .select()
-        .from(importJobRows)
-        .where(eq(importJobRows.jobId, jobId))
-        .orderBy(asc(importJobRows.rowNumber));
-      const buffer = await this.stagedRowsToCsv(stagedRows);
-      await this.commitImport(
-        buffer,
-        "CSV",
-        claimed.examId,
-        claimed.createdBy,
-        now,
-        jobId,
-      );
+      const examId = claimed.examId;
+
+      let processed = claimed.processedRows;
+      let createdCount = claimed.createdCount;
+      let updatedCount = claimed.updatedCount;
+
+      while (true) {
+        const chunkRows = await this.database
+          .select()
+          .from(importJobRows)
+          .where(eq(importJobRows.jobId, jobId))
+          .orderBy(asc(importJobRows.rowNumber))
+          .limit(IMPORT_COMMIT_CHUNK_SIZE)
+          .offset(processed);
+
+        if (chunkRows.length === 0) break;
+
+        await this.database.transaction(async (tx) => {
+          const result = await this.commitChunk(
+            tx,
+            examId,
+            claimed.createdBy,
+            now,
+            chunkRows,
+          );
+          processed += chunkRows.length;
+          createdCount += result.created;
+          updatedCount += result.updated;
+          await tx
+            .update(importJobs)
+            .set({ processedRows: processed, createdCount, updatedCount, updatedAt: now })
+            .where(eq(importJobs.id, jobId));
+        });
+
+        const current = (
+          await this.database
+            .select({ status: importJobs.status })
+            .from(importJobs)
+            .where(eq(importJobs.id, jobId))
+            .limit(1)
+        )[0];
+        if (current?.status === "CANCELLING") {
+          const cancelledAt = now;
+          await this.database.transaction(async (tx) => {
+            await tx
+              .update(importJobs)
+              .set({
+                status: "CANCELLED",
+                lockedAt: null,
+                completedAt: cancelledAt,
+                updatedAt: cancelledAt,
+              })
+              .where(eq(importJobs.id, jobId));
+            await tx.insert(importJobLogs).values({
+              jobId,
+              level: "INFO",
+              event: "CANCELLED",
+              message:
+                "Import job was cancelled; rows committed before cancellation were kept.",
+              metadata: { processedRows: processed, createdCount, updatedCount },
+              createdAt: cancelledAt,
+            });
+            await tx.insert(auditLogs).values({
+              actorUserId: claimed.createdBy,
+              action: "IMPORT_JOB_CANCELLED",
+              entityType: "IMPORT_JOB",
+              entityId: jobId,
+              metadata: { examId, processedRows: processed },
+              createdAt: cancelledAt,
+            });
+          });
+          return this.getJob(jobId);
+        }
+      }
+
+      const completedAt = now;
+      await this.database.transaction(async (tx) => {
+        await tx
+          .update(importJobs)
+          .set({
+            status: "COMPLETED",
+            processedRows: processed,
+            createdCount,
+            updatedCount,
+            errorMessage: null,
+            errorReport: {},
+            lockedAt: null,
+            completedAt,
+            summary: {
+              totalRows: processed,
+              createdCount,
+              updatedCount,
+              errorCount: 0,
+            },
+            updatedAt: completedAt,
+          })
+          .where(eq(importJobs.id, jobId));
+        await tx.insert(importJobLogs).values({
+          jobId,
+          level: "INFO",
+          event: "COMPLETED",
+          message: "Import transaction completed successfully.",
+          metadata: { createdCount, updatedCount },
+          createdAt: completedAt,
+        });
+        await tx.insert(auditLogs).values({
+          actorUserId: claimed.createdBy,
+          action: "IMPORT_JOB_COMPLETED",
+          entityType: "IMPORT_JOB",
+          entityId: jobId,
+          metadata: { examId, createdCount, updatedCount },
+          createdAt: completedAt,
+        });
+      });
     } catch (error) {
-      const failedAt = new Date();
+      const failedAt = now;
       const safeMessage =
         "Import failed while committing. Review the source data and retry.";
       await this.database.transaction(async (tx) => {
@@ -477,6 +711,39 @@ export class DrizzleImportRepository implements ImportRepository {
         })),
       );
     }
+
+    // A job stuck CANCELLING (its worker crashed before it noticed the
+    // cancellation request) never resumes committing rows — finalize it as
+    // CANCELLED rather than queueing it again.
+    const cancelledStale = await this.database
+      .update(importJobs)
+      .set({
+        status: "CANCELLED",
+        lockedAt: null,
+        completedAt: now,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(importJobs.status, "CANCELLING"),
+          lt(importJobs.lockedAt, leaseExpiredBefore),
+        ),
+      )
+      .returning();
+    if (cancelledStale.length > 0) {
+      await this.database.insert(importJobLogs).values(
+        cancelledStale.map((job) => ({
+          jobId: job.id,
+          level: "INFO",
+          event: "CANCELLED",
+          message:
+            "Expired worker lease was recovered while cancelling; the job was finalized as cancelled.",
+          metadata: {},
+          createdAt: now,
+        })),
+      );
+    }
+
     const next = (
       await this.database
         .select({ id: importJobs.id })
@@ -499,9 +766,10 @@ export class DrizzleImportRepository implements ImportRepository {
           .update(importJobs)
           .set({
             status: "VALIDATED",
-            processedRows: 0,
-            createdCount: 0,
-            updatedCount: 0,
+            // processedRows/createdCount/updatedCount are intentionally left
+            // as-is: chunks already committed before the failure must not be
+            // reprocessed (that would duplicate their questions). processJob
+            // resumes from these counters as an offset.
             errorMessage: null,
             errorReport: {},
             startedAt: null,
@@ -524,7 +792,7 @@ export class DrizzleImportRepository implements ImportRepository {
         level: "INFO",
         event: "RETRIED",
         message: "Administrator queued the failed job for retry.",
-        metadata: {},
+        metadata: { resumeFromRow: row.processedRows },
         createdAt: now,
       });
       await tx.insert(auditLogs).values({
@@ -538,6 +806,77 @@ export class DrizzleImportRepository implements ImportRepository {
       return row;
     });
     return (await this.getJob(retried.id))!;
+  }
+
+  async requestCancel(
+    jobId: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<ImportJobDto> {
+    const updated = await this.database.transaction(async (tx) => {
+      const cancelledImmediately = (
+        await tx
+          .update(importJobs)
+          .set({
+            status: "CANCELLED",
+            completedAt: now,
+            lockedAt: null,
+            updatedAt: now,
+          })
+          .where(
+            and(
+              eq(importJobs.id, jobId),
+              inArray(importJobs.status, [
+                "UPLOADED",
+                "VALIDATING",
+                "VALIDATED",
+              ]),
+            ),
+          )
+          .returning()
+      )[0];
+      const row =
+        cancelledImmediately ??
+        (
+          await tx
+            .update(importJobs)
+            .set({ status: "CANCELLING", updatedAt: now })
+            .where(
+              and(
+                eq(importJobs.id, jobId),
+                eq(importJobs.status, "COMMITTING"),
+              ),
+            )
+            .returning()
+        )[0];
+      if (!row) {
+        throw new ImportError(
+          "CONFLICT",
+          409,
+          "Only an active import job can be cancelled",
+        );
+      }
+      await tx.insert(importJobLogs).values({
+        jobId,
+        level: "INFO",
+        event: cancelledImmediately ? "CANCELLED" : "CANCELLING",
+        message: cancelledImmediately
+          ? "Administrator cancelled the job before it started committing."
+          : "Administrator requested cancellation; stopping after the current chunk.",
+        metadata: {},
+        createdAt: now,
+      });
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "IMPORT_JOB_CANCEL_REQUESTED",
+        entityType: "IMPORT_JOB",
+        entityId: jobId,
+        metadata: { immediate: Boolean(cancelledImmediately) },
+        createdAt: now,
+      });
+      return row;
+    });
+    return (await this.getJob(updated.id))!;
   }
 
   async previewImport(

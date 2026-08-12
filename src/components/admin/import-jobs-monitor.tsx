@@ -12,6 +12,14 @@ const ACTIVE_STATUSES = new Set<ImportJobStatus>([
   "VALIDATING",
   "VALIDATED",
   "COMMITTING",
+  "CANCELLING",
+]);
+
+const CANCELLABLE_STATUSES = new Set<ImportJobStatus>([
+  "UPLOADED",
+  "VALIDATING",
+  "VALIDATED",
+  "COMMITTING",
 ]);
 
 function statusLabel(status: ImportJobStatus, messages: AdminCatalog): string {
@@ -20,6 +28,8 @@ function statusLabel(status: ImportJobStatus, messages: AdminCatalog): string {
     VALIDATING: messages.imports.statusValidating,
     VALIDATED: messages.imports.statusValidated,
     COMMITTING: messages.imports.statusCommitting,
+    CANCELLING: messages.imports.statusCancelling,
+    CANCELLED: messages.imports.statusCancelled,
     COMPLETED: messages.imports.statusCompleted,
     FAILED: messages.imports.statusFailed,
   };
@@ -34,6 +44,8 @@ function logMessage(event: string, messages: AdminCatalog): string {
     FAILED: messages.imports.logFailed,
     RETRIED: messages.imports.logRetried,
     RECOVERED: messages.imports.logRecovered,
+    CANCELLING: messages.imports.logCancelling,
+    CANCELLED: messages.imports.logCancelled,
   };
   return labels[event] ?? event;
 }
@@ -49,6 +61,7 @@ export function ImportJobsMonitor({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const lastKickAt = useRef(0);
   const hasActiveJobs = jobs.some((job) => ACTIVE_STATUSES.has(job.status));
 
@@ -132,6 +145,31 @@ export function ImportJobsMonitor({
       );
     } finally {
       setRetryingId(null);
+    }
+  }
+
+  async function cancelJob(jobId: string) {
+    if (!window.confirm(messages.imports.cancelConfirm)) return;
+    setCancellingId(jobId);
+    setError(null);
+    try {
+      const response = await apiFetch(
+        withLocale(`/api/admin/imports/jobs/${jobId}/cancel`),
+        { method: "POST" },
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.message ?? messages.common.requestFailed);
+      }
+      await loadJobs();
+    } catch (cancelError) {
+      setError(
+        cancelError instanceof Error
+          ? cancelError.message
+          : messages.common.connectionError,
+      );
+    } finally {
+      setCancellingId(null);
     }
   }
 
@@ -250,18 +288,32 @@ export function ImportJobsMonitor({
                       </details>
                     </td>
                     <td>
-                      {job.status === "FAILED" && (
-                        <button
-                          type="button"
-                          className="button button-secondary"
-                          onClick={() => void retryJob(job.id)}
-                          disabled={retryingId === job.id}
-                        >
-                          {retryingId === job.id
-                            ? messages.imports.retrying
-                            : messages.imports.retryAction}
-                        </button>
-                      )}
+                      <div className="admin-row-actions">
+                        {job.status === "FAILED" && (
+                          <button
+                            type="button"
+                            className="button button-secondary"
+                            onClick={() => void retryJob(job.id)}
+                            disabled={retryingId === job.id}
+                          >
+                            {retryingId === job.id
+                              ? messages.imports.retrying
+                              : messages.imports.retryAction}
+                          </button>
+                        )}
+                        {CANCELLABLE_STATUSES.has(job.status) && (
+                          <button
+                            type="button"
+                            className="button button-danger"
+                            onClick={() => void cancelJob(job.id)}
+                            disabled={cancellingId === job.id}
+                          >
+                            {cancellingId === job.id
+                              ? messages.imports.cancelling
+                              : messages.imports.cancelAction}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

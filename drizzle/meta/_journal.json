@@ -50,6 +50,13 @@
       "when": 1786444542989,
       "tag": "0006_blue_psynapse",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1786524070672,
+      "tag": "0007_breezy_viper",
+      "breakpoints": true
     }
   ]
 }
