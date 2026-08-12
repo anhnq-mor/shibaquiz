@@ -62,6 +62,15 @@ export interface AdminCatalog {
     loadMore: string;
     moveUp: string;
     moveDown: string;
+    selectAllLabel: string;
+    selectedCount: string;
+    filterAllStatuses: string;
+    bulkStatusLabel: string;
+    bulkDeleteAction: string;
+    bulkDeleteOnlyArchivedHint: string;
+    bulkStatusConfirm: string;
+    bulkDeleteConfirm: string;
+    bulkResultSummary: string;
   };
   exams: {
     title: string;
@@ -341,6 +350,17 @@ const vi: AdminCatalog = {
     loadMore: "Tải thêm",
     moveUp: "Lên",
     moveDown: "Xuống",
+    selectAllLabel: "Chọn tất cả",
+    selectedCount: "Đã chọn {count} mục",
+    filterAllStatuses: "Tất cả trạng thái",
+    bulkStatusLabel: "Đổi trạng thái hàng loạt",
+    bulkDeleteAction: "Xóa vĩnh viễn",
+    bulkDeleteOnlyArchivedHint:
+      "Chỉ xóa vĩnh viễn được các mục đã Đã lưu trữ.",
+    bulkStatusConfirm: "Đổi trạng thái của {count} mục thành {status}?",
+    bulkDeleteConfirm:
+      "Xóa vĩnh viễn {count} mục đã lưu trữ? Hành động này không thể hoàn tác.",
+    bulkResultSummary: "Thành công: {success}, thất bại: {failed}.",
   },
   exams: {
     title: "Kỳ thi",
@@ -641,6 +661,16 @@ const en: AdminCatalog = {
     loadMore: "Load more",
     moveUp: "Up",
     moveDown: "Down",
+    selectAllLabel: "Select all",
+    selectedCount: "{count} item(s) selected",
+    filterAllStatuses: "All statuses",
+    bulkStatusLabel: "Bulk change status",
+    bulkDeleteAction: "Delete permanently",
+    bulkDeleteOnlyArchivedHint: "Only archived items can be permanently deleted.",
+    bulkStatusConfirm: "Change the status of {count} item(s) to {status}?",
+    bulkDeleteConfirm:
+      "Permanently delete {count} archived item(s)? This cannot be undone.",
+    bulkResultSummary: "Succeeded: {success}, failed: {failed}.",
   },
   exams: {
     title: "Exams",

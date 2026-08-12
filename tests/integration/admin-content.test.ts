@@ -503,3 +503,416 @@ describe("admin content authoring and publishing", () => {
     ).rejects.toMatchObject({ code: "CONFLICT" });
   });
 });
+
+describe("bulk content status updates", () => {
+  it("publishes a ready exam and reports PUBLISH_NOT_READY for an unready one in the same batch", async () => {
+    const readyExamId = await service.saveExam(
+      {
+        id: undefined,
+        code: "bulk-ready",
+        slug: "bulk-ready",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Ready", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId: readyExamId,
+        slug: "bulk-ready-topic",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    await service.saveQuestion(
+      questionInput({ examId: readyExamId, topicId }),
+      adminId,
+    );
+
+    const notReadyExamId = await service.saveExam(
+      {
+        id: undefined,
+        code: "bulk-not-ready",
+        slug: "bulk-not-ready",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Not ready", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+
+    const results = await service.bulkSetExamStatus(
+      [readyExamId, notReadyExamId],
+      "PUBLISHED",
+      adminId,
+    );
+    const byId = new Map(results.map((row) => [row.id, row]));
+    expect(byId.get(readyExamId)).toMatchObject({ ok: true });
+    expect(byId.get(notReadyExamId)).toMatchObject({
+      ok: false,
+      code: "PUBLISH_NOT_READY",
+    });
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.exams.find((item) => item.id === readyExamId)?.status).toBe(
+      "PUBLISHED",
+    );
+    expect(
+      workspace.exams.find((item) => item.id === notReadyExamId)?.status,
+    ).toBe("DRAFT");
+  });
+
+  it("reports NOT_FOUND for an unknown id without affecting the rest of the batch", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "bulk-mixed",
+        slug: "bulk-mixed",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Mixed", description: "Mô tả." }],
+      },
+      adminId,
+    );
+
+    const results = await service.bulkSetExamStatus(
+      [examId, "00000000-0000-4000-8000-0000000000ff"],
+      "ARCHIVED",
+      adminId,
+    );
+    const byId = new Map(results.map((row) => [row.id, row]));
+    expect(byId.get(examId)).toMatchObject({ ok: true });
+    expect(byId.get("00000000-0000-4000-8000-0000000000ff")).toMatchObject({
+      ok: false,
+      code: "NOT_FOUND",
+    });
+  });
+
+  it("moves a topic between statuses", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "bulk-topic",
+        slug: "bulk-topic",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Topic exam", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "bulk-topic-a",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+
+    const results = await service.bulkSetTopicStatus(
+      [topicId],
+      "PUBLISHED",
+      adminId,
+    );
+    expect(results).toEqual([{ id: topicId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.topics.find((item) => item.id === topicId)?.status).toBe(
+      "PUBLISHED",
+    );
+  });
+
+  it("rejects a dynamic test bulk-publish once the published question bank has shrunk below its stored allocation", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "bulk-dynamic",
+        slug: "bulk-dynamic",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Dynamic bulk", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "bulk-dynamic-topic",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionOne = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    const questionTwo = await service.saveQuestion(
+      questionInput({
+        examId,
+        topicId,
+        translations: [
+          { locale: "vi", content: "Câu hỏi 2?", explanation: "Giải thích 2." },
+        ],
+      }),
+      adminId,
+    );
+    const { id: testId } = await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "DYNAMIC",
+        status: "DRAFT",
+        questionCount: 2,
+        durationMinutes: null,
+        passingScorePercent: 70,
+        shuffleQuestions: true,
+        shuffleOptions: true,
+        translations: [
+          { locale: "vi", name: "Đề sinh động", description: "Mô tả." },
+        ],
+        fixedQuestions: [],
+        dynamicRules: [{ topicId, percentage: 100 }],
+      },
+      adminId,
+    );
+    expect(questionOne).toBeTruthy();
+
+    // The bank shrinks below the test's stored allocation after creation —
+    // bulk-publish must re-check live availability, not creation-time data.
+    await service.deleteQuestion(questionTwo, adminId);
+
+    const results = await service.bulkSetTestStatus(
+      [testId],
+      "PUBLISHED",
+      adminId,
+    );
+    expect(results).toMatchObject([
+      { id: testId, ok: false, code: "PUBLISH_NOT_READY" },
+    ]);
+  });
+
+  it("rejects changing the status of a soft-deleted question", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "bulk-question",
+        slug: "bulk-question",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Question bulk", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "bulk-question-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId, status: "DRAFT" }),
+      adminId,
+    );
+    await service.deleteQuestion(questionId, adminId);
+
+    const results = await service.bulkSetQuestionStatus(
+      [questionId],
+      "DRAFT",
+      adminId,
+    );
+    expect(results).toMatchObject([
+      { id: questionId, ok: false, code: "CONFLICT" },
+    ]);
+  });
+});
+
+describe("bulk content hard delete", () => {
+  it("refuses to permanently delete a record that is not archived", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-not-archived",
+        slug: "hard-not-archived",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Not archived", description: "Mô tả." }],
+      },
+      adminId,
+    );
+
+    const results = await service.bulkDeleteExams([examId], adminId);
+    expect(results).toMatchObject([{ id: examId, ok: false, code: "CONFLICT" }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.exams.some((item) => item.id === examId)).toBe(true);
+  });
+
+  it("permanently deletes an archived exam with no remaining children", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-empty-exam",
+        slug: "hard-empty-exam",
+        primaryLocale: "vi",
+        status: "ARCHIVED",
+        translations: [{ locale: "vi", name: "Empty", description: "Mô tả." }],
+      },
+      adminId,
+    );
+
+    const results = await service.bulkDeleteExams([examId], adminId);
+    expect(results).toEqual([{ id: examId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.exams.some((item) => item.id === examId)).toBe(false);
+
+    const auditRows = await database
+      .select()
+      .from(schema.auditLogs)
+      .where(eq(schema.auditLogs.entityId, examId));
+    expect(
+      auditRows.some((row) => row.action === "CONTENT_EXAM_HARD_DELETED"),
+    ).toBe(true);
+  });
+
+  it("blocks deleting an archived topic that still has questions", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-topic-blocked",
+        slug: "hard-topic-blocked",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Topic blocked", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-topic-blocked-a",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    await service.saveQuestion(
+      questionInput({ examId, topicId, status: "DRAFT" }),
+      adminId,
+    );
+    await service.bulkSetTopicStatus([topicId], "ARCHIVED", adminId);
+
+    const results = await service.bulkDeleteTopics([topicId], adminId);
+    expect(results).toMatchObject([
+      { id: topicId, ok: false, code: "CONFLICT" },
+    ]);
+  });
+
+  it("permanently deletes an archived question with no references, cascading its options", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-clean",
+        slug: "hard-question-clean",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Question clean", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-clean-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId, status: "DRAFT" }),
+      adminId,
+    );
+    await service.deleteQuestion(questionId, adminId);
+
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toEqual([{ id: questionId, ok: true }]);
+
+    const remainingOptions = await database
+      .select()
+      .from(schema.questionOptions)
+      .where(eq(schema.questionOptions.questionId, questionId));
+    expect(remainingOptions).toHaveLength(0);
+  });
+
+  it("blocks deleting an archived question that still has a comment", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-referenced",
+        slug: "hard-question-referenced",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Question referenced", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-referenced-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId, status: "DRAFT" }),
+      adminId,
+    );
+    await service.deleteQuestion(questionId, adminId);
+    await database.insert(schema.comments).values({
+      questionId,
+      userId: adminId,
+      content: "Bình luận vẫn còn tồn tại.",
+    });
+
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toMatchObject([
+      { id: questionId, ok: false, code: "CONFLICT" },
+    ]);
+  });
+});

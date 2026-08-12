@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
+import { BulkActionsToolbar } from "@/components/admin/bulk-actions-toolbar";
 import { contentStatusTone } from "@/components/admin/status-tone";
+import { useBulkSelection } from "@/components/admin/use-bulk-selection";
 import {
   adminApiRequest,
   AdminApiRequestError,
@@ -21,6 +23,7 @@ import {
 import { requiredLocalesForStatus } from "@/components/admin/translation-rules";
 import type {
   AdminContentWorkspace,
+  BulkActionResult,
   ContentStatus,
   QuestionType,
 } from "@/domain/admin/content";
@@ -196,6 +199,93 @@ export function QuestionsEditor({
     }
     return true;
   });
+
+  const bulk = useBulkSelection(filteredQuestions);
+  const [bulkStatus, setBulkStatus] = useState<ContentStatus>("PUBLISHED");
+  const [bulkPending, setBulkPending] = useState(false);
+
+  function statusLabel(status: ContentStatus): string {
+    return {
+      DRAFT: messages.common.statusDraft,
+      PUBLISHED: messages.common.statusPublished,
+      ARCHIVED: messages.common.statusArchived,
+    }[status];
+  }
+
+  function summarizeBulkResults(results: BulkActionResult[]) {
+    const failed = results.filter((item) => !item.ok);
+    setListResult({
+      kind: failed.length > 0 ? "error" : "success",
+      message: messages.common.bulkResultSummary
+        .replace("{success}", String(results.length - failed.length))
+        .replace("{failed}", String(failed.length)),
+    });
+    bulk.replace(failed.map((item) => item.id));
+    router.refresh();
+  }
+
+  async function applyBulkStatus() {
+    if (
+      !window.confirm(
+        messages.common.bulkStatusConfirm
+          .replace("{count}", String(bulk.count))
+          .replace("{status}", statusLabel(bulkStatus)),
+      )
+    ) {
+      return;
+    }
+    setBulkPending(true);
+    try {
+      const response = await adminApiRequest<{ results: BulkActionResult[] }>(
+        "/api/admin/questions/bulk-status",
+        locale,
+        { body: { ids: [...bulk.selected], status: bulkStatus } },
+      );
+      summarizeBulkResults(response.results);
+    } catch (error) {
+      setListResult({
+        kind: "error",
+        message:
+          error instanceof AdminApiRequestError
+            ? (error.body?.message ?? messages.common.requestFailed)
+            : messages.common.connectionError,
+      });
+    } finally {
+      setBulkPending(false);
+    }
+  }
+
+  async function bulkDelete() {
+    if (
+      !window.confirm(
+        messages.common.bulkDeleteConfirm.replace(
+          "{count}",
+          String(bulk.count),
+        ),
+      )
+    ) {
+      return;
+    }
+    setBulkPending(true);
+    try {
+      const response = await adminApiRequest<{ results: BulkActionResult[] }>(
+        "/api/admin/questions/bulk-delete",
+        locale,
+        { body: { ids: [...bulk.selected] } },
+      );
+      summarizeBulkResults(response.results);
+    } catch (error) {
+      setListResult({
+        kind: "error",
+        message:
+          error instanceof AdminApiRequestError
+            ? (error.body?.message ?? messages.common.requestFailed)
+            : messages.common.connectionError,
+      });
+    } finally {
+      setBulkPending(false);
+    }
+  }
 
   const availableTopics = topics.filter(
     (topic) => topic.examId === form.examId,
@@ -526,10 +616,30 @@ export function QuestionsEditor({
           </p>
         )}
 
+        <BulkActionsToolbar
+          messages={messages}
+          count={bulk.count}
+          allArchived={bulk.allArchived}
+          pending={bulkPending}
+          status={bulkStatus}
+          onStatusChange={setBulkStatus}
+          onApplyStatus={() => void applyBulkStatus()}
+          onDelete={() => void bulkDelete()}
+          result={null}
+        />
+
         <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr>
+                <th scope="col" className="admin-cell-nowrap">
+                  <input
+                    type="checkbox"
+                    checked={bulk.allSelected}
+                    onChange={bulk.toggleAll}
+                    aria-label={messages.common.selectAllLabel}
+                  />
+                </th>
                 <th scope="col" className="admin-cell-nowrap">
                   {messages.common.exam}
                 </th>
@@ -551,6 +661,14 @@ export function QuestionsEditor({
             <tbody>
               {filteredQuestions.map((question) => (
                 <tr key={question.id}>
+                  <td className="admin-cell-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={bulk.selected.has(question.id)}
+                      onChange={() => bulk.toggle(question.id)}
+                      aria-label={messages.common.selectAllLabel}
+                    />
+                  </td>
                   <td className="admin-cell-nowrap">
                     {examsById.get(question.examId)?.code ?? question.examId}
                   </td>

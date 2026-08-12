@@ -5,12 +5,18 @@ import { useRef, useState, type FormEvent } from "react";
 import { Check, Globe, Pencil, Plus, X } from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
+import { BulkActionsToolbar } from "@/components/admin/bulk-actions-toolbar";
 import { contentStatusTone } from "@/components/admin/status-tone";
+import { useBulkSelection } from "@/components/admin/use-bulk-selection";
 import {
   adminApiRequest,
   AdminApiRequestError,
 } from "@/components/admin/admin-api";
-import type { AdminContentWorkspace } from "@/domain/admin/content";
+import type {
+  AdminContentWorkspace,
+  BulkActionResult,
+  ContentStatus,
+} from "@/domain/admin/content";
 import type { Locale } from "@/domain/common/locale";
 import type { AdminCatalog } from "@/i18n/admin-catalogs";
 
@@ -68,6 +74,102 @@ export function ExamsEditor({
     kind: "error" | "success";
     message: string;
   } | null>(null);
+
+  const [filterStatus, setFilterStatus] = useState("");
+  const filteredExams = exams.filter(
+    (exam) => !filterStatus || exam.status === filterStatus,
+  );
+
+  const [listResult, setListResult] = useState<{
+    kind: "error" | "success";
+    message: string;
+  } | null>(null);
+  const bulk = useBulkSelection(filteredExams);
+  const [bulkStatus, setBulkStatus] = useState<ContentStatus>("PUBLISHED");
+  const [bulkPending, setBulkPending] = useState(false);
+
+  function statusLabel(status: ContentStatus): string {
+    return {
+      DRAFT: messages.common.statusDraft,
+      PUBLISHED: messages.common.statusPublished,
+      ARCHIVED: messages.common.statusArchived,
+    }[status];
+  }
+
+  function summarizeBulkResults(results: BulkActionResult[]) {
+    const failed = results.filter((item) => !item.ok);
+    setListResult({
+      kind: failed.length > 0 ? "error" : "success",
+      message: messages.common.bulkResultSummary
+        .replace("{success}", String(results.length - failed.length))
+        .replace("{failed}", String(failed.length)),
+    });
+    bulk.replace(failed.map((item) => item.id));
+    router.refresh();
+  }
+
+  async function applyBulkStatus() {
+    if (
+      !window.confirm(
+        messages.common.bulkStatusConfirm
+          .replace("{count}", String(bulk.count))
+          .replace("{status}", statusLabel(bulkStatus)),
+      )
+    ) {
+      return;
+    }
+    setBulkPending(true);
+    try {
+      const response = await adminApiRequest<{ results: BulkActionResult[] }>(
+        "/api/admin/exams/bulk-status",
+        locale,
+        { body: { ids: [...bulk.selected], status: bulkStatus } },
+      );
+      summarizeBulkResults(response.results);
+    } catch (error) {
+      setListResult({
+        kind: "error",
+        message:
+          error instanceof AdminApiRequestError
+            ? (error.body?.message ?? messages.common.requestFailed)
+            : messages.common.connectionError,
+      });
+    } finally {
+      setBulkPending(false);
+    }
+  }
+
+  async function bulkDelete() {
+    if (
+      !window.confirm(
+        messages.common.bulkDeleteConfirm.replace(
+          "{count}",
+          String(bulk.count),
+        ),
+      )
+    ) {
+      return;
+    }
+    setBulkPending(true);
+    try {
+      const response = await adminApiRequest<{ results: BulkActionResult[] }>(
+        "/api/admin/exams/bulk-delete",
+        locale,
+        { body: { ids: [...bulk.selected] } },
+      );
+      summarizeBulkResults(response.results);
+    } catch (error) {
+      setListResult({
+        kind: "error",
+        message:
+          error instanceof AdminApiRequestError
+            ? (error.body?.message ?? messages.common.requestFailed)
+            : messages.common.connectionError,
+      });
+    } finally {
+      setBulkPending(false);
+    }
+  }
 
   function openDialog(exam: Exam | null) {
     setSelectedId(exam?.id ?? null);
@@ -191,10 +293,56 @@ export function ExamsEditor({
             {messages.exams.newAction}
           </button>
         </div>
+        <div className="admin-toolbar">
+          <label>
+            <span>{messages.common.status}</span>
+            <select
+              value={filterStatus}
+              onChange={(event) => setFilterStatus(event.target.value)}
+            >
+              <option value="">{messages.common.filterAllStatuses}</option>
+              <option value="DRAFT">{messages.common.statusDraft}</option>
+              <option value="PUBLISHED">
+                {messages.common.statusPublished}
+              </option>
+              <option value="ARCHIVED">{messages.common.statusArchived}</option>
+            </select>
+          </label>
+        </div>
+
+        {listResult && (
+          <p
+            className={`form-message ${listResult.kind}`}
+            role={listResult.kind === "error" ? "alert" : "status"}
+          >
+            {listResult.message}
+          </p>
+        )}
+
+        <BulkActionsToolbar
+          messages={messages}
+          count={bulk.count}
+          allArchived={bulk.allArchived}
+          pending={bulkPending}
+          status={bulkStatus}
+          onStatusChange={setBulkStatus}
+          onApplyStatus={() => void applyBulkStatus()}
+          onDelete={() => void bulkDelete()}
+          result={null}
+        />
+
         <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr>
+                <th scope="col" className="admin-cell-nowrap">
+                  <input
+                    type="checkbox"
+                    checked={bulk.allSelected}
+                    onChange={bulk.toggleAll}
+                    aria-label={messages.common.selectAllLabel}
+                  />
+                </th>
                 <th scope="col">{messages.common.code}</th>
                 <th scope="col" className="admin-cell-nowrap">
                   {messages.common.primaryLocale}
@@ -211,8 +359,16 @@ export function ExamsEditor({
               </tr>
             </thead>
             <tbody>
-              {exams.map((exam) => (
+              {filteredExams.map((exam) => (
                 <tr key={exam.id}>
+                  <td className="admin-cell-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={bulk.selected.has(exam.id)}
+                      onChange={() => bulk.toggle(exam.id)}
+                      aria-label={messages.common.selectAllLabel}
+                    />
+                  </td>
                   <td>{exam.code}</td>
                   <td className="admin-cell-nowrap">
                     {exam.primaryLocale.toUpperCase()}
@@ -251,7 +407,7 @@ export function ExamsEditor({
               ))}
             </tbody>
           </table>
-          {exams.length === 0 && (
+          {filteredExams.length === 0 && (
             <p className="admin-empty">{messages.common.empty}</p>
           )}
         </div>

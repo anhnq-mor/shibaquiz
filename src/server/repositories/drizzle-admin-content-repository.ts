@@ -3,8 +3,11 @@ import { and, asc, count, eq, inArray, isNull, sql } from "drizzle-orm";
 import {
   AdminContentError,
   allocateLargestRemainder,
+  isAdminContentError,
   type AdminContentRepository,
   type AdminContentWorkspace,
+  type BulkActionResult,
+  type ContentStatus,
   type SaveExamInput,
   type SaveQuestionInput,
   type SaveTestInput,
@@ -74,6 +77,17 @@ function safeConflict(error: unknown): never {
   }
   throw error;
 }
+
+function isForeignKeyViolation(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as { code?: string; cause?: { code?: string } };
+  const code = candidate.code ?? candidate.cause?.code;
+  // 23503 = foreign_key_violation, 23001 = restrict_violation (PGlite reports
+  // ON DELETE RESTRICT breaches under this code instead of 23503).
+  return code === "23503" || code === "23001";
+}
+
+type MutableExecutor = Pick<Database, "select" | "insert" | "update" | "delete">;
 
 async function buildTestPreview(
   executor: SelectExecutor,
@@ -1013,5 +1027,516 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     } catch (error) {
       return safeConflict(error);
     }
+  }
+
+  private async runBulk(
+    ids: string[],
+    operation: (id: string, tx: MutableExecutor) => Promise<void>,
+  ): Promise<BulkActionResult[]> {
+    const results: BulkActionResult[] = [];
+    for (const id of ids) {
+      try {
+        await this.database.transaction((tx) => operation(id, tx));
+        results.push({ id, ok: true });
+      } catch (error) {
+        if (isAdminContentError(error)) {
+          results.push({
+            id,
+            ok: false,
+            code: error.code,
+            message: error.message,
+          });
+        } else if (isForeignKeyViolation(error)) {
+          results.push({
+            id,
+            ok: false,
+            code: "CONFLICT",
+            message: "Still referenced by other records",
+          });
+        } else if (isUniqueViolation(error)) {
+          results.push({
+            id,
+            ok: false,
+            code: "CONFLICT",
+            message: "Conflicts with an existing record",
+          });
+        } else {
+          throw error;
+        }
+      }
+    }
+    return results;
+  }
+
+  async bulkSetExamStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select()
+          .from(exams)
+          .where(eq(exams.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Exam not found");
+      }
+      if (existing.status === status) return;
+
+      if (status === "PUBLISHED") {
+        const translations = await tx
+          .select({ locale: examTranslations.locale })
+          .from(examTranslations)
+          .where(eq(examTranslations.examId, id));
+        assertTranslations(translations, existing.enabledLocales, "translations");
+        const [publishedTopics, publishedQuestions] = await Promise.all([
+          tx
+            .select({ value: count() })
+            .from(topics)
+            .where(and(eq(topics.examId, id), eq(topics.status, "PUBLISHED"))),
+          tx
+            .select({ value: count() })
+            .from(questions)
+            .where(
+              and(
+                eq(questions.examId, id),
+                eq(questions.status, "PUBLISHED"),
+                isNull(questions.deletedAt),
+              ),
+            ),
+        ]);
+        if (
+          Number(publishedTopics[0]?.value ?? 0) < 1 ||
+          Number(publishedQuestions[0]?.value ?? 0) < 1
+        ) {
+          throw new AdminContentError(
+            "PUBLISH_NOT_READY",
+            409,
+            "An exam needs a published topic and question",
+            { status: ["EXAM_CONTENT_REQUIRED"] },
+          );
+        }
+      }
+
+      await tx.update(exams).set({ status, updatedAt: now }).where(eq(exams.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_EXAM_STATUS_BULK_UPDATED",
+        entityType: "EXAM",
+        entityId: id,
+        metadata: { from: existing.status, to: status },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkSetTopicStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select()
+          .from(topics)
+          .where(eq(topics.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Topic not found");
+      }
+      if (existing.status === status) return;
+
+      if (status === "PUBLISHED") {
+        const exam = (
+          await tx
+            .select({ enabledLocales: exams.enabledLocales })
+            .from(exams)
+            .where(eq(exams.id, existing.examId))
+            .limit(1)
+        )[0];
+        if (!exam) {
+          throw new AdminContentError("NOT_FOUND", 404, "Exam not found");
+        }
+        const translations = await tx
+          .select({ locale: topicTranslations.locale })
+          .from(topicTranslations)
+          .where(eq(topicTranslations.topicId, id));
+        assertTranslations(translations, exam.enabledLocales, "translations");
+      }
+
+      await tx
+        .update(topics)
+        .set({ status, updatedAt: now })
+        .where(eq(topics.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_TOPIC_STATUS_BULK_UPDATED",
+        entityType: "TOPIC",
+        entityId: id,
+        metadata: { from: existing.status, to: status },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkSetQuestionStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select()
+          .from(questions)
+          .where(eq(questions.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Question not found");
+      }
+      if (existing.deletedAt) {
+        throw new AdminContentError(
+          "CONFLICT",
+          409,
+          "A deleted question cannot be edited",
+        );
+      }
+      if (existing.status === status) return;
+
+      if (status === "PUBLISHED") {
+        const exam = (
+          await tx
+            .select({ enabledLocales: exams.enabledLocales })
+            .from(exams)
+            .where(eq(exams.id, existing.examId))
+            .limit(1)
+        )[0];
+        if (!exam) {
+          throw new AdminContentError("NOT_FOUND", 404, "Exam not found");
+        }
+        const translations = await tx
+          .select({ locale: questionTranslations.locale })
+          .from(questionTranslations)
+          .where(eq(questionTranslations.questionId, id));
+        assertTranslations(translations, exam.enabledLocales, "translations");
+
+        const optionRows = await tx
+          .select({ id: questionOptions.id })
+          .from(questionOptions)
+          .where(eq(questionOptions.questionId, id));
+        const optionIds = optionRows.map((option) => option.id);
+        const optionTranslationRows = optionIds.length
+          ? await tx
+              .select({
+                optionId: questionOptionTranslations.optionId,
+                locale: questionOptionTranslations.locale,
+              })
+              .from(questionOptionTranslations)
+              .where(inArray(questionOptionTranslations.optionId, optionIds))
+          : [];
+        for (const optionId of optionIds) {
+          const localesForOption = optionTranslationRows.filter(
+            (row) => row.optionId === optionId,
+          );
+          assertTranslations(localesForOption, exam.enabledLocales, "options");
+        }
+      }
+
+      await tx
+        .update(questions)
+        .set({ status, updatedBy: actorUserId, updatedAt: now })
+        .where(eq(questions.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_QUESTION_STATUS_BULK_UPDATED",
+        entityType: "QUESTION",
+        entityId: id,
+        metadata: { from: existing.status, to: status },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkSetTestStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select()
+          .from(quizTests)
+          .where(eq(quizTests.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Test not found");
+      }
+      if (existing.status === status) return;
+
+      const exam = (
+        await tx
+          .select({ enabledLocales: exams.enabledLocales })
+          .from(exams)
+          .where(eq(exams.id, existing.examId))
+          .limit(1)
+      )[0];
+      if (!exam) {
+        throw new AdminContentError("NOT_FOUND", 404, "Exam not found");
+      }
+
+      if (status === "PUBLISHED") {
+        const translations = await tx
+          .select({ locale: testTranslations.locale })
+          .from(testTranslations)
+          .where(eq(testTranslations.testId, id));
+        assertTranslations(translations, exam.enabledLocales, "translations");
+
+        if (existing.type === "FIXED") {
+          const fixedRows = await tx
+            .select({ questionId: testQuestions.questionId })
+            .from(testQuestions)
+            .where(eq(testQuestions.testId, id));
+          const questionIds = fixedRows.map((row) => row.questionId);
+          const availableRows = questionIds.length
+            ? await tx
+                .select({ id: questions.id })
+                .from(questions)
+                .where(
+                  and(
+                    inArray(questions.id, questionIds),
+                    eq(questions.status, "PUBLISHED"),
+                    isNull(questions.deletedAt),
+                  ),
+                )
+            : [];
+          if (availableRows.length !== questionIds.length) {
+            throw new AdminContentError(
+              "PUBLISH_NOT_READY",
+              409,
+              "The published question bank is insufficient",
+              { fixedQuestions: ["QUESTION_SOURCE_INVALID"] },
+            );
+          }
+        } else {
+          const ruleRows = await tx
+            .select({
+              topicId: testTopicRules.topicId,
+              percentage: testTopicRules.percentage,
+            })
+            .from(testTopicRules)
+            .where(eq(testTopicRules.testId, id));
+          const topicIds = ruleRows.map((rule) => rule.topicId);
+          const bankRows = topicIds.length
+            ? await tx
+                .select({ topicId: questions.topicId, value: count() })
+                .from(questions)
+                .where(
+                  and(
+                    inArray(questions.topicId, topicIds),
+                    eq(questions.examId, existing.examId),
+                    eq(questions.status, "PUBLISHED"),
+                    isNull(questions.deletedAt),
+                  ),
+                )
+                .groupBy(questions.topicId)
+            : [];
+          const available = new Map(
+            bankRows.map((row) => [row.topicId, Number(row.value)]),
+          );
+          const allocation = allocateLargestRemainder(
+            existing.questionCount,
+            ruleRows.map((rule) => ({
+              topicId: rule.topicId,
+              percentage: Number(rule.percentage),
+            })),
+          );
+          if (
+            allocation.some(
+              (row) => (available.get(row.topicId) ?? 0) < row.questionCount,
+            )
+          ) {
+            throw new AdminContentError(
+              "PUBLISH_NOT_READY",
+              409,
+              "The published question bank is insufficient",
+              { dynamicRules: ["QUESTION_BANK_INSUFFICIENT"] },
+            );
+          }
+        }
+      }
+
+      await tx
+        .update(quizTests)
+        .set({ status, updatedAt: now })
+        .where(eq(quizTests.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_TEST_STATUS_BULK_UPDATED",
+        entityType: "TEST",
+        entityId: id,
+        metadata: { from: existing.status, to: status },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkDeleteExams(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select({ id: exams.id, status: exams.status })
+          .from(exams)
+          .where(eq(exams.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Exam not found");
+      }
+      if (existing.status !== "ARCHIVED") {
+        throw new AdminContentError(
+          "CONFLICT",
+          409,
+          "Only archived records can be permanently deleted",
+        );
+      }
+      await tx.delete(exams).where(eq(exams.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_EXAM_HARD_DELETED",
+        entityType: "EXAM",
+        entityId: id,
+        metadata: { status: "ARCHIVED" },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkDeleteTopics(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select({ id: topics.id, status: topics.status })
+          .from(topics)
+          .where(eq(topics.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Topic not found");
+      }
+      if (existing.status !== "ARCHIVED") {
+        throw new AdminContentError(
+          "CONFLICT",
+          409,
+          "Only archived records can be permanently deleted",
+        );
+      }
+      await tx.delete(topics).where(eq(topics.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_TOPIC_HARD_DELETED",
+        entityType: "TOPIC",
+        entityId: id,
+        metadata: { status: "ARCHIVED" },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkDeleteTests(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select({ id: quizTests.id, status: quizTests.status })
+          .from(quizTests)
+          .where(eq(quizTests.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Test not found");
+      }
+      if (existing.status !== "ARCHIVED") {
+        throw new AdminContentError(
+          "CONFLICT",
+          409,
+          "Only archived records can be permanently deleted",
+        );
+      }
+      await tx.delete(quizTests).where(eq(quizTests.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_TEST_HARD_DELETED",
+        entityType: "TEST",
+        entityId: id,
+        metadata: { status: "ARCHIVED" },
+        createdAt: now,
+      });
+    });
+  }
+
+  async bulkDeleteQuestions(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]> {
+    return this.runBulk(ids, async (id, tx) => {
+      const existing = (
+        await tx
+          .select({ id: questions.id, status: questions.status })
+          .from(questions)
+          .where(eq(questions.id, id))
+          .limit(1)
+          .for("update")
+      )[0];
+      if (!existing) {
+        throw new AdminContentError("NOT_FOUND", 404, "Question not found");
+      }
+      if (existing.status !== "ARCHIVED") {
+        throw new AdminContentError(
+          "CONFLICT",
+          409,
+          "Only archived records can be permanently deleted",
+        );
+      }
+      await tx.delete(questions).where(eq(questions.id, id));
+      await tx.insert(auditLogs).values({
+        actorUserId,
+        action: "CONTENT_QUESTION_HARD_DELETED",
+        entityType: "QUESTION",
+        entityId: id,
+        metadata: { status: "ARCHIVED" },
+        createdAt: now,
+      });
+    });
   }
 }

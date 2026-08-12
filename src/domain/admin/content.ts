@@ -148,6 +148,24 @@ export const saveTestSchema = z.object({
 
 export const entityIdSchema = z.object({ id: idSchema });
 
+export const bulkIdsSchema = z.object({
+  ids: z.array(idSchema).min(1).max(200),
+});
+
+export const bulkStatusSchema = bulkIdsSchema.extend({
+  status: statusSchema,
+});
+
+export type BulkIdsInput = z.infer<typeof bulkIdsSchema>;
+export type BulkStatusInput = z.infer<typeof bulkStatusSchema>;
+
+export interface BulkActionResult {
+  id: string;
+  ok: boolean;
+  code?: string;
+  message?: string;
+}
+
 export type SaveExamInput = z.infer<typeof saveExamSchema>;
 export type SaveTopicInput = z.infer<typeof saveTopicSchema>;
 export type SaveQuestionInput = z.infer<typeof saveQuestionSchema>;
@@ -264,6 +282,50 @@ export interface AdminContentRepository {
     actorUserId: string,
     now: Date,
   ): Promise<{ id: string; preview: TestAllocationPreview[] }>;
+  bulkSetExamStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkSetTopicStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkSetTestStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkSetQuestionStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkDeleteExams(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkDeleteTopics(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkDeleteTests(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
+  bulkDeleteQuestions(
+    ids: string[],
+    actorUserId: string,
+    now: Date,
+  ): Promise<BulkActionResult[]>;
 }
 
 export function assertQuestionCorrectness(input: SaveQuestionInput): void {

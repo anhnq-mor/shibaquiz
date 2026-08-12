@@ -2,6 +2,7 @@ import {
   assertQuestionCorrectness,
   assertUniqueTestStructure,
   type AdminContentRepository,
+  type ContentStatus,
   type SaveExamInput,
   type SaveQuestionInput,
   type SaveTestInput,
@@ -48,5 +49,57 @@ export class AdminContentService {
   async saveTest(input: SaveTestInput, actorUserId: string, now = new Date()) {
     assertUniqueTestStructure(input);
     return this.repository.saveTest(input, actorUserId, now);
+  }
+
+  bulkSetExamStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now = new Date(),
+  ) {
+    return this.repository.bulkSetExamStatus(ids, status, actorUserId, now);
+  }
+
+  bulkSetTopicStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now = new Date(),
+  ) {
+    return this.repository.bulkSetTopicStatus(ids, status, actorUserId, now);
+  }
+
+  bulkSetTestStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now = new Date(),
+  ) {
+    return this.repository.bulkSetTestStatus(ids, status, actorUserId, now);
+  }
+
+  bulkSetQuestionStatus(
+    ids: string[],
+    status: ContentStatus,
+    actorUserId: string,
+    now = new Date(),
+  ) {
+    return this.repository.bulkSetQuestionStatus(ids, status, actorUserId, now);
+  }
+
+  bulkDeleteExams(ids: string[], actorUserId: string, now = new Date()) {
+    return this.repository.bulkDeleteExams(ids, actorUserId, now);
+  }
+
+  bulkDeleteTopics(ids: string[], actorUserId: string, now = new Date()) {
+    return this.repository.bulkDeleteTopics(ids, actorUserId, now);
+  }
+
+  bulkDeleteTests(ids: string[], actorUserId: string, now = new Date()) {
+    return this.repository.bulkDeleteTests(ids, actorUserId, now);
+  }
+
+  bulkDeleteQuestions(ids: string[], actorUserId: string, now = new Date()) {
+    return this.repository.bulkDeleteQuestions(ids, actorUserId, now);
   }
 }

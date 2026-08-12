@@ -890,7 +890,7 @@ p {
 }
 
 h1 {
-  max-width: 13ch;
+  /* max-width: 13ch; */
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.8rem, 6vw, 5.5rem);
@@ -1570,9 +1570,8 @@ h1 {
 }
 
 .topic-grid {
-  display: grid;
+  display: flex;
   gap: 0.85rem;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
 }
 
 .topic-card {
@@ -1602,6 +1601,10 @@ h1 {
 }
 
 .topic-card-button {
+  justify-content: space-between;
+  flex-direction: column;
+  display: flex !important;
+  align-items: flex-start !important;
   width: 100%;
   cursor: pointer;
   text-align: left;
@@ -1677,6 +1680,31 @@ h1 {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--ink-700);
+}
+
+.admin-bulk-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+}
+
+.admin-bulk-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-700);
+}
+
+.admin-bulk-toolbar .form-message {
+  margin: 0;
 }
 
 .admin-toolbar input,
@@ -1765,12 +1793,12 @@ h1 {
   resize: vertical;
 }
 
-.admin-form input:focus,
+/* .admin-form input:focus,
 .admin-form select:focus,
 .admin-form textarea:focus {
   border-color: var(--focus);
   outline: 3px solid rgb(18 95 212 / 20%);
-}
+} */
 
 .admin-checkbox-field {
   display: flex !important;
@@ -1969,7 +1997,7 @@ dialog.admin-dialog::backdrop {
 }
 
 .app-page-header h1 {
-  margin: 0 0 0.35rem;
+  margin: 1.35rem 0 1.35rem;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 5vw, 2.4rem);
 }
@@ -2625,7 +2653,7 @@ dialog.attempt-nav-dialog {
 
 .filter-form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: 0.85rem 1.25rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1.25rem;
