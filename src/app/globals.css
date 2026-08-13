@@ -2524,6 +2524,7 @@ a:has(svg):not(.button) {
     white-space: nowrap;
     justify-content: center;
   }
+
 }
 
 .attempt-question-panel {
@@ -2654,6 +2655,28 @@ a:has(svg):not(.button) {
 
 .option-list li.incorrect .option-label {
   border-color: var(--red-700);
+}
+
+@media (max-width: 40rem) {
+  .attempt-question-panel {
+    padding: 1rem;
+  }
+
+  .option-list li {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .option-list li label {
+    gap: 0.5rem;
+    margin: -0.65rem -0.75rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .option-label {
+    min-width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.78rem;
+  }
 }
 
 .attempt-toolbar {
