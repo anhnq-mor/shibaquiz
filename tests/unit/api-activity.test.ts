@@ -1,8 +1,11 @@
+import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   apiFetch,
   API_COMPLETION_DURATION_MS,
+  API_OVERLAY_DELAY_MS,
+  API_PROGRESS_BAR_DELAY_MS,
   beginApiActivity,
   getApiActivityCount,
   getApiActivityPhase,
@@ -51,5 +54,33 @@ describe("API activity tracking", () => {
 
     vi.advanceTimersByTime(API_COMPLETION_DURATION_MS);
     expect(getApiActivityPhase()).toBe("idle");
+  });
+});
+
+describe("graduated loading feedback (NN/g response-time thresholds)", () => {
+  it("escalates delay by how disruptive the indicator is: bar < blocking overlay", () => {
+    expect(API_PROGRESS_BAR_DELAY_MS).toBeLessThan(API_OVERLAY_DELAY_MS);
+    expect(API_OVERLAY_DELAY_MS).toBeLessThan(API_COMPLETION_DURATION_MS);
+  });
+
+  it("only shows the top progress bar once a request outlasts its delay", () => {
+    const source = readFileSync("src/components/api-progress-bar.tsx", "utf8");
+    expect(source).toContain("API_PROGRESS_BAR_DELAY_MS");
+    expect(source).toContain("() => setVisible(true)");
+    expect(source).toContain("if (!visible) return null;");
+  });
+
+  it("only shows the blocking overlay once a request outlasts its delay", () => {
+    const source = readFileSync(
+      "src/components/api-loading-overlay.tsx",
+      "utf8",
+    );
+    expect(source).toContain("API_OVERLAY_DELAY_MS");
+    expect(source).toContain("() => setVisible(true)");
+    expect(source).toContain("if (!visible) return null;");
+    // Regression guard: the className template must keep a leading space
+    // before "is-done", otherwise it concatenates into one unmatched class
+    // token and the overlay silently loses all of its styling.
+    expect(source).toContain('" is-done" : ""');
   });
 });

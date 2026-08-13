@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { Play } from "lucide-react";
+import { Loader2, Play } from "lucide-react";
 
 import { appApiRequest, AppApiRequestError } from "@/components/app/app-api";
 import type { PublishedExamDetail } from "@/domain/discovery/discovery";
@@ -154,7 +154,11 @@ export function StartAttemptForm({
             className="button button-primary"
             disabled={pending || !uiMode}
           >
-            <Play size={16} aria-hidden />
+            {pending ? (
+              <Loader2 size={16} aria-hidden className="icon-spin" />
+            ) : (
+              <Play size={16} aria-hidden />
+            )}
             {pending ? messages.exams.startWorking : messages.exams.startAction}
           </button>
         </div>

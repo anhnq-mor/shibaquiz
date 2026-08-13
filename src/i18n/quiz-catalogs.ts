@@ -24,6 +24,7 @@ export interface QuizCatalog {
     listDescription: string;
     searchLabel: string;
     searchAction: string;
+    searching: string;
     empty: string;
     topicsCount: string;
     questionsCount: string;
@@ -198,6 +199,7 @@ const vi: QuizCatalog = {
     listDescription: "Chọn một kỳ thi đã publish để bắt đầu luyện tập.",
     searchLabel: "Tìm theo tên hoặc mã kỳ thi",
     searchAction: "Tìm kiếm",
+    searching: "Đang tìm…",
     empty: "Chưa có kỳ thi nào được publish.",
     topicsCount: "{count} chủ đề",
     questionsCount: "{count} câu hỏi đã publish",
@@ -375,6 +377,7 @@ const en: QuizCatalog = {
     listDescription: "Pick a published exam to start practicing.",
     searchLabel: "Search by exam name or code",
     searchAction: "Search",
+    searching: "Searching…",
     empty: "No exams have been published yet.",
     topicsCount: "{count} topics",
     questionsCount: "{count} published questions",

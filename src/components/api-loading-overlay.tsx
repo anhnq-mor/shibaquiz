@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import {
+  API_OVERLAY_DELAY_MS,
   getApiActivityPhase,
   subscribeToApiActivity,
 } from "@/components/api-activity";
@@ -15,21 +16,40 @@ export function ApiLoadingOverlay({ locale }: { locale: Locale }) {
     getApiActivityPhase,
     () => "idle" as const,
   );
-  const busy = phase === "running";
+  // A request only earns the blocking overlay once it has been running
+  // longer than API_OVERLAY_DELAY_MS — fast requests resolve before the
+  // timer fires and never show it, keeping quick actions distraction-free.
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (busy) document.body.setAttribute("aria-busy", "true");
+    if (phase === "running") {
+      const timer = setTimeout(() => setVisible(true), API_OVERLAY_DELAY_MS);
+      return () => clearTimeout(timer);
+    }
+    if (phase === "idle") {
+      // Deferred rather than called synchronously in the effect body, so
+      // this stays a reaction to the external store instead of a same-commit
+      // cascading render.
+      const timer = setTimeout(() => setVisible(false), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    if (visible) document.body.setAttribute("aria-busy", "true");
     else document.body.removeAttribute("aria-busy");
 
     return () => document.body.removeAttribute("aria-busy");
-  }, [busy]);
+  }, [visible]);
 
-  if (phase === "idle") return null;
+  if (!visible) return null;
+
+  const displayPhase = phase === "done" ? "done" : "running";
 
   return (
-    <div className={`api-loading-overlay${phase === "done" ? "is-done" : ""}`}>
+    <div className={`api-loading-overlay${displayPhase === "done" ? " is-done" : ""}`}>
       <div className="api-loading-card" role="status" aria-live="polite">
-        <ShibaLoading locale={locale} phase={phase} />
+        <ShibaLoading locale={locale} phase={displayPhase} />
       </div>
     </div>
   );

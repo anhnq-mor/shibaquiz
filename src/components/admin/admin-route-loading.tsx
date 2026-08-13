@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 
 import { isLocale } from "@/domain/common/locale";
-import { ShibaLoading } from "@/components/shiba-loading";
+import { LogoLoading } from "@/components/logo-loading";
 
 export function AdminRouteLoading() {
   const params = useParams<{ locale?: string | string[] }>();
@@ -16,7 +16,7 @@ export function AdminRouteLoading() {
     <section className="admin-route-loading" aria-busy="true">
       <div className="route-loading-bar" aria-hidden="true" />
       <div className="route-loading-content" role="status" aria-live="polite">
-        <ShibaLoading locale={locale} phase="running" />
+        <LogoLoading locale={locale} />
       </div>
     </section>
   );

@@ -1,9 +1,10 @@
 import type { Route } from "next";
 import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
-import { ChevronDown, Eye, Search } from "lucide-react";
+import { ChevronDown, Eye } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
+import { ExamSearchForm } from "@/components/app/exam-search-form";
 import { isLocale } from "@/domain/common/locale";
 import { getQuizMessages } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
@@ -40,22 +41,11 @@ export default async function ExamsPage({
         <p>{messages.exams.listDescription}</p>
       </div>
 
-      <form className="search-form" method="GET">
-        <label className="sr-only" htmlFor="exam-search">
-          {messages.exams.searchLabel}
-        </label>
-        <input
-          id="exam-search"
-          type="search"
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder={messages.exams.searchLabel}
-        />
-        <button type="submit" className="button button-primary">
-          <Search size={16} aria-hidden />
-          {messages.exams.searchAction}
-        </button>
-      </form>
+      <ExamSearchForm
+        locale={locale}
+        messages={messages}
+        initialQuery={q ?? ""}
+      />
 
       {items.length === 0 ? (
         <p className="admin-empty">{messages.exams.empty}</p>

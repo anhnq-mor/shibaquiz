@@ -16,7 +16,7 @@ describe("route navigation feedback", () => {
     "utf8",
   );
   const loadingCatalog = readFileSync("src/i18n/loading-catalogs.ts", "utf8");
-  const shibaLoading = readFileSync("src/components/shiba-loading.tsx", "utf8");
+  const logoLoading = readFileSync("src/components/logo-loading.tsx", "utf8");
   const stylesheet = readFileSync("src/app/globals.css", "utf8");
 
   it("uses Next link status and exposes the busy state", () => {
@@ -31,25 +31,31 @@ describe("route navigation feedback", () => {
     );
   });
 
-  it("provides localized status text without blocking the page", () => {
-    expect(loadingFallback).toContain("ShibaLoading");
-    expect(loadingCatalog).toContain('mission: "Shiba nhận nhiệm vụ rồi!"');
-    expect(loadingCatalog).toContain('mission: "Shiba got the mission!"');
-    expect(shibaLoading).toContain('aria-hidden="true"');
+  it("shows only the brand logo, with a screen-reader label, while a route renders", () => {
+    expect(loadingFallback).toContain("LogoLoading");
+    expect(loadingCatalog).toContain('loading: "Đang tải…"');
+    expect(loadingCatalog).toContain('loading: "Loading…"');
+    expect(logoLoading).toContain("BrandMark");
+    expect(logoLoading).toContain('aria-hidden="true"');
+    expect(logoLoading).toContain("sr-only");
     expect(loadingFallback).not.toContain("position: fixed");
   });
 
   it("provides a localized loading boundary inside the admin shell", () => {
     expect(adminLoadingBoundary).toContain("AdminRouteLoading");
-    expect(adminLoadingFallback).toContain("ShibaLoading");
+    expect(adminLoadingFallback).toContain("LogoLoading");
     expect(adminLoadingFallback).toContain('role="status"');
     expect(adminLoadingFallback).toContain('aria-live="polite"');
   });
 
-  it("runs Shiba left to right and respects reduced motion", () => {
-    expect(stylesheet).toContain("@keyframes shiba-run-across");
-    expect(stylesheet).toContain("@keyframes shiba-tail-done");
-    expect(stylesheet).toContain("prefers-reduced-motion: reduce");
+  it("pulses the logo gently and respects reduced motion", () => {
+    expect(stylesheet).toContain("@keyframes logo-loading-pulse");
+    expect(stylesheet).toMatch(
+      /\.logo-loading-mark\s*{[^}]*animation: logo-loading-pulse/,
+    );
+    expect(stylesheet).toMatch(
+      /prefers-reduced-motion: reduce\)\s*{[\s\S]*\.logo-loading-mark\s*{\s*animation: none;/,
+    );
   });
 
   it("centers route loading for admin and regular user screens", () => {

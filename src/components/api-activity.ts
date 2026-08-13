@@ -5,6 +5,12 @@ export type ApiActivityPhase = "idle" | "running" | "done";
 
 export const API_COMPLETION_DURATION_MS = 720;
 
+// Nielsen Norman Group response-time thresholds: sub-second actions only need
+// a light, non-blocking cue; the disruptive full-screen overlay should wait
+// long enough that the user would otherwise wonder if the app is frozen.
+export const API_PROGRESS_BAR_DELAY_MS = 120;
+export const API_OVERLAY_DELAY_MS = 500;
+
 const listeners = new Set<ApiActivityListener>();
 let activeRequestCount = 0;
 let phase: ApiActivityPhase = "idle";
