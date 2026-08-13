@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import {
   allocateLargestRemainder,
@@ -23,7 +23,9 @@ import {
   type AttemptRepository,
   type AttemptResultView,
   type AttemptTakingView,
+  type ExamProgressSummary,
   type HistoryFilterInput,
+  type ModeProgress,
   type SaveAnswerInput,
   type StartAttemptInput,
   type TopicBreakdown,
@@ -1191,5 +1193,96 @@ export class DrizzleAttemptRepository implements AttemptRepository {
     }));
 
     return { items, nextCursor };
+  }
+
+  async getExamProgress(
+    userId: string,
+    examId: string,
+  ): Promise<ExamProgressSummary> {
+    const attemptRows = await this.database
+      .select({
+        id: attempts.id,
+        scope: attempts.scope,
+        mode: attempts.mode,
+        status: attempts.status,
+        testId: attempts.testId,
+        topicId: sql<string | null>`${attempts.generationConfigSnapshot}->>'topicId'`,
+        startedAt: attempts.startedAt,
+        lastActivityAt: attempts.lastActivityAt,
+      })
+      .from(attempts)
+      .where(and(eq(attempts.userId, userId), eq(attempts.examId, examId)));
+
+    if (attemptRows.length === 0) return { topics: {}, tests: {} };
+
+    const attemptIds = attemptRows.map((row) => row.id);
+    const countRows = await this.database
+      .select({
+        attemptId: attemptQuestions.attemptId,
+        total: count(),
+        answered: count(attemptQuestions.answeredAt),
+      })
+      .from(attemptQuestions)
+      .where(inArray(attemptQuestions.attemptId, attemptIds))
+      .groupBy(attemptQuestions.attemptId);
+    const countsByAttempt = new Map(
+      countRows.map((row) => [
+        row.attemptId,
+        { total: row.total, answered: row.answered },
+      ]),
+    );
+
+    type Bucket = { targetType: "topic" | "test"; targetId: string };
+    const winners = new Map<
+      string,
+      (typeof attemptRows)[number] & { modeBucket: "STUDY" | "PRACTICE" }
+    >();
+
+    for (const row of attemptRows) {
+      let bucket: Bucket | null = null;
+      if (row.scope === "TOPIC" && row.topicId) {
+        bucket = { targetType: "topic", targetId: row.topicId };
+      } else if (row.scope === "FULL_TEST" && row.testId) {
+        bucket = { targetType: "test", targetId: row.testId };
+      }
+      if (!bucket) continue;
+
+      const modeBucket = row.mode === "STUDY" ? "STUDY" : "PRACTICE";
+      const key = `${bucket.targetType}:${bucket.targetId}:${modeBucket}`;
+      const existing = winners.get(key);
+      const rowRecency = (row.lastActivityAt ?? row.startedAt).getTime();
+      const existingRecency = existing
+        ? (existing.lastActivityAt ?? existing.startedAt).getTime()
+        : -Infinity;
+      if (!existing || rowRecency > existingRecency) {
+        winners.set(key, { ...row, modeBucket });
+      }
+    }
+
+    const topics: Record<string, ModeProgress> = {};
+    const tests: Record<string, ModeProgress> = {};
+
+    for (const [key, winner] of winners) {
+      const [targetType, targetId] = key.split(":") as ["topic" | "test", string];
+      const counts = countsByAttempt.get(winner.id);
+      const percent =
+        winner.status === "SUBMITTED"
+          ? 100
+          : counts && counts.total > 0
+            ? Math.round((counts.answered / counts.total) * 100)
+            : 0;
+
+      const target = targetType === "topic" ? topics : tests;
+      const existing = target[targetId] ?? {
+        studyPercent: 0,
+        practicePercent: 0,
+      };
+      target[targetId] =
+        winner.modeBucket === "STUDY"
+          ? { ...existing, studyPercent: percent }
+          : { ...existing, practicePercent: percent };
+    }
+
+    return { topics, tests };
   }
 }

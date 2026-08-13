@@ -33,12 +33,15 @@ export interface QuizCatalog {
     localeFallbackNotice: string;
     testsHeading: string;
     topicQuestionsCount: string;
+    progressStudyLabel: string;
+    progressPracticeLabel: string;
     testDurationMinutes: string;
     testNoTimeLimit: string;
     testPassingScore: string;
     tableTestName: string;
     tableDuration: string;
     tablePassingScore: string;
+    tableProgress: string;
     modeLabel: string;
     modeStudyHint: string;
     modePracticeImmediateHint: string;
@@ -209,12 +212,15 @@ const vi: QuizCatalog = {
       "Kỳ thi này chưa bật tiếng Anh; nội dung dưới đây hiển thị bằng ngôn ngữ chính của kỳ thi.",
     testsHeading: "Đề thi",
     topicQuestionsCount: "{count} câu đã publish",
+    progressStudyLabel: "Ôn tập",
+    progressPracticeLabel: "Luyện tập",
     testDurationMinutes: "{minutes} phút",
     testNoTimeLimit: "Không giới hạn thời gian",
     testPassingScore: "Điểm đạt {percent}%",
     tableTestName: "Đề thi",
     tableDuration: "Thời gian",
     tablePassingScore: "Điểm đạt",
+    tableProgress: "Tiến độ",
     modeLabel: "Chế độ làm bài",
     modeStudyHint: "Hiện đáp án và giải thích ngay khi mở câu.",
     modePracticeImmediateHint: "Tự kiểm tra đáp án trong lúc làm bài.",
@@ -387,12 +393,15 @@ const en: QuizCatalog = {
       "English isn't enabled for this exam yet; content below is shown in the exam's primary language.",
     testsHeading: "Tests",
     topicQuestionsCount: "{count} published questions",
+    progressStudyLabel: "Study",
+    progressPracticeLabel: "Practice",
     testDurationMinutes: "{minutes} minutes",
     testNoTimeLimit: "No time limit",
     testPassingScore: "Passing score {percent}%",
     tableTestName: "Test",
     tableDuration: "Duration",
     tablePassingScore: "Passing score",
+    tableProgress: "Progress",
     modeLabel: "Mode",
     modeStudyHint:
       "Show the answer and explanation as soon as you open a question.",

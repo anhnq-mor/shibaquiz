@@ -4,9 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, BookOpen, Layers, Play } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
-import { historyFilterSchema } from "@/domain/attempts/attempt";
+import {
+  historyFilterSchema,
+  type ModeProgress,
+} from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
-import { getQuizMessages } from "@/i18n/quiz-catalogs";
+import { getQuizMessages, type QuizCatalog } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import {
   getAttemptService,
@@ -14,6 +17,43 @@ import {
 } from "@/server/content/runtime";
 
 export const dynamic = "force-dynamic";
+
+function ProgressMiniBars({
+  progress,
+  messages,
+}: {
+  progress: ModeProgress;
+  messages: QuizCatalog;
+}) {
+  return (
+    <div className="progress-mini-group">
+      <div className="progress-mini">
+        <span className="progress-mini-label">
+          <span>{messages.exams.progressStudyLabel}</span>
+          <span>{progress.studyPercent}%</span>
+        </span>
+        <span className="progress-mini-track">
+          <span
+            className="progress-mini-fill tone-study"
+            style={{ width: `${progress.studyPercent}%` }}
+          />
+        </span>
+      </div>
+      <div className="progress-mini">
+        <span className="progress-mini-label">
+          <span>{messages.exams.progressPracticeLabel}</span>
+          <span>{progress.practicePercent}%</span>
+        </span>
+        <span className="progress-mini-track">
+          <span
+            className="progress-mini-fill tone-practice"
+            style={{ width: `${progress.practicePercent}%` }}
+          />
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export default async function ExamDetailPage({
   params,
@@ -33,6 +73,11 @@ export default async function ExamDetailPage({
     user.id,
     historyFilterSchema.parse({ examId: exam.id, status: "IN_PROGRESS" }),
   );
+  const progress = await getAttemptService().getExamProgress(
+    user.id,
+    exam.id,
+  );
+  const noProgress: ModeProgress = { studyPercent: 0, practicePercent: 0 };
 
   const startBase = `/${locale}/exams/${slug}/start`;
 
@@ -90,6 +135,10 @@ export default async function ExamDetailPage({
                       String(topic.publishedQuestionCount),
                     )}
                   </span>
+                  <ProgressMiniBars
+                    progress={progress.topics[topic.id] ?? noProgress}
+                    messages={messages}
+                  />
                 </Link>
               ))}
               {exam.publishedQuestionCount > 0 && (
@@ -129,6 +178,7 @@ export default async function ExamDetailPage({
                     <th scope="col" className="admin-cell-nowrap">
                       {messages.exams.tablePassingScore}
                     </th>
+                    <th scope="col">{messages.exams.tableProgress}</th>
                     <th scope="col" className="admin-cell-nowrap">
                       {messages.common.scopeFullTest}
                     </th>
@@ -159,6 +209,12 @@ export default async function ExamDetailPage({
                           "{percent}",
                           String(test.passingScorePercent),
                         )}
+                      </td>
+                      <td data-label={messages.exams.tableProgress}>
+                        <ProgressMiniBars
+                          progress={progress.tests[test.id] ?? noProgress}
+                          messages={messages}
+                        />
                       </td>
                       <td
                         className="admin-cell-nowrap"

@@ -325,6 +325,16 @@ export interface AttemptHistoryItem {
   durationSeconds: number | null;
 }
 
+export interface ModeProgress {
+  studyPercent: number;
+  practicePercent: number;
+}
+
+export interface ExamProgressSummary {
+  topics: Record<string, ModeProgress>;
+  tests: Record<string, ModeProgress>;
+}
+
 export interface AttemptRepository {
   startOrResumeAttempt(
     input: StartAttemptInput,
@@ -365,4 +375,8 @@ export interface AttemptRepository {
     userId: string,
     filters: HistoryFilterInput,
   ): Promise<{ items: AttemptHistoryItem[]; nextCursor: string | null }>;
+  getExamProgress(
+    userId: string,
+    examId: string,
+  ): Promise<ExamProgressSummary>;
 }

@@ -1736,6 +1736,49 @@ h1 {
   font-size: 0.85rem;
 }
 
+.progress-mini-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.progress-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.progress-mini-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+  color: var(--ink-700);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.progress-mini-track {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+
+.progress-mini-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.progress-mini-fill.tone-study {
+  background: var(--green-700);
+}
+
+.progress-mini-fill.tone-practice {
+  background: var(--gold-500);
+}
+
 .topic-card-button {
   justify-content: space-between;
   flex-direction: column;

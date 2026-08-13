@@ -17,6 +17,7 @@ const authorId = uid(1);
 const u1 = uid(2);
 const u2 = uid(3);
 const u4 = uid(4);
+const p1 = uid(200);
 const examId = uid(5);
 const topicMath = uid(6);
 const topicScience = uid(7);
@@ -122,6 +123,14 @@ beforeAll(async () => {
       id: u4,
       email: "attempt-user-4@example.com",
       displayName: "History User",
+      passwordHash: "not-a-real-password-hash",
+      role: "USER",
+      emailVerifiedAt: new Date("2026-08-05T09:00:00.000Z"),
+    },
+    {
+      id: p1,
+      email: "attempt-progress-1@example.com",
+      displayName: "Progress User",
       passwordHash: "not-a-real-password-hash",
       role: "USER",
       emailVerifiedAt: new Date("2026-08-05T09:00:00.000Z"),
@@ -872,5 +881,183 @@ describe("history", () => {
     expect(nextPage.items.map((item) => item.attemptId)).toEqual([
       first.attemptId,
     ]);
+  });
+});
+
+describe("exam progress", () => {
+  it("returns no progress for a user who has never attempted anything in this exam", async () => {
+    const progress = await service.getExamProgress(p1, examId);
+    expect(progress.topics[topicMath]).toBeUndefined();
+    expect(progress.tests[fixedTestUntimed]).toBeUndefined();
+  });
+
+  it("shows in-progress percent as answered/total, leaving the other mode at 0%", async () => {
+    const { attemptId } = await service.startOrResumeAttempt(
+      { examId, scope: "TOPIC", mode: "STUDY", topicId: topicMath },
+      p1,
+      "vi",
+      new Date("2026-08-12T08:00:00.000Z"),
+    );
+    const view = await service.getAttemptForTaking(
+      attemptId,
+      p1,
+      new Date("2026-08-12T08:00:00.000Z"),
+    );
+    await service.saveAnswer(
+      attemptId,
+      view.questions[0]!.attemptQuestionId,
+      p1,
+      { selectedOptionIds: [uid(20)] },
+      new Date("2026-08-12T08:01:00.000Z"),
+    );
+
+    const progress = await service.getExamProgress(p1, examId);
+    expect(progress.topics[topicMath]).toEqual({
+      studyPercent: 33,
+      practicePercent: 0,
+    });
+  });
+
+  it("shows 100% once submitted, regardless of how many questions were answered", async () => {
+    const { attemptId, resumed } = await service.startOrResumeAttempt(
+      { examId, scope: "TOPIC", mode: "STUDY", topicId: topicMath },
+      p1,
+      "vi",
+      new Date("2026-08-12T08:02:00.000Z"),
+    );
+    expect(resumed).toBe(true); // still the same 1/3-answered attempt from the previous test
+
+    await service.submitAttempt(
+      attemptId,
+      p1,
+      new Date("2026-08-12T08:03:00.000Z"),
+    );
+
+    const progress = await service.getExamProgress(p1, examId);
+    expect(progress.topics[topicMath]!.studyPercent).toBe(100);
+  });
+
+  it("rolls both PRACTICE_IMMEDIATE and EXAM_DEFERRED up into practicePercent, using the most recently active attempt", async () => {
+    const { attemptId: immediateId } = await service.startOrResumeAttempt(
+      { examId, scope: "TOPIC", mode: "PRACTICE_IMMEDIATE", topicId: topicScience },
+      p1,
+      "vi",
+      new Date("2026-08-12T09:00:00.000Z"),
+    );
+    const immediateView = await service.getAttemptForTaking(
+      immediateId,
+      p1,
+      new Date("2026-08-12T09:00:00.000Z"),
+    );
+    await service.saveAnswer(
+      immediateId,
+      immediateView.questions[0]!.attemptQuestionId,
+      p1,
+      { selectedOptionIds: [uid(32)] },
+      new Date("2026-08-12T09:01:00.000Z"),
+    );
+
+    let progress = await service.getExamProgress(p1, examId);
+    expect(progress.topics[topicScience]).toEqual({
+      studyPercent: 0,
+      practicePercent: 50,
+    });
+
+    const { attemptId: deferredId } = await service.startOrResumeAttempt(
+      { examId, scope: "TOPIC", mode: "EXAM_DEFERRED", topicId: topicScience },
+      p1,
+      "vi",
+      new Date("2026-08-12T10:00:00.000Z"),
+    );
+    const deferredView = await service.getAttemptForTaking(
+      deferredId,
+      p1,
+      new Date("2026-08-12T10:00:00.000Z"),
+    );
+    await service.saveAnswer(
+      deferredId,
+      deferredView.questions[0]!.attemptQuestionId,
+      p1,
+      { selectedOptionIds: [uid(32)] }, // q4's own option
+      new Date("2026-08-12T10:01:00.000Z"),
+    );
+    await service.saveAnswer(
+      deferredId,
+      deferredView.questions[1]!.attemptQuestionId,
+      p1,
+      { selectedOptionIds: [uid(36)] }, // q5's own option
+      new Date("2026-08-12T10:02:00.000Z"),
+    );
+
+    progress = await service.getExamProgress(p1, examId);
+    expect(progress.topics[topicScience]).toEqual({
+      studyPercent: 0,
+      practicePercent: 100,
+    });
+  });
+
+  it("keys FULL_TEST progress by testId, independently of topic progress", async () => {
+    const { attemptId } = await service.startOrResumeAttempt(
+      { examId, scope: "FULL_TEST", mode: "STUDY", testId: fixedTestUntimed },
+      p1,
+      "vi",
+      new Date("2026-08-12T11:00:00.000Z"),
+    );
+    const view = await service.getAttemptForTaking(
+      attemptId,
+      p1,
+      new Date("2026-08-12T11:00:00.000Z"),
+    );
+    await service.saveAnswer(
+      attemptId,
+      view.questions[0]!.attemptQuestionId,
+      p1,
+      { selectedOptionIds: [uid(20)] },
+      new Date("2026-08-12T11:01:00.000Z"),
+    );
+
+    const progress = await service.getExamProgress(p1, examId);
+    expect(progress.tests[fixedTestUntimed]).toEqual({
+      studyPercent: 50,
+      practicePercent: 0,
+    });
+    expect(progress.topics[topicMath]!.studyPercent).toBe(100); // unaffected by the test-scoped attempt
+  });
+
+  it("keeps an abandoned attempt's last-known percent instead of resetting it to 0", async () => {
+    const { attemptId } = await service.startOrResumeAttempt(
+      {
+        examId,
+        scope: "TOPIC",
+        mode: "PRACTICE_IMMEDIATE",
+        topicId: topicMath,
+      },
+      p1,
+      "vi",
+      new Date("2026-08-12T12:00:00.000Z"),
+    );
+    const view = await service.getAttemptForTaking(
+      attemptId,
+      p1,
+      new Date("2026-08-12T12:00:00.000Z"),
+    );
+    await service.saveAnswer(
+      attemptId,
+      view.questions[0]!.attemptQuestionId,
+      p1,
+      { selectedOptionIds: [uid(20)] },
+      new Date("2026-08-12T12:01:00.000Z"),
+    );
+    await service.abandonAttempt(
+      attemptId,
+      p1,
+      new Date("2026-08-12T12:02:00.000Z"),
+    );
+
+    const progress = await service.getExamProgress(p1, examId);
+    expect(progress.topics[topicMath]).toEqual({
+      studyPercent: 100, // from the earlier submitted STUDY attempt
+      practicePercent: 33, // kept from the abandoned attempt, not reset to 0
+    });
   });
 });

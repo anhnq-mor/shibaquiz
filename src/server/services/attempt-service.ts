@@ -67,4 +67,8 @@ export class AttemptService {
   listHistory(userId: string, filters: HistoryFilterInput) {
     return this.repository.listHistory(userId, filters);
   }
+
+  getExamProgress(userId: string, examId: string) {
+    return this.repository.getExamProgress(userId, examId);
+  }
 }
