@@ -1,0 +1,197 @@
+{
+    "exam_attempt": {
+        "id": "d4bb84bc-8d80-4393-b7bd-d6c7f0084c6f",
+        "exam": {
+            "id": "38acaa8d-80a9-4f70-a033-bc34e8a11867",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "badf913d-4ea3-43e2-8f36-a32364169985",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Regularly evaluate external changes, prioritize their impact on strategy and backlog, and adjust through current governance processes.",
+                            "Quickly adjust scope and priorities to stay competitive, acknowledging short-term disruption as necessary for flexibility.",
+                            "Recognize external changes but delay scope and priority changes until this phase ends to maintain stability.",
+                            "Escalate external change signals to executive leadership and await clear instructions before adjusting scope, sequence, or investments."
+                        ],
+                        "question": "Case Study 10: Cross-Organization Transformation Under External Pressure\n\nA multinational organization is undertaking a multi-year transformation to consolidate operations, data platforms, and decision-making across its business units. Executives view this initiative as essential for competitiveness, resilience, and adapting to market changes, regulations, and stakeholder needs.\n\nThe initiative covers multiple regions and regulatory areas, using internal teams, shared services, and external partners. Vendors supply platforms, analytics, and regional support. Contracts vary from fixed, compliance-driven to flexible scopes. Delivery is hybrid: core functions use a predictive model for compliance, while customer-facing features are developed iteratively to adapt and test new ideas.\n\nEnterprise and regional governance structures were built for stable projects with clear boundaries. As the initiative advances, these mechanisms struggle with cross-organization dependencies, conflicting priorities, and rapid external change. Decision authority is formally set, but leaders often delay choices to seek validation or balance local and enterprise interests.\n\nLeaders must regularly update priorities as markets evolve and digital competitors emerge. While strategic goals are shared, business units interpret success differently, affecting decisions and investments. Expanding scope increases risks across data security, suppliers, compliance, and sustainability due to greater interdependence. Delivery teams face slow decisions, unclear escalation, and conflicting priorities, which hinder progress. Despite leadership's emphasis on improvement, teams struggle to consistently apply lessons organization-wide.\n\nThe project manager helps senior leadership by fostering aligned decisions, keeping delivery on track, and adjusting to external changes without disrupting execution. This involves balancing agility with stability, tackling systemic barriers, and ensuring a unified view of value and success throughout the organization.\n\nAs the transformation continues, competitors launch rapid digital offerings, customer demands increase for transparency and sustainability, and regulatory guidance may impact compliance. Some leaders call for swift changes to scope and priorities, while others caution against frequent shifts that disrupt execution. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "60b24b0c-92dd-400b-aca4-52472fbdf3df",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Increase governance visibility for higher-exposure risks before adjusting strategies.",
+                            "Keep existing risk responses and enhance monitoring to identify early impact signals.",
+                            "Reassess risk exposure and adjust response strategies accordingly if limits are surpassed.",
+                            "Implement coordinated measures to decrease overall risk across different work areas."
+                        ],
+                        "question": "Case Study 10: Cross-Organization Transformation Under External Pressure\n\nA multinational organization is undertaking a multi-year transformation to consolidate operations, data platforms, and decision-making across its business units. Executives view this initiative as essential for competitiveness, resilience, and adapting to market changes, regulations, and stakeholder needs.\n\nThe initiative covers multiple regions and regulatory areas, using internal teams, shared services, and external partners. Vendors supply platforms, analytics, and regional support. Contracts vary from fixed, compliance-driven to flexible scopes. Delivery is hybrid: core functions use a predictive model for compliance, while customer-facing features are developed iteratively to adapt and test new ideas.\n\nEnterprise and regional governance structures were built for stable projects with clear boundaries. As the initiative advances, these mechanisms struggle with cross-organization dependencies, conflicting priorities, and rapid external change. Decision authority is formally set, but leaders often delay choices to seek validation or balance local and enterprise interests.\n\nLeaders must regularly update priorities as markets evolve and digital competitors emerge. While strategic goals are shared, business units interpret success differently, affecting decisions and investments. Expanding scope increases risks across data security, suppliers, compliance, and sustainability due to greater interdependence. Delivery teams face slow decisions, unclear escalation, and conflicting priorities, which hinder progress. Despite leadership's emphasis on improvement, teams struggle to consistently apply lessons organization-wide.\n\nThe project manager helps senior leadership by fostering aligned decisions, keeping delivery on track, and adjusting to external changes without disrupting execution. This involves balancing agility with stability, tackling systemic barriers, and ensuring a unified view of value and success throughout the organization.\n\nAs transformation spreads, new risks emerge, including growing data security concerns, increased supplier reliance, and long-term sustainability planning. While some risks are manageable, others may escalate. Teams worry about disruptions, governance needs risk assurance, and leadership looks for decision-making guidance. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4fb3a25c-cd69-4866-abe6-1658a20a9535",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Motivate teams to address challenges locally to ensure governance processes continue smoothly.",
+                            "Identify recurring blockers, address root causes, and refine decision and escalation processes.",
+                            "Report ongoing issues to senior leadership for faster resolution and increased accountability.",
+                            "Identify impediments as risks and consistently monitor them until they warrant formal escalation."
+                        ],
+                        "question": "Case Study 10: Cross-Organization Transformation Under External Pressure\n\nA multinational organization is undertaking a multi-year transformation to consolidate operations, data platforms, and decision-making across its business units. Executives view this initiative as essential for competitiveness, resilience, and adapting to market changes, regulations, and stakeholder needs.\n\nThe initiative covers multiple regions and regulatory areas, using internal teams, shared services, and external partners. Vendors supply platforms, analytics, and regional support. Contracts vary from fixed, compliance-driven to flexible scopes. Delivery is hybrid: core functions use a predictive model for compliance, while customer-facing features are developed iteratively to adapt and test new ideas.\n\nEnterprise and regional governance structures were built for stable projects with clear boundaries. As the initiative advances, these mechanisms struggle with cross-organization dependencies, conflicting priorities, and rapid external change. Decision authority is formally set, but leaders often delay choices to seek validation or balance local and enterprise interests.\n\nLeaders must regularly update priorities as markets evolve and digital competitors emerge. While strategic goals are shared, business units interpret success differently, affecting decisions and investments. Expanding scope increases risks across data security, suppliers, compliance, and sustainability due to greater interdependence. Delivery teams face slow decisions, unclear escalation, and conflicting priorities, which hinder progress. Despite leadership's emphasis on improvement, teams struggle to consistently apply lessons organization-wide.\n\nThe project manager helps senior leadership by fostering aligned decisions, keeping delivery on track, and adjusting to external changes without disrupting execution. This involves balancing agility with stability, tackling systemic barriers, and ensuring a unified view of value and success throughout the organization.\n\nAs the transformation initiative advances, teams face repeated obstacles, such as slow decision-making, unclear escalation paths, and conflicting priorities, which together hinder progress. Some leaders advise teams to bypass these issues for speed, while others favor more frequent escalations to resolve them. Senior leadership seeks guidance on managing impediments efficiently without excessive escalation. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "5b41de24-fd54-40eb-a68c-a0351634a7ec",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Integrate lessons learned into ongoing planning, decision-making, and organizational process assets.",
+                            "Gather insights throughout the delivery process and conduct an official review once the initiative concludes.",
+                            "Enable teams to implement lessons learned autonomously, according to their individual priorities and constraints.",
+                            "Establish a dedicated workstream to oversee the implementation of lessons learned beyond delivery activities."
+                        ],
+                        "question": "Case Study 10: Cross-Organization Transformation Under External Pressure\n\nA multinational organization is undertaking a multi-year transformation to consolidate operations, data platforms, and decision-making across its business units. Executives view this initiative as essential for competitiveness, resilience, and adapting to market changes, regulations, and stakeholder needs.\n\nThe initiative covers multiple regions and regulatory areas, using internal teams, shared services, and external partners. Vendors supply platforms, analytics, and regional support. Contracts vary from fixed, compliance-driven to flexible scopes. Delivery is hybrid: core functions use a predictive model for compliance, while customer-facing features are developed iteratively to adapt and test new ideas.\n\nEnterprise and regional governance structures were built for stable projects with clear boundaries. As the initiative advances, these mechanisms struggle with cross-organization dependencies, conflicting priorities, and rapid external change. Decision authority is formally set, but leaders often delay choices to seek validation or balance local and enterprise interests.\n\nLeaders must regularly update priorities as markets evolve and digital competitors emerge. While strategic goals are shared, business units interpret success differently, affecting decisions and investments. Expanding scope increases risks across data security, suppliers, compliance, and sustainability due to greater interdependence. Delivery teams face slow decisions, unclear escalation, and conflicting priorities, which hinder progress. Despite leadership's emphasis on improvement, teams struggle to consistently apply lessons organization-wide.\n\nThe project manager helps senior leadership by fostering aligned decisions, keeping delivery on track, and adjusting to external changes without disrupting execution. This involves balancing agility with stability, tackling systemic barriers, and ensuring a unified view of value and success throughout the organization.\n\nSenior leadership expects continuous improvement to be embedded throughout the transformation initiative, not treated as an end-of-project activity. Teams are capturing lessons learned during delivery, but application is inconsistent across regions and workstreams. Some teams apply insights locally, while others continue operating unchanged, limiting organization-wide benefit. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "c4f9174d-43c3-429c-92a3-adf83f3b658c",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Strengthen the current vision statement and ensure compliance throughout all business units.",
+                            "Allow business units to interpret independently to maintain autonomy and responsiveness.",
+                            "Submit vision alignment issues to executive leadership for formal clarification and guidance.",
+                            "Facilitate alignment on shared objectives and success measures, while respecting local priorities."
+                        ],
+                        "question": "Case Study 10: Cross-Organization Transformation Under External Pressure\n\nA multinational organization is undertaking a multi-year transformation to consolidate operations, data platforms, and decision-making across its business units. Executives view this initiative as essential for competitiveness, resilience, and adapting to market changes, regulations, and stakeholder needs.\n\nThe initiative covers multiple regions and regulatory areas, using internal teams, shared services, and external partners. Vendors supply platforms, analytics, and regional support. Contracts vary from fixed, compliance-driven to flexible scopes. Delivery is hybrid: core functions use a predictive model for compliance, while customer-facing features are developed iteratively to adapt and test new ideas.\n\nEnterprise and regional governance structures were built for stable projects with clear boundaries. As the initiative advances, these mechanisms struggle with cross-organization dependencies, conflicting priorities, and rapid external change. Decision authority is formally set, but leaders often delay choices to seek validation or balance local and enterprise interests.\n\nLeaders must regularly update priorities as markets evolve and digital competitors emerge. While strategic goals are shared, business units interpret success differently, affecting decisions and investments. Expanding scope increases risks across data security, suppliers, compliance, and sustainability due to greater interdependence. Delivery teams face slow decisions, unclear escalation, and conflicting priorities, which hinder progress. Despite leadership's emphasis on improvement, teams struggle to consistently apply lessons organization-wide.\n\nThe project manager helps senior leadership by fostering aligned decisions, keeping delivery on track, and adjusting to external changes without disrupting execution. This involves balancing agility with stability, tackling systemic barriers, and ensuring a unified view of value and success throughout the organization.\n\nAs the transformation initiative progresses, different business units interpret strategic objectives and success measures differently, leading to variations in local prioritization, funding decisions, and delivery tradeoffs. Senior leadership worries that, without intervention, these divergent interpretations will fragment execution and weaken overall value realization, and asks how to restore alignment on vision without suppressing necessary local context. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 10
+                },
+                {
+                    "id": "b6e0fb67-79b3-4101-a75f-633a3dac29be",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Centralize more decisions with the project manager to ensure consistency and reduce the risk of errors.",
+                            "Ask functional managers to replace team members who seem hesitant to make decisions independently.",
+                            "Reduce documentation of expectations so the team develops its own informal decision approach.",
+                            "Encourage the team to make decisions within agreed boundaries and offer support when they encounter exceptions or risks."
+                        ],
+                        "question": "In a product development project, skilled specialists routinely seek the project manager’s approval before making standard technical and process decisions. This behavior creates delays and turns the project manager into a bottleneck. Team members appear hesitant to exercise judgment within their expertise. The project manager sees that ownership and autonomy are limited. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "0b7fcdfd-2ce3-49b1-bed8-1b2eff044c05",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Assign detailed tasks to each team immediately based only on their current availability and skill sets.",
+                            "Ask each regional team to design its own coordination and decision-making practices without an overarching structure.",
+                            "Define a project execution strategy that specifies coordination mechanisms, decision authorities, and control points across teams and suppliers.",
+                            "Rely on existing functional governance forums to handle all project decisions and controls without further definition."
+                        ],
+                        "question": "At a global logistics firm, a project manager has selected a hybrid delivery approach for implementing an integrated warehouse and transportation management solution across regions. Stakeholders seek clarity on coordination, decision authority, and rollout sequencing. Different leaders have different expectations about approvals and governance. The project manager recognizes the need for a clear execution strategy. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "f2bc3fcd-a7e3-4d81-aef4-7e0e511cd5de",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Focus only on technical completion of deliverables and close the project once equipment passes tests.",
+                            "Extend the project indefinitely until all stakeholders feel fully comfortable, without reference to criteria.",
+                            "Review and confirm that agreed closure criteria are met before proceeding to formal closure.",
+                            "Ask operations to accept responsibility immediately and resolve remaining issues on their own after closure."
+                        ],
+                        "question": "At a manufacturing company, a project manager is nearing completion of an equipment upgrade project. Some stakeholders argue the project can close because deliverables are installed and tested, while others point to unresolved documentation and training gaps. The sponsor asks how to determine readiness for closure. The project manager must balance operational readiness with timely release of resources. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "503f23d2-8814-4ae4-8f83-3268d942ba64",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Maintain the existing sequence to avoid re-planning effort, noting that all features will eventually be delivered.",
+                            "Work with stakeholders to reprioritize planned work so that the higher-value feature is delivered earlier.",
+                            "Delay the high-value feature until a future project to avoid changing the current plan midstream.",
+                            "Ask the team to work overtime to deliver the high-value feature earlier and keep all near-term items in place."
+                        ],
+                        "question": "A project manager is delivering a customer analytics platform in phases. Stakeholders identify a higher-value feature that could be delivered earlier with limited resequencing. Sales wants the feature sooner, while technical impacts must be considered. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "33bc0c93-4675-41ba-914b-3cc7e8437efe",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Analyze the upcoming specialist demand and adjust assignments and sequencing with functional managers to optimize availability.",
+                            "Maintain current assignments and hope that specialist availability will remain adequate.",
+                            "Escalate immediately to the sponsor requesting more headcount before discussing options with functional managers.",
+                            "Delay the validation activities until specialist availability becomes clearer, without revising the overall plan."
+                        ],
+                        "question": "At a pharmaceutical company, a project manager is mid-execution on a lab automation project that depends on a limited pool of validation specialists shared with ongoing operations. Upcoming validation work will require concentrated specialist effort, but availability may fluctuate due to inspections. The sponsor expects consistent delivery performance. The project manager anticipates future conflicts if assignments remain unchanged. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 10 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                }
+            ]
+        },
+        "answers": {},
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-16T04:30:56.957219Z"
+    }
+}

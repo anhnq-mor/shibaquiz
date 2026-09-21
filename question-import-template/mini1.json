@@ -1,0 +1,248 @@
+{
+    "exam_attempt": {
+        "id": "609b5917-8c4c-4272-9ff6-55d2d4717d91",
+        "exam": {
+            "id": "168f541d-decd-43e1-b574-114ae9246261",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "00dfa2de-c345-4975-9fd2-f180ea2b5086",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Ignore the mistake and assume that team members will understand the situation.",
+                            "Acknowledge the mistake and apologize for any unintended consequences.",
+                            "Request that the unintended email recipients delete the message without reading it.",
+                            "Send a private message to the team member apologizing for the critical feedback."
+                        ],
+                        "question": "A project manager realizes that an email intended for a specific team member has been mistakenly sent to the entire global project team. This email contains critical feedback regarding a recent incident. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "446fd440-a81f-43cc-8c2a-6105771e75c8",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Develop a risk management plan to identify compliance risks before charter approval.",
+                            "Request departmental communication guidelines from business analysts to support coordination.",
+                            "Prepare a stakeholder engagement plan to promote alignment in governance across departments.",
+                            "Apply PMO governance templates and procedures when drafting the charter to ensure compliance."
+                        ],
+                        "question": "A financial institution is launching a cross-departmental initiative that needs to comply with regional governance requirements. The CEO has authorized a project manager to draft the charter. The project management office (PMO) has provided organizational process assets (OPAs) that include governance structures, reporting periods, and escalation procedures. The project manager must ensure alignment with governance. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "6b30282a-a24e-4d67-9011-6f0c3a391ede",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Conduct a competency gap analysis and collaborate with HR to develop cost-effective remediation strategies.",
+                            "Escalate the issue to senior management with documented evidence of training deficiencies and business impact.",
+                            "Reassign critical tasks to experienced team members while implementing peer mentoring for skill development.",
+                            "Document the training failure as a risk and implement additional quality assurance measures to mitigate impact."
+                        ],
+                        "question": "A project manager discovers that recently hired interns lack the technical competencies required for critical project deliverables, despite completing mandatory training programs. The HR manager refuses to authorize additional training costs due to budget constraints and claims the original training met organizational standards. The project timeline is at risk, and stakeholders expect deliverable quality to remain unchanged. What should the project manager do to resolve this situation?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "d36c676d-1c00-42bf-a00e-488fdb616046",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Record the recurring issue in the risk register so the project team can continue to monitor it as needed.",
+                            "Request a quality management plan change using repository insights to strengthen acceptance criteria practices.",
+                            "Escalate the recurring issue to the project management office (PMO) for resolution outside the project team.",
+                            "Expand the number of test cycles in order to detect additional defects before the next scheduled release."
+                        ],
+                        "question": "Midway through an agile product development project, the team identifies recurring defects tied to unclear acceptance criteria. A retrospective highlights similar issues from two prior projects that were previously documented in the repository. The project manager is tasked with preventing further rework. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "ae6a4f45-0c3a-4c65-aa75-7df5af8ec462",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Aligned the additional costs with the anticipated benefits outlined in the original business case to justify the variance.",
+                            "Tracked and evaluated the realization of business benefits throughout the project life cycle against the baseline defined in the business case.",
+                            "Conducted a post-implementation benefits realization review to assess organizational improvements and validate achieved outcomes.",
+                            "Communicated non-financial or intangible benefits such as enhanced customer satisfaction and reputation as key indicators of value realization."
+                        ],
+                        "question": "During the sign-off phase of a strategic project, the project manager struggled to justify unexpected additional costs. These expenses could not be clearly connected to the business value gained from the project's successful completion. What should the project manager have done earlier to prevent being unable to justify the extra costs?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "f139f1ac-ae22-4b35-886f-61128028b841",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Escalate the issue to the project steering committee for review and guidance.",
+                            "Acknowledge the sponsor’s request and proceed by skipping the planned sessions as instructed",
+                            "Inform the sponsor that skipping the sessions will jeopardize the project.",
+                            "Meet with the sponsor to understand the time constraints and discuss risks of skipping the sessions."
+                        ],
+                        "question": "During the planning phase, a project requires extensive data collection and analysis. To speed up the process, the sponsor asks the project manager to skip the scheduled focus group discussion and brainstorming sessions. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "283dee38-ad00-46c0-a2af-3bbb8ca18ad8",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Ask the team to evaluate both alternatives through analysis or prototyping to determine feasibility.",
+                            "Log the performance concern as an issue and assign it to a team member for monitoring.",
+                            "Proceed with the more promising alternative and add management reserve for potential rework.",
+                            "Inform stakeholders about the risk and wait for their guidance on how to proceed."
+                        ],
+                        "question": "A critical subsystem must be developed as part of a project. Two technical alternatives have been identified, but it is unclear whether either will meet performance requirements. If the selected approach fails, the project will be at risk. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "4791d0b8-c1de-4fc6-976e-fbe9cac5a975",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Establish contractual relationships with experienced local suppliers positioned to navigate political disruptions effectively.",
+                            "Include comprehensive force majeure clauses consistently across critical procurement and supplier agreements.",
+                            "Provide stakeholders with political risk updates and postpone implementing contingency responses until after the election.",
+                            "Apply structured scenario planning techniques to anticipate multiple risks and define contingency strategies."
+                        ],
+                        "question": "A global nonprofit organization is executing a large initiative in a region with frequent political instability. Local elections are approaching, and reports suggest a possible change in government that could restrict permits and disrupt supplier agreements. The sponsor instructs the project manager to recommend proactive actions to help the project continue without major interruptions. The project manager must ensure stakeholders remain confident despite the uncertainty What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "05c89440-d3a9-48b0-9ea7-2c818b172d26",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Allocate additional resources to the team to accelerate throughput and reduce the work-in-progress inventory.",
+                            "Extend the current sprint's timeline to give the team more time to complete any pending work items.",
+                            "Review the team’s work-in-progress limits to address the bottlenecks identified three sprints ago.",
+                            "Prioritize and reduce backlog items to reallocate resources toward completing the key items from two sprints ago."
+                        ],
+                        "question": "A project manager presents the cumulative flow diagram during a sprint review, showing that the \"In Progress\" band has continued to grow over the last several sprints, while the \"Done\" band has not increased in the past three sprints. The sponsor is concerned about potential delays, the scrum master notes possible bottlenecks, and the product owner worries that stakeholder confidence may be lost.\n\nWhat should the project manager do? (Refer to the diagram)"
+                    },
+                    "name": "PMP Mini Exam 01 - 009",
+                    "type": "mcq",
+                    "image": "https://epcg-production.s3.amazonaws.com/questions/images/Mini_1-9_UiDxyXz.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVYKPC2VKYUXC26H4%2F20260824%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20260824T124805Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=71e5f3dec829f31da0814bc7a6df727543cf55b550709176f23f212bf13b4ef9",
+                    "question_tags_count": 0
+                },
+                {
+                    "id": "3014be9e-85ff-4706-a3fe-6ad7a902c830",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "100%",
+                            "80%",
+                            "50%",
+                            "20%"
+                        ],
+                        "question": "A team uncovers 20 defects in a sprint that completed 100 tasks. What is the defect rate?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 01 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                }
+            ]
+        },
+        "answers": {
+            "00dfa2de-c345-4975-9fd2-f180ea2b5086": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "05c89440-d3a9-48b0-9ea7-2c818b172d26": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "283dee38-ad00-46c0-a2af-3bbb8ca18ad8": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "3014be9e-85ff-4706-a3fe-6ad7a902c830": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "446fd440-a81f-43cc-8c2a-6105771e75c8": {
+                "flag": true,
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "D"
+            },
+            "4791d0b8-c1de-4fc6-976e-fbe9cac5a975": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "D"
+            },
+            "6b30282a-a24e-4d67-9011-6f0c3a391ede": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "ae6a4f45-0c3a-4c65-aa75-7df5af8ec462": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "d36c676d-1c00-42bf-a00e-488fdb616046": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "f139f1ac-ae22-4b35-886f-61128028b841": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-08-24T12:48:07.206141Z"
+    }
+}

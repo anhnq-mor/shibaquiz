@@ -1,0 +1,243 @@
+{
+    "exam_attempt": {
+        "id": "6ea1eb7d-975c-4c4c-ab02-577e49cef680",
+        "exam": {
+            "id": "19518525-910b-485b-b642-c5ede6c8887e",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "1bdf4a27-826e-4278-a45e-5c199c7904c6",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Submit a change request and meet with the customer to discuss new delivery dates.",
+                            "Rebaseline the project schedule and inform the sponsor of the revised completion date.",
+                            "Document the issue and work with the team to identify and implement corrective actions.",
+                            "Notify the customer immediately and formally request approval for a timeline extension."
+                        ],
+                        "question": "During a project schedule review meeting, the team identifies that a critical path activity has slipped due to delays from an external vendor. If unaddressed, this delay will push the project completion date beyond the agreed deadline. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "cbc7a8c3-cdec-4cce-96df-267a6410924f",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Consult with the project management office (PMO) to get their insights on project governance.",
+                            "Collaborate with the team and stakeholders to discuss tailoring the existing governance.",
+                            "Inform stakeholders that the same project governance can be used for the new project.",
+                            "Request that the stakeholders discuss all governance-related concerns with the product owner."
+                        ],
+                        "question": "A project manager has been assigned to an existing agile team and is preparing for an upcoming project. The last project that the team worked on was so successful that stakeholders requested that the team use the same governance structure for the new project. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "39378a8c-2d13-4cfd-94b4-d17f921fad5b",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Utilize parametric estimation by applying standardized benchmarks and scaling formulas, despite uncertainties in scope.",
+                            "Apply analogous estimation by referencing similar government projects and adjusting cost baselines for context.",
+                            "Develop three-point estimates for high-level scope components, using expert input to model ranges.",
+                            "Gather insights from internal and external experts to build a judgment-based estimate with a rationale."
+                        ],
+                        "question": "A project manager is leading the early phases of a strategic digital transformation initiative within a government agency. The scope is evolving, and the available documentation is limited. However, other government entities have executed similar initiatives, with varied outcomes. Senior leadership demands a defensible estimate to secure funding before the next budget cycle, emphasizing the need for both speed and audit readiness. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "119d22f3-973a-4632-98b6-46393c6340a0",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Assess the impact of SME change on project objectives and develop transition plan.",
+                            "Facilitate comprehensive knowledge transfer sessions between the departing and incoming SME.",
+                            "Request project schedule adjustment to accommodate the new SME's learning curve.",
+                            "Engage stakeholders to understand their concerns and maintain relationships during transition."
+                        ],
+                        "question": "During project execution, the project sponsor decides to replace a critical subject matter expert (SME) who holds unique domain knowledge and has established relationships with key stakeholders. The replacement SME has different expertise and no prior relationship with the project team. This change occurs during a critical phase where the original SME's input is essential for upcoming deliverables. The team is concerned about knowledge gaps and timeline impacts. What should the project manager do first to minimize project disruption?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "208556cc-abce-464a-9941-df2db65c6e8d",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Escalate the issue to the sponsor to seek support in managing team morale.",
+                            "Adjust workload assignments to reduce pressure and help recover motivation.",
+                            "Reassign the technical lead’s responsibilities to avoid a negative impact on project performance.",
+                            "Meet with the technical lead to thoroughly explore the cause and provide support for re-engagement."
+                        ],
+                        "question": "A senior technical lead has made significant contributions to a complex, cross-functional project. However, in recent iterations, the project manager has noticed that the technical lead is disengaged, delivering incomplete work, and not participating in collaborative sessions. Other team members have also noticed the shift and have raised concerns during retrospectives. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "bfa377f3-8151-4738-ab1b-18dd18c189bb",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Create a shared repository where both teams can store documentation and validate product progress together.",
+                            "Request that the design team also take full responsibility for the execution of project deliverables.",
+                            "Inform the PMO that the current hybrid approach presents too much risk for the organization.",
+                            "Improve collaboration by training both teams on an adaptive project management framework."
+                        ],
+                        "question": "A hybrid project is using an iterative design process for product development, but design and execution are handled by separate teams. This separation has created concerns about coordination, information flow, and product alignment between the two groups. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "e3cc404a-2347-4f09-973f-4a588bb80c7d",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Close the user story and explain that the feature is no longer valid.",
+                            "Remove the user story from the current sprint and schedule it for the next sprint.",
+                            "Inform the team that user stories committed for a sprint cannot be modified.",
+                            "Work with the team to expedite the completion of the user story."
+                        ],
+                        "question": "During the daily coordination meeting, one of the team members informs the team that a user story for implementing a feature is no longer compliant due to a recent policy change, making it obsolete. What should the scrum master do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "5f3e5064-aa94-419c-9e11-3fd2c1f669dd",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Report green status because the scope, schedule, and cost baselines are fully aligned with the project plan.",
+                            "Report yellow status, highlight adoption risks, and propose corrective actions to improve value realization.",
+                            "Report red status and suspend any further work on the project until benefits show a significant increase.",
+                            "Report green status, but defer benefit tracking to portfolio governance until after project closure."
+                        ],
+                        "question": "A project is delivering outputs on time and within budget. However, adoption metrics show minimal usage and limited realized benefits. The sponsor insists that the overall status should remain green. The client argues that the project is failing to achieve the intended business value. The project management office stresses that benefits realization must be tracked alongside deliverables. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "c8fc40fa-882f-4776-9437-dc5c7befdcd6",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "The project is ahead of schedule by $17,000 worth of work",
+                            "The project is ahead of schedule by $7,500 worth of work",
+                            "The project is behind schedule by $17,000 worth of work",
+                            "The project is behind schedule by $7,500 worth of work"
+                        ],
+                        "question": "A stakeholder wants an update on schedule performance and how that impacts the overall project. Refer to the data in the table to calculate the schedule variance (SV). All values in the table below are expressed in US dollars. Based on the schedule variance, what should the team tell the stakeholder?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 06 - 009",
+                    "type": "mcq",
+                    "image": "https://epcg-production.s3.amazonaws.com/questions/images/Mini_6_-_9.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVYKPC2VKYUXC26H4%2F20260913%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20260913T082747Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=29d366ac82d76f0532b7c44c63be8f52096b2cbca2cd6bbff6b0dc7497cb3757",
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "6bddbc36-f23c-42d8-a16a-19561e45e35a",
+                    "data": {
+                        "answer": "Finalize",
+                        "options": [],
+                        "question": "The deployment of a solution at the client site has been delayed, impacting the project’s delivery timeline. The task that is delaying project delivery: _________ (Fill Blank)",
+                        "num_answers": 0
+                    },
+                    "name": "PMP Mini Exam 06 - 010",
+                    "type": "fill_blank",
+                    "image": "https://epcg-production.s3.amazonaws.com/questions/images/Mini_6_-_10.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVYKPC2VKYUXC26H4%2F20260913%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20260913T082747Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a1a073d369ee28c420686afb39cf0600ea7dc644d229afef266573a1c0104b8e",
+                    "question_tags_count": 6
+                }
+            ]
+        },
+        "answers": {
+            "119d22f3-973a-4632-98b6-46393c6340a0": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "1bdf4a27-826e-4278-a45e-5c199c7904c6": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "208556cc-abce-464a-9941-df2db65c6e8d": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "39378a8c-2d13-4cfd-94b4-d17f921fad5b": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "5f3e5064-aa94-419c-9e11-3fd2c1f669dd": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "6bddbc36-f23c-42d8-a16a-19561e45e35a": {
+                "answer": "Finalize",
+                "correct": true,
+                "correct_answer": "Finalize"
+            },
+            "bfa377f3-8151-4738-ab1b-18dd18c189bb": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "c8fc40fa-882f-4776-9437-dc5c7befdcd6": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "cbc7a8c3-cdec-4cce-96df-267a6410924f": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "e3cc404a-2347-4f09-973f-4a588bb80c7d": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "A"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-13T08:27:48.867660Z"
+    }
+}

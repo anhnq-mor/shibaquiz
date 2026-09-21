@@ -1,0 +1,248 @@
+{
+    "exam_attempt": {
+        "id": "b51421e3-d3e7-4d81-bfcb-7bfd04dc4cd3",
+        "exam": {
+            "id": "fca908d2-5ce7-45f4-b836-ff87b88fdf1c",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "897624b7-331f-4359-a7f8-579208e8b27d",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Facilitate a team session to co-create roles, communication protocols, and decision-making guidelines.",
+                            "Assign a team lead in each country to manage their local team and escalate the issue to the sponsor.",
+                            "Schedule mandatory weekly virtual meetings at the same time each week to ensure attendance.",
+                            "Ask the IT manager to deploy the newest video conferencing software and mandate its use for all meetings."
+                        ],
+                        "question": "A project manager is leading a global project with team members from various countries and cultural backgrounds. Initial virtual meetings have faced problems with miscommunication, time zone differences, and unclear expectations regarding decision-making rights. What should the project manager do next to improve collaboration and project outcomes?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "dbeef380-4079-4a74-979c-ecea5cdfb6fe",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Invite all stakeholders to a meeting to discuss their expectations for the project and record the discussion for later reference.",
+                            "Gather the stakeholders’ expectations by any means they prefer and document their answers clearly to be sure they are understood.",
+                            "Prioritize engaging with the stakeholders who have more influence and give their expectations higher prominence in the project plan.",
+                            "Schedule an interview with each stakeholder to question them individually and document the interviews for later reference."
+                        ],
+                        "question": "A project manager has received the complete list of stakeholders for a new project. The next step is to determine what those stakeholders expect from the project. The project manager needs to find a way to accurately identify their individual expectations in preparation for aligning them with the project management plan. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "587a4086-036d-4985-b800-d7a3f1131fb1",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Record each issue in the issue log and track internal resolution progress without altering the reporting approach.",
+                            "Continue providing monthly updates as outlined in the communications plan to maintain stakeholder alignment.",
+                            "Increase the frequency and detail of communications to stakeholders to support timely decisions and management.",
+                            "Formally update the communications plan to reflect a new cadence and obtain approval before engaging stakeholders."
+                        ],
+                        "question": "Midway through execution, the project team encounters multiple unexpected issues that directly threaten both schedule and budget performance. Many of these issues are on the critical path and must be resolved immediately before dependent work can proceed. According to the approved communications management plan, the client and key stakeholders receive formal updates only once a month. Several of the current issues require decisions that could significantly impact contractual commitments and project risk exposure. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "01abd3f9-7982-49c0-b6a3-fc69a8c4739d",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Divide the project team into subgroups focusing on different components.",
+                            "Ask the team to work overtime to try to meet the original delivery deadline.",
+                            "Reprioritize project deliverables to enable phased delivery in increments.",
+                            "Update the project schedule baseline to reflect more realistic estimates."
+                        ],
+                        "question": "During the execution of a project, the project manager realizes that the initial estimates were unrealistic and that the project will take significantly longer to complete. The project manager will have to obtain approval for a more realistic project timeline. What should the project manager do while waiting for approval?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "b0fa53cb-37ef-435c-93a8-34ee3a90f1a7",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Consult the project’s official definition of done to confirm completion criteria for documentation and training materials.",
+                            "Review the approved project scope and verify whether updated help documentation is included as a contractual deliverable.",
+                            "Proceed with the formal closing process and request stakeholder acceptance of all approved deliverables as documented.",
+                            "Meet with the development and documentation teams to analyze user feedback and determine required corrective actions."
+                        ],
+                        "question": "A software development company has completed an update to a new software version that was fully tested and approved by the QA team. As the rollout begins, customer support reports that multiple users are struggling because the help documentation still references the previous version. Stakeholders expect a timely project closure, but this discrepancy might indicate incomplete deliverables. What should the project manager do before proceeding with formal closure?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4e9060b0-2e78-4fad-a713-68568e55b904",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Launch the product in Region X and plan future iterations to address noncompliance in other regions.",
+                            "Document this as a noncompliance in the quality management plan and initiate a formal change request.",
+                            "Pause the baseline launch in Region X and replan the launch to meet the standards of all three regions.",
+                            "Connect with all regional sales teams and customers to reach an agreement on the existing design."
+                        ],
+                        "question": "A company must launch a global product to respond to a competitive threat. As part of an agile approach, the team chooses Region X as the baseline to test the first iteration. While the product meets the standards and requirements in Region X, it does not comply with the standards of two other regions. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "3786c49c-3e2e-4ed9-8f5b-8ea7d760f0ff",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Involve subject matter experts collectively to validate and align tasks for all project deliverables.",
+                            "Facilitate group workshops with the project team to collaboratively develop and review the WBS.",
+                            "Establish formal communication channels to continuously share WBS progress and feedback.",
+                            "Create a responsibility assignment matrix to clarify task ownership and prevent duplicate work."
+                        ],
+                        "question": "A project manager is leading a complex, cross-departmental project and has developed a work breakdown structure (WBS) by individually meeting with representatives from several functional teams. After finalizing the WBS, it was discovered that several tasks were redundant, causing confusion in scheduling and resource allocation. What should the project manager have done to avoid this?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "f9c417ed-874f-4edc-b345-a6ef27826407",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Measure user satisfaction and present the results to the steering committee.",
+                            "Remove the deliverables from the backlog that were not part of the project charter.",
+                            "Request additional budget based on an updated estimation of the remaining backlog items.",
+                            "Highlight the importance of completing the committed work on schedule."
+                        ],
+                        "question": "An agile project team has been successfully releasing updated deliverables each sprint that consistently provide increased value to users. However, the project is running over the initially allocated budget, and there are still many items in the project backlog. Stakeholders have expressed increasing concerns, and the project manager needs to decide on the best course of action to address the situation and manage stakeholder expectations. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "b7ce27cf-54f0-4b55-bf92-fd01591e170e",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Completing the framing is a milestone that signifies the end of a phase and allows new work to begin.",
+                            "Pouring the foundation is a milestone because it is the first construction activity on the schedule.",
+                            "Installing the electrical wiring is a milestone because it is a critical component of the construction phase.",
+                            "All three items listed above are milestones because they are necessary for the project completion."
+                        ],
+                        "question": "A commercial building project is underway, and the project manager is reviewing the construction timeline with stakeholders. The following activities are listed on the schedule: What statement correctly distinguishes milestones from tasks?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 009",
+                    "type": "mcq",
+                    "image": "https://epcg-production.s3.amazonaws.com/questions/images/Mini_5_-_9.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVYKPC2VKYUXC26H4%2F20260913%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20260913T080539Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cc9f934b8d1a1918f6276a52d60ffb84ac6425d7101bde1aa8ca46ab02c658a2",
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "fc8f01ae-3716-4645-b406-65378412bb87",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "0.6",
+                            "1.4",
+                            "0.8",
+                            "1.2"
+                        ],
+                        "question": "A team planned to complete 50 story points in an iteration, but only reached 30. What is the schedule performance index (SPI)?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 05 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                }
+            ]
+        },
+        "answers": {
+            "01abd3f9-7982-49c0-b6a3-fc69a8c4739d": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "C"
+            },
+            "3786c49c-3e2e-4ed9-8f5b-8ea7d760f0ff": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "4e9060b0-2e78-4fad-a713-68568e55b904": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "587a4086-036d-4985-b800-d7a3f1131fb1": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "C"
+            },
+            "897624b7-331f-4359-a7f8-579208e8b27d": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "b0fa53cb-37ef-435c-93a8-34ee3a90f1a7": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "b7ce27cf-54f0-4b55-bf92-fd01591e170e": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "dbeef380-4079-4a74-979c-ecea5cdfb6fe": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "f9c417ed-874f-4edc-b345-a6ef27826407": {
+                "answer": "B",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "fc8f01ae-3716-4645-b406-65378412bb87": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-13T08:05:43.681380Z"
+    }
+}

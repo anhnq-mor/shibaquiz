@@ -1,0 +1,223 @@
+{
+    "exam_attempt": {
+        "id": "607cc60b-4780-4248-97e1-9998b3dd4283",
+        "exam": {
+            "id": "4b6a3f99-4878-4770-bc54-4ddf9d411fb5",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "cf39cec5-89fa-45c9-a52e-f87add539ead",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Ask the sponsor to intervene and decide which senior team member should lead all technical decisions.",
+                            "Split the disputed tasks evenly between the two team members to avoid further disagreement.",
+                            "Clarify role definitions and decision authority with the group to first determine the underlying source of the conflict.",
+                            "Proceed with the workshop agenda and ask the two team members to resolve the issue offline after the session."
+                        ],
+                        "question": "At a national energy utility, a project manager runs a planning workshop for a grid modernization project involving operations and IT teams. Two senior team members clash over ownership and decision authority, each citing different interpretations of earlier agreements. The disagreement begins to stall planning. Without clarification, similar conflicts are likely to recur during execution. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "1863c8ff-b2b7-44cd-87cd-4b872ae45aae",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Analyze stakeholder interests, influence, and expectations to determine tailored engagement strategies for each group.",
+                            "Invite all stakeholders to every project meeting to ensure complete transparency and equal participation.",
+                            "Focus engagement only on stakeholders with high authority, assuming others will adapt to decisions that are made.",
+                            "Send the same standard communication package to all stakeholders on a fixed schedule."
+                        ],
+                        "question": "At a global manufacturing company, a project manager updates the stakeholder register for a production line modernization project and identifies a wide range of stakeholders. Stakeholders differ significantly in influence, interest, and expectations. Some are highly impacted but lack authority, while others hold decision power with limited involvement. The project manager realizes a one-size-fits-all engagement approach will not work. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "60ebe586-b52f-4fad-aadb-b2a34d31dcfd",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Prioritize internal expectations exclusively to ensure operational readiness before addressing external expectations.",
+                            "Focus only on external customer demands to maintain market perception, assuming internal teams will adapt.",
+                            "Proceed with the existing plan without discussing expectations unless a conflict arises.",
+                            "Clarify expectations through targeted conversations to establish a common understanding of value and timelines."
+                        ],
+                        "question": "Early in the execution of a platform upgrade, a project manager notices that internal operations teams and external customers express different expectations about how quickly value should be realized. These differences have not yet affected decisions. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "f0b7727e-7a09-418e-8e74-fcad36ad0f18",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Document each stakeholder’s solution preferences separately and proceed with the most detailed version as the project scope.",
+                            "Initiate detailed design work immediately so that prototypes can be developed to clarify what stakeholders really want.",
+                            "Facilitate structured discussions to translate high-level objectives into clear scope statements with explicit assumptions.",
+                            "Limit discussions to technical feasibility and postpone formal scope definition until after the first development iteration."
+                        ],
+                        "question": "A project manager is leading a client engagement to launch a new customer portal. Stakeholders agree on high-level goals but describe outcomes using vague solution language. Different interpretations lead to conflicting designs and unspoken assumptions. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "2a76cb38-c415-44b6-9c67-622b175a1b8c",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Ask each workstream lead to negotiate directly with the safety engineers on an ad hoc basis during execution.",
+                            "Extend the overall project schedule buffer time without changing existing resource assumptions.",
+                            "Identify safety engineer requirements for each workstream and verify availability with functional managers.",
+                            "Request additional funding for more safety engineers before analyzing current demand patterns."
+                        ],
+                        "question": "A project manager is executing a project with several parallel workstreams that share specialized safety engineers from different departments. Teams have inconsistent access to safety engineers, and functional managers face competing priorities. The sponsor wants safety milestones met on time despite early signs of resource conflicts between workstreams. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "ffd7b8e4-e730-4657-b5d1-44b732028323",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Assess financial needs and constraints across all upgrades, matching budget and timing to each source’s limits.",
+                            "Ask each workstream lead to prepare separate budgets and hope they fit within the existing funding constraints.",
+                            "Request that the project sponsor secure additional flexible funding before finalizing any financial plans.",
+                            "Reduce the scope in the most constrained component without reviewing cross-component financial needs."
+                        ],
+                        "question": "A project manager is planning a multi-campus learning platform upgrade that includes state-funded enhancements, a donor-funded analytics module, and a grant-funded accessibility component. Each funding source has unique rules, deadlines, and restrictions that cannot be mixed. The sponsor asks whether the combined financial plan is realistic and compliant. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "9929f77a-4553-4652-9504-b057ec5ac8f6",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Require that all work be incorporated into a single detailed predictive schedule regardless of uncertainty.",
+                            "Use predictive sequencing for stable tasks and time-boxed iterations for components that are still evolving.",
+                            "Keep only a high-level roadmap for the entire project and avoid specifying any detailed sequencing.",
+                            "Plan all work using fully adaptive iterations without defining any fixed dates or dependencies."
+                        ],
+                        "question": "A project manager is planning a customer onboarding transformation that includes fixed-sequence integration work and a series of iterative experience enhancements. Some work has strict dependencies, while other elements will evolve based on feedback. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "d0ba8f4d-4a38-49c6-b87b-923bc4544c97",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Ask the compliance department to perform a final review at the end of the project and provide remediation options.",
+                            "Proceed with technical design first and schedule a separate compliance workstream after development is complete.",
+                            "Document that compliance is the responsibility of functional experts and exclude it from the core project planning.",
+                            "Identify applicable compliance requirements early and integrate them into project plans and activities."
+                        ],
+                        "question": "A project manager is initiating a project to implement a new medical data platform. New regulatory, security, and sustainability requirements affect design and hosting decisions. Some stakeholders assume compliance will be addressed later. The project manager realizes early integration is critical to avoid rework and delays. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "d917b316-438d-4e1d-8212-63897f5094da",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Immediately implement the most comprehensive long-term solution option, regardless of current impact, to avoid future problems.",
+                            "Choose the quickest workaround without evaluating longer-term consequences or recurrence risk.",
+                            "Apply an intervention strategy that is proportionate to the impediment’s impact, using workarounds or structural changes as needed.",
+                            "Escalate the issue to senior leadership and suspend related project work until they decide on a solution."
+                        ],
+                        "question": "A project manager is leading a project to optimize cross-border shipment routing. A customs clearance bottleneck is delaying critical shipments. The team has identified both short-term workarounds and longer-term redesign options. The sponsor wants the issue resolved without unnecessary disruption or cost. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "a0d769f6-569f-4b34-9c26-2e82eb76d533",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Continue capturing lessons learned for a final report at closure without altering current processes.",
+                            "Designate a team member to maintain a lessons learned log, but postpone any changes until the next project.",
+                            "Share improvement ideas informally and leave it to individuals to decide whether to adjust their work.",
+                            "Apply lessons learned during execution by incorporating agreed improvements into current ways of working."
+                        ],
+                        "question": "At a global technology company, a project manager is executing a project to improve internal product support processes. Retrospectives identify useful improvements, but lessons learned are only captured at project closure. Mid-project insights rarely influence ongoing work. The sponsor wants continuous improvement to be visible while the project is still in flight. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 08 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                }
+            ]
+        },
+        "answers": {
+            "1863c8ff-b2b7-44cd-87cd-4b872ae45aae": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "2a76cb38-c415-44b6-9c67-622b175a1b8c": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "60ebe586-b52f-4fad-aadb-b2a34d31dcfd": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "cf39cec5-89fa-45c9-a52e-f87add539ead": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "C"
+            },
+            "f0b7727e-7a09-418e-8e74-fcad36ad0f18": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-14T09:13:39.562449Z"
+    }
+}

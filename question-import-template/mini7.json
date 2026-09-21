@@ -1,0 +1,248 @@
+{
+    "exam_attempt": {
+        "id": "399403dd-37cf-452e-bd21-3cc0580f6acf",
+        "exam": {
+            "id": "ee25e22d-521d-40ff-a88c-3c087e787a3f",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "861d73b2-e1c0-4bc0-9e6e-26f147f97106",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Emphasize meeting delivery deadlines and anticipate teams adapting as structures become more stable.",
+                            "Clearly define roles and expectations, tailor leadership approaches to meet the team’s specific needs, and promote accountability.",
+                            "Empower teams to organize themselves and address engagement challenges as their responsibilities and priorities shift.",
+                            "Escalate morale and engagement concerns to functional managers for appropriate and focused intervention."
+                        ],
+                        "question": "Case Study 7: Navigating Delivery During a Post‑Merger Transformation\n\nA large retail organization is navigating a complex transformation following a merger that brings together various portfolios, delivery methods, and leadership styles. While some strategic projects are already underway, additional initiatives have been started to consolidate systems, harmonize processes, and develop shared services. Executives are expected to maintain consistent delivery, ensure operational stability, and demonstrate early value to both internal and external stakeholders.\n\nPortfolio realignment leads to shifts in morale, changes in reporting lines, and role adjustments. Team members either seek clarity or resist changes due to concerns about autonomy and influence. Shared critical skills create resource contention and force tough prioritization decisions. Stakeholders disagree on delivery speed, scope, and risk tolerance.\n\nThe delivery landscape is divided among legacy organizations, each bringing its own governance style, approval steps, and approach to risk. While some teams rely on well-established predictive methods ideal for strict compliance, others prefer flexible strategies that emphasize speed and experimentation. Roles and decision-making rights are recorded, yet decisions frequently stall due to overlapping responsibilities, unclear priorities, and hesitation to commit, especially when these choices may contradict changing directions.\n\nCommunication adds complexity. Communications are interpreted differently across teams, with some requesting clearer guidance and others feeling overloaded by frequent, vague updates. Inconsistent understanding of priorities increases the risk of misaligned decisions.\n\nRole changes and new reporting lines impact team dynamics, leading some members to disengage due to uncertainty, while others need more guidance. Productivity fluctuates, and tension rises where projects share resources. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "93528ec7-71ce-4e9e-b7fb-344689c39909",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Lead structured discussions to clarify expectations, identify tradeoffs, and align stakeholders on priorities and success criteria.",
+                            "Align with conservative stakeholder expectations to limit risk and prevent disruption during organizational change.",
+                            "Permit each project to manage stakeholder expectations autonomously, taking into account local context and delivery constraints.",
+                            "Escalate conflicting stakeholder expectations to executive leadership and seek a definitive resolution to ensure alignment."
+                        ],
+                        "question": "Case Study 7: Navigating Delivery During a Post‑Merger Transformation\n\nA large retail organization is navigating a complex transformation following a merger that brings together various portfolios, delivery methods, and leadership styles. While some strategic projects are already underway, additional initiatives have been started to consolidate systems, harmonize processes, and develop shared services. Executives are expected to maintain consistent delivery, ensure operational stability, and demonstrate early value to both internal and external stakeholders.\n\nPortfolio realignment leads to shifts in morale, changes in reporting lines, and role adjustments. Team members either seek clarity or resist changes due to concerns about autonomy and influence. Shared critical skills create resource contention and force tough prioritization decisions. Stakeholders disagree on delivery speed, scope, and risk tolerance.\n\nThe delivery landscape is divided among legacy organizations, each bringing its own governance style, approval steps, and approach to risk. While some teams rely on well-established predictive methods ideal for strict compliance, others prefer flexible strategies that emphasize speed and experimentation. Roles and decision-making rights are recorded, yet decisions frequently stall due to overlapping responsibilities, unclear priorities, and hesitation to commit, especially when these choices may contradict changing directions.\n\nCommunication adds complexity. Communications are interpreted differently across teams, with some requesting clearer guidance and others feeling overloaded by frequent, vague updates. Inconsistent understanding of priorities increases the risk of misaligned decisions.\n\nAs the portfolio adjusts after the merger, stakeholders from the old organizations bring conflicting priorities. These disagreements are slowing decisions, creating tension, and confusing delivery teams in steering meetings. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "c00942e2-050a-4b04-a8ee-53f618d39c56",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Allow ongoing local plan modifications, and utilize established coordination forums to identify and address new cross-project impacts as they arise.",
+                            "Maintain temporary stability of plans and restrict modifications to designated checkpoints to minimize disruption and optimize resource allocation.",
+                            "Emphasize using integrated planning as the main tool for coordination and incorporate approved local adjustments to ensure overall system consistency.",
+                            "Defer significant planning and tradeoff decisions to sponsors until organizational priorities and structures are more clearly defined."
+                        ],
+                        "question": "Case Study 7: Navigating Delivery During a Post‑Merger Transformation\n\nA large retail organization is navigating a complex transformation following a merger that brings together various portfolios, delivery methods, and leadership styles. While some strategic projects are already underway, additional initiatives have been started to consolidate systems, harmonize processes, and develop shared services. Executives are expected to maintain consistent delivery, ensure operational stability, and demonstrate early value to both internal and external stakeholders.\n\nPortfolio realignment leads to shifts in morale, changes in reporting lines, and role adjustments. Team members either seek clarity or resist changes due to concerns about autonomy and influence. Shared critical skills create resource contention and force tough prioritization decisions. Stakeholders disagree on delivery speed, scope, and risk tolerance.\n\nThe delivery landscape is divided among legacy organizations, each bringing its own governance style, approval steps, and approach to risk. While some teams rely on well-established predictive methods ideal for strict compliance, others prefer flexible strategies that emphasize speed and experimentation. Roles and decision-making rights are recorded, yet decisions frequently stall due to overlapping responsibilities, unclear priorities, and hesitation to commit, especially when these choices may contradict changing directions.\n\nCommunication adds complexity. Communications are interpreted differently across teams, with some requesting clearer guidance and others feeling overloaded by frequent, vague updates. Inconsistent understanding of priorities increases the risk of misaligned decisions.\n\nTeams often make local plan changes to address changing priorities and resource limits. Project dependencies are less clear, resources are stretched thin, and decisions about delivery sequencing can cause issues in other areas. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "2e6cfe64-769f-47e2-80af-f18eb3729591",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Provide leadership messages more often and consistently to reinforce organizational priorities.",
+                            "Develop a clear communication plan outlining decision intent, audience needs, and feedback channels.",
+                            "Centralize communication approvals to keep messages consistent and limit potential misinterpretation.",
+                            "Allow teams to interpret leadership messages based on local circumstances and decision urgency."
+                        ],
+                        "question": "Case Study 7: Navigating Delivery During a Post‑Merger Transformation\n\nA large retail organization is navigating a complex transformation following a merger that brings together various portfolios, delivery methods, and leadership styles. While some strategic projects are already underway, additional initiatives have been started to consolidate systems, harmonize processes, and develop shared services. Executives are expected to maintain consistent delivery, ensure operational stability, and demonstrate early value to both internal and external stakeholders.\n\nPortfolio realignment leads to shifts in morale, changes in reporting lines, and role adjustments. Team members either seek clarity or resist changes due to concerns about autonomy and influence. Shared critical skills create resource contention and force tough prioritization decisions. Stakeholders disagree on delivery speed, scope, and risk tolerance.\n\nThe delivery landscape is divided among legacy organizations, each bringing its own governance style, approval steps, and approach to risk. While some teams rely on well-established predictive methods ideal for strict compliance, others prefer flexible strategies that emphasize speed and experimentation. Roles and decision-making rights are recorded, yet decisions frequently stall due to overlapping responsibilities, unclear priorities, and hesitation to commit, especially when these choices may contradict changing directions.\n\nCommunication adds complexity. Communications are interpreted differently across teams, with some requesting clearer guidance and others feeling overloaded by frequent, vague updates. Inconsistent understanding of priorities increases the risk of misaligned decisions.\n\nMessages are interpreted differently by teams, leading some to seek frequent, detailed guidance, while others experience overload without clear decision rationale. This causes inconsistent priorities and success criteria, impacting delivery choices. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "2688dbcb-81de-44ea-a8b5-081c7eb6adc6",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Uphold existing delivery commitments to demonstrate stability and prevent further uncertainty throughout the transition.",
+                            "Postpone decisions regarding value-based delivery until organizational roles, priorities, and governance frameworks are clearly established.",
+                            "Escalate value tradeoff decisions to sponsors after presenting delivery status without framing alternative options.",
+                            "Focus on delivery options that provide substantial value and are achievable given existing resources and transition limitations."
+                        ],
+                        "question": "Executive sponsors still seek clear progress and early returns to support ongoing investment and uphold confidence in the combined portfolio. Multiple delivery approaches are being evaluated, each offering unique benefits but also presenting specific challenges concerning risk, resource capacity, stakeholder assurance, and long-term integration goals. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "9647584c-ec52-4938-87f9-ac2a943736c3",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Hold a meeting with senior leaders to clarify interpretations and agree on concrete outcomes for the initiative.",
+                            "Send a summary email restating the original high-level vision statement and ask leaders to confirm their support.",
+                            "Ask business analysts to proceed with requirements based on each leader’s stated priorities and plan to reconcile differences later.",
+                            "Escalate to the portfolio steering committee to request a decision on which executive’s interpretation should take precedence."
+                        ],
+                        "question": "A project manager launches a customer analytics initiative to boost retention and cross-selling. Senior leaders express support, but each defines success differently—one prioritizes cost savings, another values regulatory reporting, and a third highlights digital sales growth. As teams reflect these varied goals in early decisions, the project manager notices potential for the initiative to lose focus without alignment. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 11
+                },
+                {
+                    "id": "3b325485-d03b-470a-97b7-0968fa2c196a",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Increase the length and level of detail in written status reports to reduce the chance of misunderstanding.",
+                            "Create structured opportunities for stakeholders to provide feedback on decisions and communications.",
+                            "Maintain the current communication approach but add more recipients to widen visibility.",
+                            "Rely on individual stakeholders to request clarification if they feel their perspectives are not considered."
+                        ],
+                        "question": "During execution of a regulatory reporting project, a project manager notices that formal communications such as status reports and decision logs are sent on schedule and acknowledged by recipients. Despite regular updates, misunderstandings about decisions surface after actions are taken. Stakeholders say they receive information but feel unheard. The project manager realizes one-way communication is insufficient. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "a3855b00-0afe-4b33-8884-2ca37b7e2836",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Ask each functional team to decide independently what sustainability information they will track for their work.",
+                            "Proceed with selecting suppliers based on cost and schedule only, and add sustainability tracking later if needed.",
+                            "Limit information requirements to regulatory compliance metrics and exclude broader sustainability indicators.",
+                            "Identify and document the critical data and reporting requirements needed to support sustainability-related decisions."
+                        ],
+                        "question": "At a regional healthcare network, a project manager is planning a new patient scheduling platform that must meet regulatory reporting needs and organizational sustainability commitments. Leaders request clarity on what data must be tracked to support regulatory, sustainability, and delivery decisions. Different stakeholders emphasize different information needs. The project manager sees that unclear requirements could lead to inconsistent data and weak decisions. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "8a6feb3b-0536-4fea-93f2-d9caf96f042d",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Proceed with project closure based on the sponsor’s verbal indication that objectives appear to be met.",
+                            "Obtain formal confirmation from stakeholders that acceptance criteria have been met for final deliverables.",
+                            "Close contracts and release resources, assuming that lack of complaints implies acceptance.",
+                            "Archive project documents and move the team to new work without formal acceptance."
+                        ],
+                        "question": "At a national healthcare provider, a project manager is wrapping up an electronic health record enhancement project. Most deliverables are complete, but several departments have not formally confirmed acceptance. Procurement and finance also require confirmation before closing contracts. The sponsor wants a definitive decision on project completion. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "a7c9ec79-a971-4d49-aad7-341cc917cb3b",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Ask each functional director to define their own reporting preferences and escalation rules for their teams.",
+                            "Rely on the existing organizational hierarchy for decisions and proceed without additional governance definition.",
+                            "Define and document a governance framework that clarifies decision authority, reporting expectations, and escalation paths.",
+                            "Begin detailed scheduling work and adjust governance informally as issues arise."
+                        ],
+                        "question": "At a global consumer goods company, a project manager is initiating a project to implement a new product lifecycle management platform across multiple regions. During kickoff, stakeholders express confusion about approvals, reporting expectations, and escalation paths. The sponsor stresses the need for clear governance before execution begins. The project manager sees a risk of stalled decisions if governance is unclear. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 07 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                }
+            ]
+        },
+        "answers": {
+            "2688dbcb-81de-44ea-a8b5-081c7eb6adc6": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "2e6cfe64-769f-47e2-80af-f18eb3729591": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "3b325485-d03b-470a-97b7-0968fa2c196a": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "861d73b2-e1c0-4bc0-9e6e-26f147f97106": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "8a6feb3b-0536-4fea-93f2-d9caf96f042d": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "93528ec7-71ce-4e9e-b7fb-344689c39909": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "9647584c-ec52-4938-87f9-ac2a943736c3": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "a3855b00-0afe-4b33-8884-2ca37b7e2836": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "D"
+            },
+            "a7c9ec79-a971-4d49-aad7-341cc917cb3b": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "c00942e2-050a-4b04-a8ee-53f618d39c56": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-14T04:51:04.728940Z"
+    }
+}

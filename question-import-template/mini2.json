@@ -1,0 +1,248 @@
+{
+    "exam_attempt": {
+        "id": "cec65aee-b0cd-4296-ba95-cc6d43df5c16",
+        "exam": {
+            "id": "19ac4f7b-9b49-4d14-ba58-b1ef85e0bb2d",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "a6a1fde4-cb49-47cc-b6e0-e592255eeaca",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Report green status to align with the sponsor’s request and use earned value management to forecast schedule.",
+                            "Report red status immediately and suspend all dependent work until full alignment is restored across projects.",
+                            "Report yellow status, highlight dependency risks, and present an updated forecast with recovery actions.",
+                            "Report yellow status, reevaluate the critical path, and adjust as necessary to aid schedule recovery."
+                        ],
+                        "question": "Two dependent projects are currently behind schedule, jeopardizing an upcoming integration milestone. The sponsor tells the project manager to maintain green status to protect executive perception. The project management office warns dependency risk is material and cannot be ignored. The client requests a realistic integration forecast with mitigation measures. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "68ce303a-ee12-46e6-ba3d-323d4689a043",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Pause the discussions briefly to emphasize the rules for self-governance.",
+                            "Form focus groups to help elicit a clearer sense of the diverse preferences.",
+                            "Bring in a neutral third party to mediate an agreement among the participants.",
+                            "Use the nominal group technique to facilitate group decision-making."
+                        ],
+                        "question": "A project team is in the early stages of defining the business case for the project, and their discussions about competing priorities have tended to become chaotic and unproductive. To align all the stakeholder expectations into a clearly articulated business case, the project manager needs to facilitate discussions that will equalize participation and minimize dominance by the more vocal stakeholders. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "48b3b83c-8454-449d-b8ed-c1c996b44520",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Draft a summary of stakeholder concerns and circulate it to team leads in each department.",
+                            "Develop training based on anticipated shifts in technology to support virtual delivery.",
+                            "Elicit stakeholder feedback and align proposed changes with stakeholder values.",
+                            "Record stakeholder input in the corporate knowledge repository for future reference."
+                        ],
+                        "question": "A university expanding its distance learning offerings is modernizing teaching methods to support virtual education. The project manager has assessed organizational culture and identified resistance patterns through structured stakeholder interviews. With key cultural barriers now understood, change activities need to be aligned with stakeholder expectations. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "9cc0dd32-026a-4fbd-ab2e-dfff93931eaa",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Continue using the previous estimation method to maintain consistency across project and program reports.",
+                            "Provide detailed training to the program manager on how the new forecasting method works in practice.",
+                            "Align project documentation with the new estimation technique and communicate the change.",
+                            "Verify that the program manager has the required background to interpret project estimates correctly."
+                        ],
+                        "question": "A project within a strategic program is using a newly adopted estimation technique. During a program review, the program manager identifies that the project’s internal forecast shows a delay, while the latest status report indicates the project is on track. The program manager raises a concern about the discrepancy in status reporting. What should the project manager have done to avoid this situation?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "bba672ce-d4db-4ba8-aa53-c8ea038790a3",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Collaborate with internal stakeholders to define and prioritize the value that components' outcomes should deliver.",
+                            "Gather input from external industry sources to supplement organizational strategic decision-making processes.",
+                            "Assess the project value, determine potential benefits and costs with stakeholders, and record the outcomes in the project plan.",
+                            "Perform a high-level risk analysis to estimate project uncertainties and potential return on investment (ROI)."
+                        ],
+                        "question": "A solar energy company needs to adapt to an energy market marked by rapid technological shifts, government incentives, and policy uncertainty. The sponsor stresses that strategic decisions must deliver clear customer value while safeguarding the organization’s long-term resilience. The manufacturing lead emphasizes that agreed-upon solutions must remain achievable within operational capacity. Stakeholders emphasize the need for decisions that are both practical and innovative. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "bacd6453-847d-48e2-b536-d04cd414d5fd",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Facilitate collaborative workshops with stakeholders to identify common goals and resolve priorities.",
+                            "Work with the project sponsor to define the official vision and communicate it to stakeholders.",
+                            "Conduct individual stakeholder meetings to understand perspectives and develop a compromise vision.",
+                            "Engage an external facilitator to lead visioning sessions and help stakeholders reach consensus."
+                        ],
+                        "question": "A project manager is leading a complex digital transformation initiative involving multiple business units with conflicting priorities and success metrics. Early stakeholder interviews reveal significant disagreement about project scope and expected outcomes. Senior leadership is pressuring for a quick consensus to avoid further delays, while different departments have competing visions for the final solution. What approach should the project manager take to build alignment and establish a unified project vision?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "adbde6c9-6acd-4554-8cc1-f6339b68fbb8",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Request that the contractor cancel the repair work and pursue compensation for the defective prior work.",
+                            "Establish a collaborative risk-sharing agreement with the contractor to manage costs and ensure quality.",
+                            "Proceed with the repair work without raising the issue of the past defects to prevent conflict and delays.",
+                            "Notify the contractor that they are responsible for funding and repairing the damage caused by the failures."
+                        ],
+                        "question": "During the execution of repair work, the cause of the damage was discovered to be failures that occurred during the construction phase. The same contractor who performed the construction work is performing the repairs. The CEO insists on negotiating cost reductions for these repairs due to previous failures. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "0a731e5f-ada1-4dcb-8e29-11e708efcb4b",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Schedule a team meeting to remind everyone to prioritize high-value user stories from the backlog first.",
+                            "Instruct the team member to select larger and more complex user stories in upcoming iterations.",
+                            "Provide targeted training on key deliverables to address any skill gaps for the team member.",
+                            "Meet with the team member to understand their selection behavior and tailor the workload accordingly."
+                        ],
+                        "question": "On an agile project, a team member has been consistently selecting smaller, less complex user stories instead of those with the highest priority. This behavior is impacting the team’s ability to deliver the planned business value. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "0e7f918c-856f-4487-a0ec-c37336753059",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Implement corrective actions across all categories to show stakeholders that all quality issues are being addressed.",
+                            "Escalate the issue to senior management and ask them to review the chart and decide which category to prioritize.",
+                            "Remove low-frequency categories from reports to simplify stakeholder communication and avoid confusion.",
+                            "Prioritize corrective actions for categories with the highest frequency because they contribute most to overall defects."
+                        ],
+                        "question": "During a quality review, the project manager presents a chart depicting the project's defect frequency across multiple categories. Most defects fall into just two categories, but a few others exist. The sponsor insists that corrective action should be taken across all categories immediately. The quality manager suggests focusing on the categories with the highest frequency first. The risk manager argues that even low-frequency categories should be addressed regardless of their severity. 1164256 Defect frequency.png What should the project manager do? (Refer to the chart)",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 009",
+                    "type": "mcq",
+                    "image": "https://epcg-production.s3.amazonaws.com/questions/images/Mini_2-9.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVYKPC2VKYUXC26H4%2F20260825%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20260825T101654Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=286c4b8486f8328edda916d42b8761c0653ba8796696eff056661483c90670a6",
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "e35550df-5517-4d8a-b126-fd767d97136c",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "$12,000",
+                            "$18,000",
+                            "$22,500",
+                            "$30,000"
+                        ],
+                        "question": "A project has a total of 200 story points, and 120 story points have been completed. If the cost per story point is $150, what is the earned value (EV)?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 02 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                }
+            ]
+        },
+        "answers": {
+            "0a731e5f-ada1-4dcb-8e29-11e708efcb4b": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "0e7f918c-856f-4487-a0ec-c37336753059": {
+                "answer": "B",
+                "correct": false,
+                "correct_answer": "D"
+            },
+            "48b3b83c-8454-449d-b8ed-c1c996b44520": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "68ce303a-ee12-46e6-ba3d-323d4689a043": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "9cc0dd32-026a-4fbd-ab2e-dfff93931eaa": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "a6a1fde4-cb49-47cc-b6e0-e592255eeaca": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "adbde6c9-6acd-4554-8cc1-f6339b68fbb8": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "bacd6453-847d-48e2-b536-d04cd414d5fd": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "bba672ce-d4db-4ba8-aa53-c8ea038790a3": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "e35550df-5517-4d8a-b126-fd767d97136c": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-08-25T10:16:56.725867Z"
+    }
+}

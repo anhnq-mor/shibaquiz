@@ -1,0 +1,269 @@
+{
+    "exam_attempt": {
+        "id": "7fd478a5-fcb1-4483-beb0-9d557ed0a392",
+        "exam": {
+            "id": "a2b3fea4-ec78-4032-ae52-acd6fde331b1",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "5265d40a-f155-44e9-9f7f-5e19b5809902",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Recommend that the SME develop emotional intelligence by integrating with the team.",
+                            "Explain that teamwork fosters continuous improvement and early feedback loops.",
+                            "Request that the SME conduct the retrospective meetings as an objective observer.",
+                            "Ask the sponsor to meet with the SME and help improve their attitude towards teamwork."
+                        ],
+                        "question": "A highly skilled subject matter expert (SME) is engaged in a government project where approximately 30% of the deliverables will follow an agile approach. The project manager invites the SME to join the agile team to contribute to these iterations. The SME is reluctant because they think that working on a team is demotivating and slows them down, and they want to achieve the highest-quality output possible. What should the project manager do to address the SME's concerns and encourage them to join the agile team?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "3346b27c-548b-4b28-934b-b2f5fca937fc",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Address the situation immediately and answer the new team member directly.",
+                            "Inform the team member that this can be discussed, but it's better to do so in another meeting.",
+                            "Ask each team member to explain their role and what they will work on for the next sprint.",
+                            "Set up one-on-one meetings with each team member and the new team member."
+                        ],
+                        "question": "A dispersed project team just finished a sprint with complex tasks ahead of schedule. During the retrospective, a new member of the team interrupts and asks everyone to explain their roles and what they are planning on working on for the next sprint. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "97a9a055-cee7-4a7e-a1d6-652f381bb310",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Leverage collaborative digital tools, schedule virtual knowledge-sharing sessions, and create online communities to facilitate ongoing exchange.",
+                            "Ask the project management office (PMO) to identify the structure and typology of people involved in the enterprise's projects.",
+                            "Devise a method to draw conclusions from data gathered at the closing of previous projects for continuous improvement.",
+                            "Meet one-on-one with the incoming project manager to share insights and knowledge about previous projects in a personalized manner."
+                        ],
+                        "question": "A project manager is retiring from a large enterprise. Management wants the project manager to share any tacit knowledge learned while on the job. A key stakeholder stresses the need to take a systematic approach to this task to ensure the company benefits from the project manager's experience. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "0a73ebdd-0ea7-4cad-9ccc-5d336fb06674",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Survey the stakeholders and request their preferred alternative reporting methods.",
+                            "Develop monthly reports summarizing multiple iterations to maintain transparency.",
+                            "Coach stakeholders on agile principles and help them understand the value of attending iteration review meetings.",
+                            "Allow stakeholders to skip iteration reviews and ask them to review dashboards instead of monthly reports."
+                        ],
+                        "question": "An agile project is in its first of 12 iterations, and each iteration lasts two weeks. In the first iteration review meeting, the stakeholders requested monthly reports instead of attending regular iteration reviews. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "09203ea2-8d7a-468d-9829-41e3ca9f2f6c",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Submit a change request to add regression testing work packages to the project scope.",
+                            "Request additional test resources from the quality assurance functional manager.",
+                            "Suggest to the project client that regression testing be removed from the quality requirements.",
+                            "Seek approval from the project sponsor to remove regression testing from the QMP."
+                        ],
+                        "question": "The quality management plan (QMP) calls for regression testing before each product release, but these tests were not included in the work breakdown structure (WBS). What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "6cff728f-9036-4eb3-9def-66673febec1e",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Update the project management plan to reflect the new schedule and quality requirements.",
+                            "Review the project schedule and focus on delivering the project on time and within budget.",
+                            "Meet with the project team to assess the situation and develop a plan to address the concerns.",
+                            "Evaluate the project team's skills and request additional resources from the project sponsor."
+                        ],
+                        "question": "During the project's execution phase, the project manager is reassigned to another project. A new project manager takes over and quickly notices problems with the quality and scheduling of several deliverables. What should the new project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 12
+                },
+                {
+                    "id": "1d8ee7c1-6f74-45c1-a804-53ace034f38f",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Create a request for quotation (RFQ) to formulate a list of new vendors.",
+                            "Shift to a master services agreement with appendices for the additional work as required.",
+                            "Consult the lessons learned repository to formulate a list of potential new vendors.",
+                            "Try to negotiate a fixed-price contract with the current vendor."
+                        ],
+                        "question": "A vendor for a large and complex project has been performing more work than originally anticipated in the time and material contract. This type of contract caused the project to be behind schedule and over budget. The contract is about to expire. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "29b77fa0-2301-4856-915c-4a04a2422041",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Align knowledge management practices with organizational goals and objectives.",
+                            "Incentivize technical expertise for building centralized repositories.",
+                            "Include knowledge-sharing behaviors in individual performance evaluations.",
+                            "Facilitate collaboration across cultural and organizational boundaries."
+                        ],
+                        "question": "A global financial institution is executing multiple projects across its portfolio. The sponsor acknowledges that the volume of data and information makes it challenging to identify and apply relevant knowledge effectively. The project manager needs to ensure that teams can capture and share explicit knowledge as well as tacit knowledge, including professional experience and intuition, in a way that improves performance across the institution. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "3c1fce14-35f7-46f5-9c73-9af7fe0404a2",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Request that the remaining team members take on the tasks to mitigate the impact.",
+                            "Inform stakeholders that the resource’s departure will impact critical task timelines.",
+                            "Work with the resource manager to identify and train a replacement for the retiring team member.",
+                            "Ask the retiring team member to postpone their retirement to support a smooth project transition."
+                        ],
+                        "question": "A key team member on a multi-year project announces their upcoming retirement. The project manager is concerned about the potential impact on several critical tasks. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "2d550eb4-53b8-4661-b932-6412f064a909",
+                    "data": {
+                        "pairs": [
+                            {
+                                "label": "Cost variance (CV)",
+                                "content": "CV = EV−AC"
+                            },
+                            {
+                                "label": "Cost performance index (CPI)",
+                                "content": "CPI = EV ÷ AC"
+                            },
+                            {
+                                "label": "Schedule performance index (SPI)",
+                                "content": "SPI = EV ÷ PV"
+                            },
+                            {
+                                "label": "Schedule variance (SV)",
+                                "content": "SV = EV−PV"
+                            }
+                        ],
+                        "question": "Drag and drop the terms below to the correct equation:",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 03 - 010",
+                    "type": "matching",
+                    "image": null,
+                    "question_tags_count": 0
+                }
+            ]
+        },
+        "answers": {
+            "09203ea2-8d7a-468d-9829-41e3ca9f2f6c": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "0a73ebdd-0ea7-4cad-9ccc-5d336fb06674": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "C"
+            },
+            "1d8ee7c1-6f74-45c1-a804-53ace034f38f": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "29b77fa0-2301-4856-915c-4a04a2422041": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "D"
+            },
+            "2d550eb4-53b8-4661-b932-6412f064a909": {
+                "answer": [
+                    "Cost variance (CV)",
+                    "Cost performance index (CPI)",
+                    "Schedule performance index (SPI)",
+                    "Schedule variance (SV)"
+                ],
+                "correct": true,
+                "correct_answer": [
+                    "Cost variance (CV)",
+                    "Cost performance index (CPI)",
+                    "Schedule performance index (SPI)",
+                    "Schedule variance (SV)"
+                ]
+            },
+            "3346b27c-548b-4b28-934b-b2f5fca937fc": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "3c1fce14-35f7-46f5-9c73-9af7fe0404a2": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "5265d40a-f155-44e9-9f7f-5e19b5809902": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "6cff728f-9036-4eb3-9def-66673febec1e": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "97a9a055-cee7-4a7e-a1d6-652f381bb310": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-05T06:10:02.223989Z"
+    }
+}

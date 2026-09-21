@@ -1,0 +1,248 @@
+{
+    "exam_attempt": {
+        "id": "c50e5cb4-815b-4de6-8b4a-e3d862998606",
+        "exam": {
+            "id": "0b5e2bbd-77f0-4669-ab7f-17ed2208a110",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "f50e5112-e8da-45ab-a507-cf37d4f741a0",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Increase the number of status meetings to track who is doing which tasks more frequently.",
+                            "Ask the functional managers to reassign team members so that each works on only one initiative at a time.",
+                            "Escalate to the sponsor and request additional resources to reduce the workload causing confusion.",
+                            "Clarify roles and responsibilities with the team to establish clear ownership and decision boundaries for key activities."
+                        ],
+                        "question": "A project manager joins a large IT infrastructure project where team members are highly experienced but spread across multiple initiatives. The project manager notices duplicated effort and delayed decisions despite clear schedules and deliverables. Team members assume others are handling certain tasks. Lack of ownership clarity is hindering execution. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "bcd06753-e868-49d4-9093-b0454f8ee6d8",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Facilitate a structured discussion to align stakeholder expectations on success criteria and key tradeoffs.",
+                            "Allow each stakeholder group to maintain its own success criteria and manage expectations separately.",
+                            "Ask the sponsor to unilaterally define success and communicate it as the only valid perspective.",
+                            "Rely solely on documented scope and schedule baselines as the definition of success without further alignment."
+                        ],
+                        "question": "During execution of a regional service improvement project, a project manager notices that business leaders, operations managers, and support staff describe ‘successful delivery’ in different ways. Each group emphasizes different outcomes, such as revenue, stability, or workload. These views begin influencing planning priorities. The project manager recognizes that inconsistent definitions of success are driving misaligned decisions. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "a1e7d1bc-1ebe-4c7e-a869-8bfb1c603a8e",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Wait until closer to project closure to document decisions in a comprehensive handover package.",
+                            "Assign one team member to retrospectively reconstruct all past decisions from emails and meeting notes.",
+                            "Rely solely on formal design documents and assume they will capture all necessary decision context.",
+                            "Establish lightweight practices for capturing key decisions, assumptions, and rationale as work progresses."
+                        ],
+                        "question": "In a fast-moving engineering project with multiple teams, crucial architectural and interface decisions are being made informally without adequate documentation. With new members and vendors joining soon, the project manager is concerned about potential knowledge gaps. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "3dfd9dbc-3703-4a5f-ae31-61f43b769e36",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Select a dominant value measure and communicate it as the primary success criterion without broader input.",
+                            "Meet with key stakeholders to identify, prioritize, and agree on the value components that will define success for the project.",
+                            "Continue reporting only on schedule and budget performance, assuming value will follow if delivery is on track.",
+                            "Ask each stakeholder group to define its own success criteria and manage them independently throughout the project."
+                        ],
+                        "question": "A project manager is launching a new digital onboarding process. Different stakeholder groups emphasize different success criteria. Status reports focus mainly on milestones and costs, but value-based tradeoffs may be inconsistent without alignment. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "843be2a6-3c7c-4d7d-b17b-8c4e015c3b56",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Propose a contract structure that shares risk, allows controlled flexibility, and defines incentives for collaborative performance.",
+                            "Recommend a fixed-price contract with a rigid scope to minimize cost variance regardless of evolving requirements.",
+                            "Select a straightforward time-and-materials contract with no performance incentives to maximize flexibility for the buyer.",
+                            "Defer the contracting decision until requirements are fully stable, continuing informal work with the supplier in the meantime."
+                        ],
+                        "question": "A project manager is planning the outsourcing of a complex data analytics component for a clinical study platform. Requirements are expected to evolve, and delivery risk will be shared with the supplier. Stakeholders want flexibility, collaboration incentives, and cost visibility. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "1e526111-e40e-467e-8fec-31193f0c86d3",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Ask each stakeholder group to send their quality expectations by email and file them without reconciliation.",
+                            "Base the definition of quality exclusively on regulatory compliance to prevent subjective debates about usability.",
+                            "Facilitate working sessions with key stakeholders to document specific quality requirements and acceptance criteria.",
+                            "Allow the development team to interpret quality expectations based on their past experience with similar portals."
+                        ],
+                        "question": "A project manager is planning a new customer self-service portal, and stakeholders disagree on the definition of acceptable quality. The sponsor wants clarification of these goals before development. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "a3fbfffd-614f-4f93-8f16-581d04b05ec3",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Allow each workstream to continue using its preferred metrics and consolidate them without standardization.",
+                            "Define a set of project metrics and analysis methods that provide a consistent view across workstreams.",
+                            "Rely entirely on narrative status updates from workstream leads without defined indicators.",
+                            "Track only schedule and cost metrics and assume they adequately reflect the overall status across workstreams."
+                        ],
+                        "question": "A project manager at a global firm is launching an automation initiative with multiple workstreams. The sponsor seeks status updates covering more than just schedule and cost, but teams use varying metrics and formats. This creates a risk of inconsistent interpretations of project health. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "5cc5d963-2575-421e-9aa9-60d110a0dc78",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Ask stakeholders to check the configuration management system themselves if they want to know a status change.",
+                            "Limit visibility of change requests to the core project team until final decisions are made.",
+                            "Communicate the status of proposed changes clearly and consistently to stakeholders throughout the change process.",
+                            "Discourage submission of new change requests to reduce the volume of items causing confusion."
+                        ],
+                        "question": "At a technology services company, a project manager is overseeing a client-facing platform upgrade. Stakeholders assume some change requests are already approved, while others are unsure what is still under review. Confusion grows about what is actually in scope, creating risk of misaligned work. The sponsor asks how misunderstandings about change status will be prevented going forward. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "7d5db83a-bb78-45a7-a082-3cde9315039e",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Execute planned risk responses when defined triggers or conditions are met, and reinforce this expectation with the teams.",
+                            "Wait until significant negative impacts occur before implementing any risk responses to avoid overreacting.",
+                            "Ask teams periodically if they feel a risk is becoming serious enough to act, regardless of defined triggers.",
+                            "Revisit all risk responses and remove triggers to allow more flexible, ad hoc decision-making."
+                        ],
+                        "question": "At a national bank, a project manager is executing a project to modernize the online lending platform. Risk responses and triggers are defined, but teams delay acting until full impacts are visible. The sponsor asks how responses will be applied consistently and on time. The project manager must ensure triggers are treated seriously in practice. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "a2ed2a34-d444-4c07-bd9b-018f6c2d2769",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Evaluate how organizational change affects project roles and decisions, then update responsibilities and coordination as needed.",
+                            "Ignore the restructuring and continue using the existing project roles and approvals to avoid disruption.",
+                            "Pause major project work until the new organization stabilizes and new leaders decide how to proceed.",
+                            "Ask individual stakeholders to work out their new responsibilities among themselves without project-level guidance."
+                        ],
+                        "question": "At a multinational manufacturing corporation, a project manager is in the middle of a project to standardize product data management across divisions. An organizational restructuring changes reporting lines and decision authority. Team members are unsure how approvals and coordination will be affected. The sponsor asks how the project will adapt while maintaining momentum. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 09 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                }
+            ]
+        },
+        "answers": {
+            "1e526111-e40e-467e-8fec-31193f0c86d3": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "3dfd9dbc-3703-4a5f-ae31-61f43b769e36": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "5cc5d963-2575-421e-9aa9-60d110a0dc78": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "7d5db83a-bb78-45a7-a082-3cde9315039e": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "843be2a6-3c7c-4d7d-b17b-8c4e015c3b56": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "a1e7d1bc-1ebe-4c7e-a869-8bfb1c603a8e": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "a2ed2a34-d444-4c07-bd9b-018f6c2d2769": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "a3fbfffd-614f-4f93-8f16-581d04b05ec3": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "bcd06753-e868-49d4-9093-b0454f8ee6d8": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "f50e5112-e8da-45ab-a507-cf37d4f741a0": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-16T04:01:11.123615Z"
+    }
+}

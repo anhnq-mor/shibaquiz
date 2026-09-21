@@ -1,0 +1,248 @@
+{
+    "exam_attempt": {
+        "id": "e811f474-f98f-4161-b52c-46a179be245e",
+        "exam": {
+            "id": "4ad023aa-7b03-476f-b6ab-e2873c0bb9bf",
+            "duration": 20
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "e6e3bf57-22df-4c40-a028-8c62f29a38ca",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Ensure the entire virtual team attends the project kickoff meeting.",
+                            "Adopt the communications management plan of a past virtual team.",
+                            "Rely on asynchronous communication for all major status reports.",
+                            "Conduct recurring check-ins and meetings at scheduled intervals."
+                        ],
+                        "question": "Due to a lack of locally skilled resources, a company employs an internationally dispersed project team that will work virtually. The project manager has never worked with a virtual team and is concerned about engagement. What should the project manager do to ensure this virtual team remains engaged?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "e2118c7b-fa53-4628-857a-90717637967f",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Integrate regulatory requirements into project planning and conduct detailed briefings.",
+                            "Require all team members to complete the required regulatory training before activities.",
+                            "Schedule regular compliance review meetings with regulatory experts and key stakeholders.",
+                            "Document environmental regulatory requirements in the communications management plan."
+                        ],
+                        "question": "A project manager is leading a critical infrastructure project in a region with new environmental regulations that significantly impact project execution methods and compliance requirements. The project team includes international contractors unfamiliar with local regulatory frameworks, and key stakeholders have varying levels of understanding about these compliance obligations. Non-compliance could result in project suspension and substantial penalties. How should the project manager ensure regulatory understanding across all participants?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "123a49c1-75cc-4020-b431-568e13b69d89",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Establish clear testing acceptance criteria and provide comprehensive requirements documentation.",
+                            "Conduct detailed knowledge transfer sessions covering business processes and stakeholder access.",
+                            "Provide existing test scripts and defect tracking procedures to ensure consistency with processes.",
+                            "Schedule regular progress reviews and implement quality gates to monitor vendor performance."
+                        ],
+                        "question": "A project manager is engaging a third-party vendor to provide critical testing services for a complex system integration project. The vendor has limited knowledge of the client's business processes and regulatory requirements. Testing must begin in two weeks, and any delays could impact the go-live date. The internal team has concerns about knowledge transfer and ensuring the vendor understands quality expectations. What should the project manager prioritize to ensure effective execution of vendor testing?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "17e4fcf4-9758-49c0-8b17-d306575cea79",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Update the project brief to reflect the current economic environment and submit a change order through project governance.",
+                            "Submit a formal request for additional funding to position the project to meet the challenges of changes in the economy.",
+                            "Review the business case and project charter to ensure the project still aligns with the organization’s evolving strategies.",
+                            "Analyze market information to identify potential opportunities and threats, and add the information to the risk management plan."
+                        ],
+                        "question": "Economic fluctuations have affected project funding and resource availability. The sponsor has asked for a re-evaluation of project objectives and deliverables to remain competitive in the industry. The project manager needs to ensure that the project is still viable. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "46069ddf-70f5-4562-a291-8b89d4632aca",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Identify the root cause and consult with stakeholders.",
+                            "Address the issue if it comes up during event planning.",
+                            "Recommend rescheduling the upcoming conference.",
+                            "Implement the same strategies used in the last event."
+                        ],
+                        "question": "A new project manager at an events company is planning a biannual conference for a client. After reviewing the lessons learned log from the previous event, they identify a recurring issue that may happen again. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "89e16b79-4668-4fe2-a311-3244cefb2b40",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Release partial payments early to maintain deliveries and negotiate new contract payment terms with the vendor.",
+                            "Deny the request to protect the cost baseline and project schedule and to maintain contractual integrity.",
+                            "Agree to payments per the agreed-upon terms and find a replacement vendor for remaining deliveries.",
+                            "Facilitate a contract review with the vendor, sponsor, and procurement manager to evaluate negotiation options."
+                        ],
+                        "question": "At the midpoint of a large construction project, a key vendor demands early release of partial payments, claiming unexpected inflation costs. The procurement manager refuses and insists payments must follow the agreed-upon payment schedule in the contract. The project sponsor fears the vendor might delay further deliveries if their demands are not met. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "ea1b6f4f-9787-4202-a547-a29f679d2849",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Organize a mid-sprint backlog refinement session with the product owner and team to reprioritize work based on value.",
+                            "Immediately escalate the issue to the project sponsor and request that they review and confirm the agreed-upon priorities.",
+                            "Continue work as planned and request that the team confirm priorities during the next sprint.",
+                            "Assign the missing high-priority tasks to the most skilled team members to ensure faster delivery."
+                        ],
+                        "question": "During the second week of the current iteration in a hybrid project, the project manager notices inconsistent progress across different user stories. During the daily coordination meeting, some team members admitted that they prioritized work based on technical difficulty, while others focused on tasks they personally preferred. The product owner expresses concern that the most critical deliverables might not be completed by the end of the sprint. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 10
+                },
+                {
+                    "id": "d4a0f87f-7a77-4a8b-bc74-79a920ef8cf3",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Establish structured protocols combining synchronous and asynchronous approaches.",
+                            "Implement daily video meetings with mandatory attendance to ensure team alignment.",
+                            "Create shared digital workspaces with real-time visibility into team activities.",
+                            "Rotate meeting times across time zones to ensure equitable participation."
+                        ],
+                        "question": "A project manager leads a diverse remote team across multiple time zones with varying cultural communication styles. Team members are working independently but missing critical interdependencies, leading to rework and missed integration points. Some team members prefer asynchronous communication while others need real-time collaboration. The project involves complex deliverables requiring frequent coordination and knowledge sharing between specialists. What should the project manager do to enhance collaboration?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "2e77b04b-9283-48c3-832d-7d4f0e86c6c3",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "0.47",
+                            "0.65",
+                            "0.83",
+                            "1.20"
+                        ],
+                        "question": "A team planned to complete 30 story points in an iteration, but only reached 25. What is the schedule performance index (SPI)?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "e34e90a3-6c91-49df-bd9f-cea5b5e9557f",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "-$340,000",
+                            "-$60,000",
+                            "$60,000",
+                            "$340,000"
+                        ],
+                        "question": "A project has an earned Value (EV) of $200,000, and the actual cost (AC) is $140,000. What is the cost variance (CV)?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Mini Exam 04 - 010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                }
+            ]
+        },
+        "answers": {
+            "123a49c1-75cc-4020-b431-568e13b69d89": {
+                "answer": "B",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "17e4fcf4-9758-49c0-8b17-d306575cea79": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "2e77b04b-9283-48c3-832d-7d4f0e86c6c3": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "46069ddf-70f5-4562-a291-8b89d4632aca": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "89e16b79-4668-4fe2-a311-3244cefb2b40": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "d4a0f87f-7a77-4a8b-bc74-79a920ef8cf3": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "e2118c7b-fa53-4628-857a-90717637967f": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "e34e90a3-6c91-49df-bd9f-cea5b5e9557f": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "e6e3bf57-22df-4c40-a028-8c62f29a38ca": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "ea1b6f4f-9787-4202-a547-a29f679d2849": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-05T06:45:10.818336Z"
+    }
+}

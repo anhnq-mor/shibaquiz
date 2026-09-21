@@ -1,0 +1,1674 @@
+{
+    "exam_attempt": {
+        "id": "2becf818-f16c-4ddf-a95a-4e3860708bd7",
+        "exam": {
+            "id": "415e67bd-5575-4d19-ba9a-f57e9f98cca1",
+            "duration": 105
+        },
+        "exam_content": {
+            "questions": [
+                {
+                    "id": "42a3b0ad-a5e1-4d6f-ad44-ac9dc056fa13",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Conduct a qualitative risk analysis to assess the probability and impact.",
+                            "Perform quantitative analysis to calculate overall risk exposure.",
+                            "Use a Monte Carlo simulation to model schedule sensitivity.",
+                            "Ask subject matter experts to help validate the entries in the risk register."
+                        ],
+                        "question": "During a project team meeting, several potential risks are identified. The sponsor requests a follow-up meeting to understand which risks require the most attention and how they may impact project objectives. The project manager wants to prioritize the risks before the meeting and determine which ones warrant further analysis. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0001",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "b981497f-9d45-470c-af8c-fe8a8ef692e7",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Speak directly with the team members who have not followed the ground rules to address the issue.",
+                            "Consider reassigning team members who repeatedly violate established ground rules.",
+                            "Recognize and reward team members who consistently adhere to the established ground rules.",
+                            "Allow the team to identify and address any team members who violate the ground rules."
+                        ],
+                        "question": "At the initial meeting for a road construction project, the project manager emphasized the importance of following all rules during project execution and stakeholder interactions. However, as the project progresses, some team members begin arriving late to meetings and disregarding other established ground rules. What should the project manager do next to protect the project's outcomes and schedule?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0002",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "6d9ebc2d-3870-48ca-ab58-a9f6d3cfa628",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Include the dashboard in the final project report to provide awareness for project stakeholders.",
+                            "Convert the pilot dashboard into a reusable template and add it to the organizational repository.",
+                            "Share the dashboard informally with other project managers across the organization.",
+                            "Ask the project sponsor to approve the dashboard for organizational use in future initiatives."
+                        ],
+                        "question": "A project team piloted a new dashboard for tracking earned value metrics that improved visibility and decision‑making. The dashboard was created within the project but is not yet part of the organization’s standard toolset. The project manager must ensure this innovation is captured for future use. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0003",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "7cbf0c53-f497-472d-be57-137287d7cc2e",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Perform a thorough impact analysis of all resolution options, including costs and implications.",
+                            "Negotiate with the vendor for accelerated delivery while identifying alternative suppliers.",
+                            "Facilitate stakeholder alignment on trade-offs between scope, timeline, and compliance.",
+                            "Pivot the team to focus on independent user stories while developing a vendor resolution strategy."
+                        ],
+                        "question": "A key vendor providing specialized API integration components for an agile project is two weeks behind schedule due to unexpected security compliance issues. This delay impacts eight user stories across the next three sprints and jeopardizes a contractual milestone, which could incur a US$50,000 penalty clause. The current vendor requests additional funds for security remediation, and switching vendors would require four weeks of knowledge transfer and onboarding. The product owner is pressing to remove security features from the scope, but regulatory requirements demand their inclusion. What should the project manager do first to resolve this issue?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0004",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "39b43250-3650-459e-b14a-27ef1c5f9ac9",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Monitor and record the number of page views and social media impressions to demonstrate early visibility.",
+                            "Define qualified recruit rate, time to insight, and interview completion predictability and review them at cadence points.",
+                            "Measure and document available delivery indicators, including velocity, cycle time, backlog size, and defect counts.",
+                            "Document success criteria such as increased customer engagement and rely on these as measurable indicators."
+                        ],
+                        "question": "A market research initiative is being launched using an agile approach to test demand for a new product. The team needs to define success metrics, but marketing managers are divided between customer engagement and speed of insights. The team needs to define success metrics that enable adaptive governance. What should the project team do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0005",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "4c0108b5-75b4-4507-bdb6-596eb8cf680b",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Develop a contingency plan, define specific conditions or events that would trigger the plan, and add the details to the risk management plan.",
+                            "Empower team members to make decisions within their areas of expertise to enable faster responses to changing internal and external conditions.",
+                            "Offer training to help the team learn problem-solving skills, increasing the likelihood of sustaining improvements over time.",
+                            "Iterate through the plan-do-check-act (PDCA) cycle to refine processes and practices, leading to incremental improvements in project efficiency."
+                        ],
+                        "question": "A manufacturing company identifies a problem with the high defect rate in one of its production lines. The team sets a goal to reduce the defect rate by 20% over the next quarter. The sponsor asks the project manager to take a structured approach to problem-solving and making informed decisions to enhance project outcomes. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0006",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 10
+                },
+                {
+                    "id": "44efb2ac-5060-4377-9dc9-4b16e38ab5b5",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Encourage the team members to ask the \"five whys\" during their communications with the client.",
+                            "Ask the client to provide a clearer explanation of the requests and issues they shared with the team.",
+                            "Review the scope with the client and ensure all requests are documented and processed as change requests.",
+                            "Request to be included in all future communications between the project team members and the client."
+                        ],
+                        "question": "A project manager receives a complaint that the team did not respond appropriately to a client's request. However, the project manager is aware that the team has been receiving multiple out-of-scope requests from the client. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0007",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "58dee198-7b3b-420a-9eb1-b5fe45c5cc68",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Ask the architecture owner to assess the team member's proposal and evaluate the compliance concerns.",
+                            "Assess the validity of the concern and evaluate the compliance of the current and newly proposed technology.",
+                            "Meet with the customer and ask if they would be comfortable implementing the newly proposed technology.",
+                            "Obtain support from the information technology (IT) department regarding the feasibility of the new technology."
+                        ],
+                        "question": "While planning a global solution delivery in a multinational organization, the project manager and team drafted all work items and defined the priorities and methodologies for implementation. During one of the daily meetings, a team member raises concerns about the compliance of the technology being used and suggests an alternative that better aligns with the country's data privacy policies. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0008",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "f13c70d7-27e4-41e0-bfff-01558220e8ae",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Initiate legal action against the supplier to address breach of contract and ensure compliance.",
+                            "Engage with new vendors to assess the feasibility of quickly sourcing the remaining components.",
+                            "Agree to renegotiate revised pricing with the supplier to avoid project delays and added costs.",
+                            "Review the current contract for clauses concerning pricing adjustments and renegotiation rights."
+                        ],
+                        "question": "Production of a critical machine was outsourced to a foreign supplier. Just before delivering the final two components, the supplier notifies the project manager that prices must be renegotiated, or they will withhold shipment. This situation jeopardizes the completion of the machine and impacts the project timeline. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0009",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4e107f56-c034-4b4f-aa4a-a1b79f3c05ad",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Meet with the new sponsor and stakeholders to review goals, constraints, and reasons for the changes.",
+                            "Request additional resources to accommodate the changes requested by the sponsor.",
+                            "Update the project plan to incorporate changes while maintaining the original deadlines.",
+                            "Escalate to the project steering committee for a decision on approving or rejecting the changes."
+                        ],
+                        "question": "Midway through project execution, the project sponsor leaves the organization, and a new sponsor is assigned. After reviewing the latest status report, the new sponsor requests significant changes to the deliverables, stating that the market and customer expectations have evolved. The project is already 60% complete, with most resources committed, and several contractual milestones linked to the original scope. The team is concerned about rework and possible delays, while the new sponsor insists that the changes align with current customer expectations. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0010",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "90719ad6-1e15-48bb-87de-96e6fbc29261",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Conduct a trend analysis using project performance data to forecast timeline impacts and identify patterns.",
+                            "Perform risk assessment workshops with stakeholders to evaluate political risks and develop strategies.",
+                            "Execute schedule compression analysis using crashing and fast-tracking to identify recovery options.",
+                            "Develop scenario-planning models showing timeline outcomes based on regulatory possibilities."
+                        ],
+                        "question": "An entrepreneur has initiated a software development project. During development, unforeseen political risks arise, causing an urgent need to expedite the project. The sponsor has requested immediate visibility on any anticipated delays and their business impact to inform critical go/no-go decisions. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0011",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "014b8a23-5da9-4039-860a-af5fa7a35444",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Request that the project be reassigned to a team experienced in adaptive approaches.",
+                            "Develop a plan to replace team members without experience in adaptive approaches.",
+                            "Provide training on adaptive principles and mindset for the current project team.",
+                            "Continue to use a predictive approach since the project team is experienced with it."
+                        ],
+                        "question": "A project manager is assigned to a mobile app development project and recognizes that an adaptive approach is more suitable. The organization supports adopting an adaptive approach. However, most team members lack experience with the adaptive approach. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0012",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "5dc61cc6-416e-4b27-acab-7a316fbed4f8",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Identify key environmental and social threats to ensure the project’s sustainability objectives are met.",
+                            "Follow a continuous stakeholder identification strategy to avoid missing risks as they emerge.",
+                            "Focus on the value of each risk in relation to the project’s outcome to ensure a pragmatic resolution.",
+                            "Implement a strategic project management framework to identify sources of overall project risk."
+                        ],
+                        "question": "A project team is working during the project's early stages to identify potential risks for inclusion in the project management plan. They discover that stakeholders have many concerns that have not been articulated. The project manager needs to find a way to identify potential risks. What approach should the project manager adopt?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0013",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "08b9fca9-28de-4592-bcd9-e5f259fdbef0",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Establish a process for continuous risk identification and update the risk register as new risks emerge.",
+                            "Revise the risk management plan every time test results or regulatory changes reveal new risks.",
+                            "Engage key stakeholders early to identify potential risks and document them in the risk register.",
+                            "Request additional reserves to cover cost and schedule impacts that might result from regulatory changes."
+                        ],
+                        "question": "A nongovernmental organization is developing a water purification system in developing countries. The system requires innovative technology that needs to be adapted through testing and feedback. In addition, the organization must navigate local regulations and standards that could alter the project scope and timeline. The project manager recognizes significant uncertainty and must prepare for the project's unknown risks. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0014",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "3445f670-3c4a-4113-8bfb-2c480ae450d7",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Wait until the HSE department finalizes and shares the updated procedures.",
+                            "Request that the HSE department assign a specialist to the team.",
+                            "Meet the sponsor to clarify expectations and update the risk register.",
+                            "Work with the HSE team to assess the impacts and revise the plan as needed."
+                        ],
+                        "question": "A local company recently had the majority of its shares acquired by a large international corporation. After the acquisition, the parent company issued a mandatory directive requiring all ongoing and future projects to fully comply with updated health, safety, and environmental (HSE) regulations. Several projects are already underway, with critical deadlines approaching, and project teams are unsure how the new requirements will impact deliverables, resources, and budgets. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0015",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "902f90d7-ad35-4b74-b789-6103a2c84b39",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Measure customer satisfaction surveys after product release to evaluate delivered value.",
+                            "Record defect density at the end of each iteration to assess the quality of product delivery.",
+                            "Track team satisfaction and engagement scores to identify early signs of delivery challenges.",
+                            "Monitor negative social media reviews to evaluate the reputational impact after product launch."
+                        ],
+                        "question": "A product owner and project manager are collaborating with the team to define governance metrics for an agile product development initiative. The sponsor emphasizes the need for innovative measures to anticipate delivery risks. The project manager needs to address this requirement in the governance plan. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0016",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "76639e37-86d6-4fd9-899a-857dff329c71",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Delay the current iteration and notify stakeholders about the issue.",
+                            "Invite the project team to a swarming session to identify a solution.",
+                            "Adjust the project timeline to reflect the development delay.",
+                            "Escalate the issue to the project sponsor to determine the next steps."
+                        ],
+                        "question": "As part of a temporary assignment, a project manager is leading a business project. During a daily status meeting, it becomes clear that the development team has not completed a critical task, delaying the current iteration. The actions required to resolve the issue fall outside the project team’s authority. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0017",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "2c272ea1-712c-4ee5-8d64-f5bbb0e9341e",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Prevent authorization of change requests during multi-country deployments.",
+                            "Require all relevant countries to align their regulations to a common baseline.",
+                            "Analyze change requests at a global level before implementing them across countries.",
+                            "Require that countries requesting changes fund impact assessments for all countries."
+                        ],
+                        "question": "A new product is nearing completion and is scheduled for deployment in several countries. Country A requested a modification to the product to better support its sustainability initiatives, and the project manager for the deployment in Country A approved the change. When the new version of the product was received in Country B, it failed quality and acceptance testing because it did not meet Country B's government regulations. What should have been done to avoid this situation?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0018",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "f70de5f4-7e4c-41f9-b02e-2bdc8d306d01",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Recommend that senior management introduce agile techniques across all departments to ensure seamless customer service.",
+                            "Continue to follow standardized organizational procedures to ensure compliance with policies and prevent potential problems.",
+                            "Inform the customer about the organizational procedures and ask them to discuss this with the organization's leadership.",
+                            "Collaborate with the legal department and other relevant departments to review the processes that support project delivery."
+                        ],
+                        "question": "An organization is trying to adopt agile approaches to execute projects. During project planning, the product owner proposed that any release to the customer should be approved by the legal department before it is shipped. Since other departments in the organization do not use agile, what should the project do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0019",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "d904a6d1-1f6c-462b-bd7b-114037ef2547",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Dedicate a team of researchers to modify products as the risks become issues.",
+                            "Install backup production systems and train team members on how to use them.",
+                            "Define alternative strategies and allocate resources to address potential issues.",
+                            "Institute a new trial protocol to gather new data about the identified risks."
+                        ],
+                        "question": "The project manager of a pharmaceutical company has identified risks that could potentially impact compliance and the project budget. When presenting this information at the daily coordination meeting, the stakeholders ask for contingency plans to mitigate the impact of those risks. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0020",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "b1b53178-d6f5-41d1-8c01-3ba2619cce58",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Adjust the project plan and timeline to accommodate the absence.",
+                            "Identify critical tasks and dependencies that may be affected.",
+                            "Introduce a replacement resource for the leaving team member.",
+                            "Ask the team member to quickly complete as much as they can."
+                        ],
+                        "question": "A critical deadline is approaching, and a specialized team member has just learned they must be away from the office for two weeks. They have only about three working days remaining and will be completely unavailable during their absence. What should the agile project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0021",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 10
+                },
+                {
+                    "id": "68c71fa5-4ed3-434d-9d37-4f5b7de7818d",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Activate emergency procedures in the project management plan and document the incident for future review.",
+                            "Review the emergency response plan, update it with the latest conditions, and implement corrective measures.",
+                            "Suspend work until the risk management team conducts a full impact assessment on cost and schedule.",
+                            "Notify senior management immediately and recommend a reassessment of the project’s viability."
+                        ],
+                        "question": "A company is about to start a project in a remote location known for extreme weather. The project will follow a predictive, multiphase approach. During the execution of the second phase, extreme weather conditions caused partial site damage and resulted in a temporary work stoppage. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0022",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "35047177-d92d-4d8a-b119-86c3d0a896d7",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Integrate risk assessment into sprint planning and retrospective ceremonies for continuous evaluation.",
+                            "Schedule regular risk review meetings with the team and stakeholders to reevaluate impact and likelihood.",
+                            "Use an automated risk monitoring software with scheduled alerts and stakeholder notifications.",
+                            "Embed risk identification discussions into daily coordination meetings and iteration planning sessions."
+                        ],
+                        "question": "An agile team has established a comprehensive risk register during project initiation. The team has completed three sprints of development and is encountering evolving technical challenges and shifting market conditions. What should the project manager do to ensure effective ongoing risk management?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0023",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "118052e2-c3a5-498b-98bf-25b5b59a36ce",
+                    "data": {
+                        "answer": "A, D",
+                        "options": [
+                            "Engage the legal and compliance departments to validate that governance aligns with corporate and local requirements.",
+                            "Authorize local compliance owners to approve corporate ethics exceptions for their country to support responsiveness.",
+                            "Adjust the governance plan for local labor practices to ensure cultural alignment and project team acceptance.",
+                            "Establish escalation procedures in the governance plan to address conflicts between local practices and corporate standards.",
+                            "Implement local ethics training that emphasizes corporate standards while explaining local legal differences."
+                        ],
+                        "question": "A project manager has been approved to lead a multinational initiative. The product owner is based in the organization’s headquarters, which requires strict governance policies. Two countries where the work will take place have less stringent labor laws and ethical standards. The product owner is concerned about reputational risks due to local practices conflicting with corporate standards. The project manager must take this into account when developing the project governance plan. Which two actions should the project manager prioritize? (Choose 2)",
+                        "num_answers": 5
+                    },
+                    "name": "PMP Business Environment - 0024",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "aa7f4b3a-36aa-4fc6-95d8-d1718b74d79b",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Engage external subject matter experts to validate identified risks and uncover additional vulnerabilities.",
+                            "Conduct additional brainstorming sessions with the team to identify more comprehensive risk scenarios.",
+                            "Review historical project data and lessons learned from similar integration projects within the organization.",
+                            "Schedule individual interviews with key stakeholders to gather their specific concerns about project risks."
+                        ],
+                        "question": "A project manager is leading a complex software integration project involving legacy systems and emerging technologies. During the initial risk identification process, the internal team identified standard technical and schedule risks. However, stakeholders are concerned about potential integration challenges and regulatory compliance issues that the team may not fully understand. The project has tight deadlines and a limited budget. What should the project manager do to enhance the risk identification process?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0025",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "a3434095-8302-447e-9bb6-80c7165a9e9d",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Submit a change request for funding before completing a structured impact evaluation.",
+                            "Adopt the technology and highlight improved quality through marketing campaigns.",
+                            "Assess the new technology to evaluate its feasibility, risks, compliance, and benefits.",
+                            "Postpone adoption of the technology now but propose implementing it in future projects."
+                        ],
+                        "question": "A pharmaceutical company is developing a new product. Midway through the project, new manufacturing technology becomes available that promises to significantly improve the quality of the product. The sponsor, eager to gain competitive advantage, pressures the project manager to adopt it immediately. The project team, however, warns that introducing the technology now might increase rework, delay compliance testing, and strain the approved budget. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0026",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 11
+                },
+                {
+                    "id": "d3475b0d-3d8f-4a6a-8bfe-c1683a460111",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Reference organizational risk appetite and tolerance levels and add this information to the risk management plan.",
+                            "Define key performance indicators (KPIs) and establish acceptable limits that meet regulatory compliance.",
+                            "Use earned value management (EVM) to monitor outcomes after thresholds have already been exceeded.",
+                            "Engage stakeholders to review proposed limits without directly linking them to measurable project metrics."
+                        ],
+                        "question": "A healthcare company is sponsoring a project to develop a new mobile application. The project must comply with strict industry regulations and meet a fixed launch deadline mandated by regulators. The project manager knows that governance thresholds are essential to track performance and risk exposure. If thresholds are not realistic, missed milestones or compliance failures could result in regulatory fines and reputational harm to the company. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0027",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "62bc7645-105d-40a3-9d46-dfd78b59cb61",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Assess how the delay impacts the project schedule and deliverables.",
+                            "Update the project schedule to reflect the new installation date.",
+                            "Immediately notify all stakeholders about the supplier's delay.",
+                            "Facilitate a brainstorming session with the team to identify solutions."
+                        ],
+                        "question": "During the execution of a development project, a team member informs the project manager that the operating system installation will be delayed because the supplier has postponed a critical upgrade. This delay could affect subsequent activities and the overall project timeline. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0028",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "9d6eccfb-ed9e-4734-9414-12899b9ed6c9",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Launch a communication campaign to promote the new virtual learning model.",
+                            "Review the organizational chart to confirm updated reporting lines for staff.",
+                            "Implement facilitated workshops to elicit and validate insights for alignment.",
+                            "Use findings to adjust training modules to prepare faculty for teaching virtually."
+                        ],
+                        "question": "A university expanding its virtual learning platform has completed an initial cultural review. Faculty concerns about teaching methods remain unresolved. The project manager needs to determine whether the review accurately captures faculty priorities and unresolved issues. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0029",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "5e370b3e-b665-488c-8b19-a2e2778b3de3",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Identify all potential risk owners and record them in the risk register.",
+                            "Assess each project risk for its probability of occurrence and impact.",
+                            "Create a simulation model to show all possible risks in relation to each other.",
+                            "Perform a root cause analysis to determine the underlying cause of each risk."
+                        ],
+                        "question": "A project manager is starting work on a new high-visibility project. The project sponsor stresses the importance of an effective and accurate initial risk analysis. The sponsor tells the project manager to consider all relevant factors to understand how each risk might affect the project’s outcome. What action should the project manager prioritize?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0030",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "e79ff6ab-5b6d-480d-8d80-e7c73826b91e",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Escalate the issue to senior management and request that they address the product owner.",
+                            "Inform the team to ignore the changes requested by the product owner during the iteration.",
+                            "Discuss the changes with the product owner and assess the impact of making changes late in a sprint.",
+                            "Remind the team that an agile approach supports change, so they must still meet deliverables on time."
+                        ],
+                        "question": "An agile team is planning for a 2-week iteration. During the last few iterations, the product owner made changes and reprioritized features, which affected the team's deliverables. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0031",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "45c42c09-982a-4ca7-99d8-4d3835306409",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Define fixed thresholds that remain unchanged throughout the project life cycle to enforce consistent quality standards.",
+                            "Collaborate with key stakeholders to establish measurable key performance indicators (KPIs) and acceptable defect rates.",
+                            "Create a formal change request proactively to modify baseline limits after performance issues are identified.",
+                            "Adopt agile methods emphasizing adaptability to adjust easily when thresholds are exceeded by project issues."
+                        ],
+                        "question": "A financial services company is funding a project to develop a new software application. During planning, the project manager defines escalation thresholds to ensure performance stays within acceptable limits. Stakeholders are worried about high defect rates, missed milestones, and compliance risks if the thresholds are poorly defined. The project manager needs to ensure that governance structures include clear measures so issues are detected and escalated early. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0032",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "dddc8f24-62d4-4037-923f-75724219a4df",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Engage stakeholders to clarify vague requirements and focus on high-priority needs.",
+                            "Submit a formal change request to extend the timeline and adjust project scope.",
+                            "Document the issue and escalate it to the project steering committee for resolution.",
+                            "Add more skilled resources to accelerate delivery and meet the original deadline."
+                        ],
+                        "question": "A project team has delivered part of the product on schedule. As they begin work on the remaining items, the project manager discovers that several requirements are unclear. These ambiguities may affect the ability to meet the agreed deadline. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0033",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "e7734aa5-e18b-4d82-a7c0-8a165cd2d516",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Negotiation",
+                            "Mediation",
+                            "Litigation",
+                            "Arbitration"
+                        ],
+                        "question": "An alternative dispute resolution (ADR) method that involves direct discussions between parties to resolve disputes without third-party intervention.  Select the term that best matches the definition from the drop-down list below.",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0034",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "3ef506e5-9681-4408-8c9a-59bfcb9e27a3",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Tailor stakeholder engagement strategies to match their expertise related to resource management.",
+                            "Update methodologies as necessary to improve organizational practices and ensure they remain relevant.",
+                            "Foster collaboration and trust to boost teamwork and strengthen accountability among stakeholders.",
+                            "Establish open and transparent communication so team members are informed about progress."
+                        ],
+                        "question": "A project manager is tracking a project’s progress toward meeting the organization’s strategic goals and business objectives. The key performance indicators (KPIs) show that the project is not meeting its milestones on time, and there is a higher-than-expected rate of resource allocation issues. The assessment shows that the current resource management process needs refinement to optimize resource utilization. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0035",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "79982462-5649-410c-be98-91214a10ce19",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Request that the team increase their efforts to accommodate the requests.",
+                            "Ask the product owner to include the requested enhancements in the current iteration.",
+                            "Request that the project team reprioritize all of the committed activities.",
+                            "Ask the product owner to add the enhancement requests to the product backlog."
+                        ],
+                        "question": "An agile team receives multiple unplanned requests for product enhancements during an iteration. This impediment is causing the team to miss scheduled tasks. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0036",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "e0e48fe8-842c-4bf6-a6bb-40cfe02636d6",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Work with the sponsor to assess the value of the new technology for this software and update the project management plan with the revised strategy.",
+                            "Alert stakeholders to expect an expansion of scope and delays in the timeline caused by code revisions to accommodate the networking technology.",
+                            "Work with the project team to determine the maximum change in scope they can realistically handle based on estimates of the changes involved.",
+                            "Use an iterative approach to the development cycle to continuously assess and prioritize the networking-related change requirements as they arise."
+                        ],
+                        "question": "A company’s software development project was launched before the availability of a new popular networking technology. The project sponsor is encouraging use of the technology, citing anticipated market share. However, the company's design might not work well with this new technology. The engineers’ consensus is that extensive recoding will be required to retrofit the software and make it compatible. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0037",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "1648fc6c-8bc4-4e4e-a337-1cca65ca8369",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Abandon the old system and instruct the team to expedite work on other deliverables.",
+                            "Request additional time to restore the old system while continuing with the project.",
+                            "Evaluate the impacts of the failure and communicate them to relevant stakeholders.",
+                            "Instruct the team to continue working, as they are not responsible for the old system."
+                        ],
+                        "question": "A project manager is managing an upgrade from an old system to a new version. Halfway through the upgrade, the older system failed to upgrade and could not be restored. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0038",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "65e9b100-f7df-4bc3-8f70-914ee3c1fa32",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Perform comparative product analysis to identify similarities and differentiation opportunities.",
+                            "Collaborate with the acquiring company's product team to understand integration possibilities.",
+                            "Seek support from the project sponsor and initiate appropriate change management procedures.",
+                            "Prepare project termination documentation and capture lessons learned from ongoing work."
+                        ],
+                        "question": "A project manager is leading a product development project in its fifth sprint. The product is due for release next quarter. The company is unexpectedly acquired by a competitor who already has a similar product. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0039",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "319b59b3-b49f-4180-9cf3-4789e0898092",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Search the knowledge repositories for updated safety process improvements.",
+                            "Check the lessons learned register for validated safety recommendations.",
+                            "Review the project archive from the last housing project for safety notes.",
+                            "Consult the safety officer for departmental procedures and add them to the plan."
+                        ],
+                        "question": "A project manager for a housing project is developing the project management plan with the project team. The sponsor has mentioned that stronger safety practices are needed compared to the last project. The project manager wants to ensure the project management plan reflects the most current organizational standards. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0040",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "f263697e-8fda-42c2-9fb1-1841940d6b9e",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Hold a meeting with stakeholders to clarify that the request is not part of the defined exit criteria.",
+                            "Work with the stakeholder to document the request and initiate a formal change request.",
+                            "Escalate the issue to the sponsor to avoid delays that could affect the delivery timeline.",
+                            "Record the legal requirement as a risk and monitor it since it falls outside the original scope."
+                        ],
+                        "question": "During a predictive project, the project manager is finalizing the exit criteria for a large-scale system development effort. At this point, a stakeholder responsible for risk and compliance notifies the project manager that a new deliverable must be added due to recently passed legislation. The request introduces potential delays in the scheduled go-live date. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0041",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "3318d835-ab6b-4788-9926-f4669d5e3ca2",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Implement only the initial response as outlined in the risk management plan.",
+                            "Update the risk management plan and implement the newly created response.",
+                            "Defer risk response until the next progress meeting to inform stakeholders.",
+                            "Implement a contingency response and inform the stakeholders afterward."
+                        ],
+                        "question": "A risk was identified at the beginning of an agile project and a mitigation plan was established. The risk event occurs, but the impact is much higher than anticipated and the originally planned response will be ineffective. The project team developed a more effective response, but it is drastically different from the original mitigation plan and must be implemented as soon as possible. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0042",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "879a57a5-79c5-4b4c-a5e6-41042dc356e8",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Review the requested changes with the team and initiate the formal change control process if needed.",
+                            "Inform the stakeholder that the requested changes will be implemented in future product updates.",
+                            "Update the project management plan to incorporate the requested changes and inform stakeholders.",
+                            "Submit a change request to the change control board and notify the project sponsor about the changes."
+                        ],
+                        "question": "A project manager is leading a project that is 70% complete. The development team has been following the project management plan and the scope defined in the project charter. During a product review meeting, a stakeholder raises concerns about adding new features, which were not part of the original project scope but are now urgent for the stakeholder. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0043",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "057fc744-ac8f-429f-90b6-b608ad4cb2d1",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Remove any unessential features to help complete the project before market conditions change.",
+                            "Schedule regular meetings to align the team’s progress with the project management plan.",
+                            "Monitor the external environment and identify the types of changes that may require immediate action.",
+                            "Warn the product owner about the potential for scope modifications if conditions change."
+                        ],
+                        "question": "A new development project in an industry subject to frequent market volatility appears especially vulnerable. The project manager is concerned that evolving external conditions might reduce the product’s value. The project manager must stay vigilant and be ready to adapt quickly. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0044",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "9b306c17-581c-4090-9853-e7feefb6f1a2",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Request a change to the stakeholder engagement plan to include structured review checkpoints.",
+                            "Assign the project management office (PMO) to monitor stakeholder satisfaction across projects.",
+                            "Record the stakeholder communication issue in the risk register as a potential threat to satisfaction.",
+                            "Add additional stakeholder meetings into the current project schedule to improve communication."
+                        ],
+                        "question": "During a portfolio review, leadership notes that multiple projects are struggling with inconsistent stakeholder feedback loops. The current improvement framework does not include a formal mechanism to capture and act on stakeholder input. How should the project manager address this gap?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0045",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4cc5d1b3-fda4-4ac0-be2b-2cc199315569",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Suggest that the project sponsor submit a formal change request to change the requirement for the theme.",
+                            "Inform the project sponsor to accept the theme, as the contract clearly states it should be red.",
+                            "Agree with the project sponsor and change the theme color as requested to avoid potential conflict.",
+                            "Request that procurement change the theme color to blue to align with the project sponsor's expectations."
+                        ],
+                        "question": "During a product acceptance test for a project, the project sponsor tells the project manager that the deliverable will only pass if the theme color is changed from red to blue. The project manager reviewed the planning documents and confirmed that the theme color should be red. The sponsor insists that the color be changed to blue. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0046",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "552dee4d-9bf9-4627-ab24-7a0dd68be8be",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Proceed with the project as planned because the new regulation is not part of the initial project requirements.",
+                            "Conduct a workshop with the project steering committee to review the new regulation and identify a resolution.",
+                            "Leverage the contingency reserve to fund the additional tasks required for the new regulation.",
+                            "Request funds from the management reserve, as the new regulation poses an unknown risk."
+                        ],
+                        "question": "An organization is halfway through a five-year project, and everything has progressed as scheduled. The latest project assessment indicates that the project will not be in compliance with a recently introduced international regulation. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0047",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "3e95b85a-f064-4ffc-b7d6-5368063b9eec",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Negotiate material prices, expedite permit approvals, and then update cost and schedule baselines.",
+                            "Revise the implementation plan, closely monitor changes, and provide frequent variance reports to stakeholders.",
+                            "Apply cost controls through tighter procurement oversight and more efficient allocation of project resources.",
+                            "Submit a formal change request to adjust the baseline budget and timelines using updated estimates."
+                        ],
+                        "question": "An engineering firm is delivering a large-scale infrastructure project funded by a public client. Midway through execution, the project manager notices significant cost and schedule variances that exceed the escalation thresholds set in the governance plan. An analysis shows the causes include unexpected material price increases and lengthy permit approval delays. The sponsor is concerned about possible reputational damage if corrective actions are not taken quickly. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0048",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "39e69e83-5696-49c9-bf90-ca5137373296",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Identify and document all interconnected project dependencies.",
+                            "Adjust interconnected project timelines to remove dependencies.",
+                            "Remove all potential dependencies between the interconnected projects.",
+                            "Ensure that all interconnected projects can move forward independently."
+                        ],
+                        "question": "A project manager is overseeing multiple interconnected projects, some of which depend on specific deliverables from others. What will the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0049",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "35e4cc23-5690-4665-aadb-a54850c4eea0",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Speak with the product owner to prioritize compliance activities in the backlog to submit a prototype to the regulatory body.",
+                            "Identify the missing requirements, prioritize them directly in the backlog, and assign the work to the relevant project team members.",
+                            "Reschedule the product launch until the team can produce a prototype for inspection, as required by the regulatory body.",
+                            "Create a new MVP definition that contains the scope requirements for the required prototype and prioritize that scope with the team."
+                        ],
+                        "question": "A project manager is working in a regulated industry, and the team is working on a project where the requirements are prioritized in a backlog. The minimum viable product (MVP) for the launch has been defined. The project manager learns that the regulatory body for the project requires a prototype for inspection before the product can be launched. The prototype is not part of the MVP definition. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0050",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "f91490c3-a687-485d-915a-11e7c8c9b3e3",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Use aggregated tasks finished and status report counts because weather conditions cannot be measured meaningfully.",
+                            "Adopt criteria to maintain safe operations and schedule variance (SV) to provide an accurate measure of schedule performance.",
+                            "Select metrics such as safety incident rate and cumulative weather delay days along with the schedule performance indicator (SPI).",
+                            "Use status report counts and milestones met with all available weather details, including temperature, rainfall, and wind speed."
+                        ],
+                        "question": "A project manager is in a governance planning meeting for a weather‑dependent construction program that spans multiple volatile regions. During the discussion on success metrics, the sponsor states that safety and schedule predictability are priorities. The site managers insist that weather variability needs to be addressed as part of safety. What should the project manager do to reflect these needs in the success metrics?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0051",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "d06825b8-5dba-4653-aaa5-1d75a35a5148",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Hire a specialized engineer with expertise in safety compliance to join and assist the design team.",
+                            "Provide the team with the organizational process assets and the project charter to guide compliance decisions.",
+                            "Review lessons learned from similar past projects to identify relevant compliance approaches.",
+                            "Conduct a benchmark study with similar facilities to capture their operational compliance constraints."
+                        ],
+                        "question": "During a design workshop for a new industrial robot, engineers raised concerns about the applicable safety and environmental protocols that must guide its operating procedures. The project is currently in the design phase and operates under strict regulatory requirements. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0052",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "80acdff1-e3a8-4cf3-839a-b90a0aa8d51f",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Submit the change request to the change control board (CCB), indicating that the customer will cover all additional costs.",
+                            "Submit the change request to the change control board (CCB) and advise rejecting the request due to its impact.",
+                            "Submit the change request to the change control board (CCB) with a detailed rationalization and a cost-impact analysis.",
+                            "Submit the change request to the change control board (CCB), indicating that the change cannot be accommodated."
+                        ],
+                        "question": "During execution, the customer submits a change request to maintain the project's business value, which has been threatened by a recently implemented government regulatory change. The project manager analyzes the change, which will require 50% of the project deliverables to be reworked and will incur additional costs to the customer. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0053",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "dfb9536a-7cb5-44e6-bc3f-5a0bade887da",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Apply for the permit, accept the 21-day delay and US$40,000 cost, and update the schedule and cost baselines.",
+                            "Continue without the permit to avoid delay and continue project execution as planned.",
+                            "Attempt to negotiate with local authorities while pausing construction activity until a resolution is reached.",
+                            "Proceed with the work as scheduled and include the daily fine in the project budget."
+                        ],
+                        "question": "A project manager overseeing a construction project discovers that a required government permit has not yet been secured. Obtaining the permit will delay the project by 21 days and incur a cost of US$40,000. However, proceeding without the permit would result in a fine of US$1,900 per day. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0054",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "e2d7a9ba-c070-4a7c-94f9-1b934e6e757b",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Perform a comprehensive business impact analysis and explore options for using alternative materials or resources.",
+                            "Assess the impact of the competitor's product changes and seek approval from the change control board (CCB) to address them.",
+                            "Continue with the project as planned, adhering to the existing project schedule and avoiding any changes to scope or quality.",
+                            "Terminate the current project and initiate a new project that better aligns with the evolving competitive landscape."
+                        ],
+                        "question": "A project manager is currently overseeing a hybrid project that has specific scope and quality requirements. However, due to recent changes in a competitor's product, there is a growing concern that the project's deliverables may become obsolete by the time the project is complete. What should the project manager do to address the potential obsolescence of deliverables?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0055",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "e6302cff-3b32-4c57-95ed-7c401a603b0a",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Escalate the disagreement to procurement and legal teams for contract interpretation and guidance.",
+                            "Conduct a stakeholder impact analysis to determine the optimal approach for transitioning resources.",
+                            "Document the vendor's position and convene a change control board meeting to resolve the issue.",
+                            "Review the contract terms to understand obligations and negotiate an amended release schedule."
+                        ],
+                        "question": "A project manager reviews the project status with the team and notices that a vendor resource can be released earlier than scheduled. The project manager checks the schedule, confirms this change, and notifies the vendor. The vendor argues that the resource must remain on the project for the initially agreed-upon duration. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0056",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "de08e40b-a8b6-4b76-bca8-8756acdfccdc",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Perform an impact analysis and submit a formal change request for approval.",
+                            "Add changes informally to satisfy compliance and keep the project moving.",
+                            "Reject the changes to protect the budget and seek an exception to the law.",
+                            "Research the actual requirements of the law regarding the date of enforcement."
+                        ],
+                        "question": "A financial institution receives notification of new legislation mandating changes to system security deliverables. The compliance officer informs stakeholders that modifications are urgent. The project sponsor resists, citing budget limitations, but the IT and project manager warn that the product launch will be blocked without legislation compliance. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0057",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "8890117b-0555-4e04-b884-e47d437f9fc6",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Define the success metrics after the first stage gate when customer satisfaction is better understood.",
+                            "Combine customer satisfaction survey scores and resolution time with earned value metrics.",
+                            "Adopt industry benchmarks for both operational and customer satisfaction success metrics.",
+                            "Use earned value metrics along with the number of completed daily service calls for customer value."
+                        ],
+                        "question": "A project manager is initiating a critical customer service improvement project. The sponsor wants to measure success beyond cost and schedule, focusing on stakeholder value outcomes. Although the project management office recommends including customer-focused metrics, the operations director argues that earned value measures are sufficient. The project manager must define success metrics that reflect governance priorities. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0058",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "2bd1f6b5-e291-4541-b54e-d9dee8911c5a",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Update job descriptions to include agile responsibilities for team members.",
+                            "Conduct a cultural assessment using surveys and interviews with employees.",
+                            "Launch training sessions to prepare engineers for agile practices.",
+                            "Draft a cultural change strategy to address the resistance from engineers."
+                        ],
+                        "question": "A technology company is shifting from a hierarchical to an agile culture. The project manager has reviewed enterprise environmental factors (EEFs) such as organizational structure and workforce readiness. Despite leadership support, engineers continue to raise concerns that are slowing adoption of the new approach. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0059",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4828639d-295b-4607-bad6-f3929f1ec347",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Continue logging impediments in the retrospective notes so the team can review them at the next iteration.",
+                            "Identify recurring impediments, record them in the lessons learned repository, and address the improvement backlog.",
+                            "Escalate the impediments to the project sponsor for resolution and oversight of organizational actions.",
+                            "Increase the number of retrospectives scheduled to capture more impediment data from the team."
+                        ],
+                        "question": "A project team using agile methods notices that sprint retrospectives consistently identify the same impediments. The impediments are logged but not addressed in the organization’s improvement framework. The project manager needs to ensure that these insights lead to systemic change. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0060",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "d44bbff3-b40f-43f1-a082-3a4d65b25910",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Conduct inspections and statistical sampling of completed components to verify compliance with documented quality standards.",
+                            "Perform a quality audit to evaluate adherence to defined processes and identify opportunities for improvement.",
+                            "Based on stakeholder concerns, integrate new tools and techniques for assurance and control into the project management plan.",
+                            "Escalate unresolved concerns about process alignment to the sponsor and document them in the issue log for resolution."
+                        ],
+                        "question": "A medical equipment manufacturer has initiated a project to develop a new medical device and is now midway through the development phase. The steering committee has recently pushed to expedite delivery due to market demands. As a result, key stakeholders have raised concerns about whether current work processes still align with the documented quality expectations. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0061",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "4164544e-879c-4e5f-939e-780c736666da",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Stop the testing and schedule a meeting to review the proposed changes with the resources.",
+                            "Reject the proposed change and proceed with the functionality testing as scheduled.",
+                            "Document the proposed changes and assess any impact on time, cost, and resources.",
+                            "Postpone the proposed changes and allow the team to complete the testing and implementation activities."
+                        ],
+                        "question": "A project manager is assigned to redesign a store's point-of-sale system. The team is currently testing the new functionality when a key stakeholder proposes a change. The proposed change can offer significant benefits and improve customer satisfaction, but it also requires more resources. What actions should the project manager take?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0062",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 6
+                },
+                {
+                    "id": "afa0d3eb-6f1c-419b-b1e6-577d284f8162",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Document the vendor delays in the final project report in support of organizational awareness.",
+                            "Escalate the vendor performance issue to the project sponsor for immediate intervention and continued oversight.",
+                            "Request a change to the procurement management plan’s vendor management practices using repository insights.",
+                            "Increase the frequency of vendor status meetings to track procurement progress more closely for the remainder of the project."
+                        ],
+                        "question": "During a mid‑project audit, the quality team discovers that recurring vendor delays were reported in lessons learned from earlier projects. The same vendor practices are now causing repeated schedule slippage. What should the project manager do to address this pattern?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0063",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "9baacb7a-6631-4067-a221-085b87530017",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Update compliance checklists for placement into the organization’s quality repository.",
+                            "Retain the checklists in the project’s repository for easy reference by the project team.",
+                            "Share the checklists informally with peers about to work on other similar projects within the organization.",
+                            "Ask the project sponsor to approve the checklists for organizational use in future initiatives that are similar."
+                        ],
+                        "question": "At the close of a compliance project, the team developed new checklists for regulatory documentation that significantly reduced errors. These checklists are not yet part of the organization’s standard resources. The project manager must ensure this improvement benefits future projects. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0064",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "2bb72e83-1cf2-4f6d-b126-84059706232d",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Conduct comprehensive impact analysis of all options including costs, risks, and implications.",
+                            "Request that the change control board (CCB) assess policy impacts and recommend response options.",
+                            "Negotiate with the client for contract modifications while implementing required compliance changes.",
+                            "Escalate to senior leadership for executive decision-making given the financial and legal implications."
+                        ],
+                        "question": "A project is 90% complete when a major new government policy change is announced. The policy change will delay the project by six months and add US$2M in compliance costs. The current contract includes penalty clauses for late delivery, and the client is threatening to take legal action. Key team members are assigned to other upcoming projects, and keeping the team will cost US$500,000 per month. Stakeholders are debating whether to complete the project with delays, renegotiate the contract, or terminate and accept the losses. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0065",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "353b1401-1f91-4983-ad17-6f7b5aad1bd1",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Update the stakeholder map to show reporting relationships across departments.",
+                            "Apply cultural and political awareness tools to evaluate decision‑making influences.",
+                            "Submit the survey findings to the project management office for review.",
+                            "Schedule a summary review with the legal and procurement department managers."
+                        ],
+                        "question": "An engineering company is outsourcing building operations. Senior management wants to understand how team dynamics could affect prioritization and governance. The project manager has collected survey data and conducted stakeholder interviews. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0066",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 9
+                },
+                {
+                    "id": "f3e33efc-7a41-4225-9d36-c75767670937",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Develop and launch protocol training for the organization’s clinical and administrative teams.",
+                            "Evaluate corporate culture to identify norms and behaviors that could affect protocol adoption.",
+                            "Submit revised protocols to the organization's project management office for review.",
+                            "Create a dashboard to track compliance milestones across the organization's departments."
+                        ],
+                        "question": "A hospital is updating its protocols to comply with new federal regulations requiring changes in technology and staff training. The project manager has completed a change impact gap analysis and documented how systems and roles will be affected. Cultural factors that might influence adoption of protocols by the staff need to be assessed quickly to maintain compliance. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0067",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "14a0e4ad-3e13-44d6-880d-96b6335c1124",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Review the resource management plan and artifacts on standard operating procedures.",
+                            "Gather initial feedback on the merger by distributing a short survey to employees.",
+                            "Convene focus groups to discuss integration concerns with selected employees.",
+                            "Review historical employee engagement data to estimate overall cultural readiness."
+                        ],
+                        "question": "A regional hospital system is preparing for a merger with another healthcare provider. Management wants to take a structured approach to understanding staff attitudes and behaviors that could influence integration activities. The project manager has reviewed enterprise environmental factors, including organizational charts and workforce demographics. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0068",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "335a4849-ba19-4c15-9241-b318f2899b45",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Evaluate the concern and submit a formal change request if criteria updates are required.",
+                            "Modify the criteria immediately to prevent delays in starting the validation testing.",
+                            "Continue with the existing test criteria to avoid any changes that might impact the project timeline.",
+                            "Discuss potential impacts and persuade the test lead to accept the current test conditions."
+                        ],
+                        "question": "The development phase of a new product has concluded. As the team prepares to start validation testing, the test lead challenges the established acceptance criteria, stating that they are incomplete or unclear. The project manager wants to address the concern without causing unnecessary delay. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0069",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "91b192a4-cf97-4dd3-9a8e-244907401d59",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Implement audit pass rates and meeting milestones to meet desired compliance outcomes and timeliness.",
+                            "Prioritize defect counts and test execution metrics because they provide detailed compliance activity evidence.",
+                            "Focus on training completion milestones because readiness is the most efficient single tracking measure.",
+                            "Use the schedule performance index and variance as the main measures to meet the sponsor’s top priority."
+                        ],
+                        "question": "A regulatory compliance project is underway to meet new mandates across multiple regions. The sponsor emphasizes meeting certification milestones, but the compliance team prefers using defect counts to demonstrate quality as the preferred success metrics. The project manager must define the project's success metrics. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0070",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4a829c91-cd97-4e5c-952d-9124a951ba00",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Revisit stakeholder interviews to confirm alignment with current priorities.",
+                            "Update the competency framework to reflect revised job descriptions.",
+                            "Compile a summary of engagement outcomes and store it in the repository.",
+                            "Initiate targeted change activities such as process redesign and staff training."
+                        ],
+                        "question": "A telecom company is restructuring operations after outsourcing facilities management. The project manager has completed stakeholder engagement addressing resistance, aligning proposed changes with the company's cultural values and feedback into the change strategy. The project team needs to prepare to implement targeted interventions. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0071",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "0f1373de-7513-4aa8-bb66-323649a27ca5",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Review the possible impacts of the updated regulations on their projects.",
+                            "Update their risk register to include emerging risks related to the new laws.",
+                            "Request that the human resources department update its procedures.",
+                            "Ask the corporate office for guidance on determining the best course of action."
+                        ],
+                        "question": "A country implements new laws with specific requirements for health and safety. The company's existing procedures haven't been updated yet, but management informed all project managers of the regulations. What should the project managers do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0072",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "4baaecb6-9fcf-4a6f-bea7-31ccb984d633",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Plot out a fully detailed schedule with clear milestones that will provide some predictability to help offset the chaotic design process.",
+                            "Re-evaluate expectations about hierarchy to trust the team members’ knowledge and empower them with decision-making.",
+                            "Employ a leadership style that tolerates more informality but still recognizes the existence of hierarchy and the importance of authority.",
+                            "Establish a code of conduct for meetings and specify policies and procedures to provide a framework for the team’s informal interactions."
+                        ],
+                        "question": "A startup tech company has hired a project manager to lead a project designing a new piece of hardware. The manager brings valuable experience from a more established company, but at this company, uncertainty and change are common. Some of the manager’s conventional practices are meeting resistance from the team. Although willing to make adjustments, the project manager is focused on the project's success. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0073",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                },
+                {
+                    "id": "fe4264a1-6c1c-4ad8-a9c4-5350c8a00888",
+                    "data": {
+                        "answer": "D",
+                        "options": [
+                            "Evaluate the risks and benefits of deploying the components in the next product release.",
+                            "Integrate the components and launch a marketing campaign announcing the improved product quality.",
+                            "Submit a formal request through change control for additional budget to cover the cost of the components.",
+                            "Assess the components to determine their potential impact and benefits to the product."
+                        ],
+                        "question": "A manufacturing company is developing a new product. As the product becomes ready to ship, new components become available that would improve the quality of the product. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0074",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "ac31b047-90ec-4c54-bee1-0982beca346b",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Ask the logistics team for strategies to expedite the clearance.",
+                            "Review the risk register and implement the respective risk response.",
+                            "Identify the cause of the delay and add it to the bid documents.",
+                            "Request that the supplier cover all costs associated with the delays."
+                        ],
+                        "question": "Some of the project's materials have been ordered from overseas. The supplier notifies the project team that the materials will not reach the site on time due to a customs clearance delay that will affect the critical path. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0075",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 8
+                },
+                {
+                    "id": "d86cb6c4-661f-40c7-9a93-e7515fed9971",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Request management reserve funding from the project sponsor to cover any remaining costs.",
+                            "Ask the project sponsor to provide an additional budget to compensate for the cost overage.",
+                            "Initiate a formal change request to modify the scope, cost, and schedule baselines to support the plan.",
+                            "Use the available contingency reserve and explore options to reduce the scope of the remaining work."
+                        ],
+                        "question": "During a progress meeting, the project team learns that a previously identified risk has materialized. The project manager decides to execute the risk response plan, but the contingency reserve does not cover the total budget for that plan. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0076",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "05f52d47-2357-468e-ae06-a81e124cd530",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Postpone all tasks affected by this issue until the supplies are available again.",
+                            "Notify stakeholders of the delay in anticipation of impacts on dependencies.",
+                            "Reassess the business value of the affected items and reprioritize them accordingly.",
+                            "Deliver the product in increments as work items are completed to continue workflows."
+                        ],
+                        "question": "A manufacturing project is dependent on a fluid supply chain. The schedule was disrupted by sudden supply chain issues, which the project sponsor warns can impact the critical path. The project manager needs to resolve the delay quickly to avoid penalties for missed milestones. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0077",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "7e47dfc0-3133-4cb8-9ced-dea1e74d4c3c",
+                    "data": {
+                        "answer": "A",
+                        "options": [
+                            "Lead a discussion with stakeholders to confirm the need for compliance and highlight the risks of non-compliance.",
+                            "Review the stakeholder register to find individuals with the authority and influence to resolve compliance disagreements.",
+                            "Escalate the compliance concerns and conflicting views to the sponsor for facilitation and decision-making.",
+                            "Propose removing select compliance elements to balance cost, complexity, and stakeholder expectations."
+                        ],
+                        "question": "A project to construct a new hydropower plant has completed its compliance analysis. Meeting all regulatory, safety, and security requirements will be costly and complex. Stakeholders have conflicting views on the necessity of full compliance and the potential risks of not meeting all requirements. What should the project manager do next?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0078",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 7
+                },
+                {
+                    "id": "d5eb4d26-36d0-4af7-9c46-a69a503e0066",
+                    "data": {
+                        "answer": "B",
+                        "options": [
+                            "Review the sprint planning documentation with the team to gain a better understanding of story interdependencies.",
+                            "Meet with the team member who falsely reported the story as complete to identify the source of the misalignment.",
+                            "Inform the product owner to review the acceptance criteria before adding it to the sprint backlog.",
+                            "Ask the team to explain their interpretation of the definition of done (DoD) at the end of the sprint."
+                        ],
+                        "question": "During a daily coordination meeting, a team member falsely reports the completion of a story, which is a dependency for other stories. When the team begins working on related stories, they are unable to continue with development because the initial story is not yet finished. What should the project manager do first?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0079",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 11
+                },
+                {
+                    "id": "0b8daa73-e791-40c7-8473-d7107db5179a",
+                    "data": {
+                        "answer": "C",
+                        "options": [
+                            "Develop standard operating procedures (SOPs) to guide execution activities and ensure compliance with organizational standards and best practices.",
+                            "Update the integrated project management plan document to reflect new ethics policies while maintaining strategic alignment with objectives.",
+                            "Use organizational process assets (OPAs) to create a governance framework that emphasizes integrity, transparency, and accountability consistently.",
+                            "Leverage organizational charts and existing governance frameworks that define project structure, authority, responsibilities, and procedural rules."
+                        ],
+                        "question": "A project manager is leading a project to develop a new customer relationship management (CRM) system for a retail company. The sponsor reminds the stakeholders of legal issues during past projects caused by mismanagement of funds. To prevent recurrence, the sponsor emphasizes the need to define and integrate the project’s ethics policies into its governance framework. What should the project manager do?",
+                        "num_answers": 4
+                    },
+                    "name": "PMP Business Environment - 0080",
+                    "type": "mcq",
+                    "image": null,
+                    "question_tags_count": 5
+                }
+            ]
+        },
+        "answers": {
+            "014b8a23-5da9-4039-860a-af5fa7a35444": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "08b9fca9-28de-4592-bcd9-e5f259fdbef0": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "118052e2-c3a5-498b-98bf-25b5b59a36ce": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "A, D"
+            },
+            "1648fc6c-8bc4-4e4e-a337-1cca65ca8369": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "2c272ea1-712c-4ee5-8d64-f5bbb0e9341e": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "C"
+            },
+            "319b59b3-b49f-4180-9cf3-4789e0898092": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "3318d835-ab6b-4788-9926-f4669d5e3ca2": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "3445f670-3c4a-4113-8bfb-2c480ae450d7": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "35047177-d92d-4d8a-b119-86c3d0a896d7": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "39b43250-3650-459e-b14a-27ef1c5f9ac9": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "3ef506e5-9681-4408-8c9a-59bfcb9e27a3": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "42a3b0ad-a5e1-4d6f-ad44-ac9dc056fa13": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "44efb2ac-5060-4377-9dc9-4b16e38ab5b5": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "45c42c09-982a-4ca7-99d8-4d3835306409": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "4c0108b5-75b4-4507-bdb6-596eb8cf680b": {
+                "answer": "B",
+                "correct": false,
+                "correct_answer": "D"
+            },
+            "4e107f56-c034-4b4f-aa4a-a1b79f3c05ad": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "58dee198-7b3b-420a-9eb1-b5fe45c5cc68": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "5dc61cc6-416e-4b27-acab-7a316fbed4f8": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "5e370b3e-b665-488c-8b19-a2e2778b3de3": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "62bc7645-105d-40a3-9d46-dfd78b59cb61": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "65e9b100-f7df-4bc3-8f70-914ee3c1fa32": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "C"
+            },
+            "68c71fa5-4ed3-434d-9d37-4f5b7de7818d": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "6d9ebc2d-3870-48ca-ab58-a9f6d3cfa628": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "76639e37-86d6-4fd9-899a-857dff329c71": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "79982462-5649-410c-be98-91214a10ce19": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "7cbf0c53-f497-472d-be57-137287d7cc2e": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "879a57a5-79c5-4b4c-a5e6-41042dc356e8": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "902f90d7-ad35-4b74-b789-6103a2c84b39": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "90719ad6-1e15-48bb-87de-96e6fbc29261": {
+                "answer": "B",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "9d6eccfb-ed9e-4734-9414-12899b9ed6c9": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "a3434095-8302-447e-9bb6-80c7165a9e9d": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "aa7f4b3a-36aa-4fc6-95d8-d1718b74d79b": {
+                "answer": "D",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "b1b53178-d6f5-41d1-8c01-3ba2619cce58": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "b981497f-9d45-470c-af8c-fe8a8ef692e7": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "d3475b0d-3d8f-4a6a-8bfe-c1683a460111": {
+                "answer": "A",
+                "correct": false,
+                "correct_answer": "B"
+            },
+            "d904a6d1-1f6c-462b-bd7b-114037ef2547": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "dddc8f24-62d4-4037-923f-75724219a4df": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "e0e48fe8-842c-4bf6-a6bb-40cfe02636d6": {
+                "answer": "C",
+                "correct": false,
+                "correct_answer": "A"
+            },
+            "e7734aa5-e18b-4d82-a7c0-8a165cd2d516": {
+                "answer": "A",
+                "correct": true,
+                "correct_answer": "A"
+            },
+            "e79ff6ab-5b6d-480d-8d80-e7c73826b91e": {
+                "answer": "C",
+                "correct": true,
+                "correct_answer": "C"
+            },
+            "f13c70d7-27e4-41e0-bfff-01558220e8ae": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            },
+            "f263697e-8fda-42c2-9fb1-1841940d6b9e": {
+                "answer": "B",
+                "correct": true,
+                "correct_answer": "B"
+            },
+            "f70de5f4-7e4c-41f9-b02e-2bdc8d306d01": {
+                "answer": "D",
+                "correct": true,
+                "correct_answer": "D"
+            }
+        },
+        "status": "done",
+        "metadata": null,
+        "started_at": "2026-09-20T07:52:34.429784Z"
+    }
+}
