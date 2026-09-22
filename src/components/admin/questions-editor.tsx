@@ -1,11 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowDown,
   ArrowUp,
   Check,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
   Pencil,
   Plus,
   Trash2,
@@ -23,6 +25,7 @@ import {
 import { requiredLocalesForStatus } from "@/components/admin/translation-rules";
 import type {
   AdminContentWorkspace,
+  AdminQuestionListResult,
   BulkActionResult,
   ContentStatus,
   QuestionType,
@@ -33,7 +36,7 @@ import type { AdminCatalog } from "@/i18n/admin-catalogs";
 
 type Exam = AdminContentWorkspace["exams"][number];
 type Topic = AdminContentWorkspace["topics"][number];
-type Question = AdminContentWorkspace["questions"][number];
+type Question = AdminQuestionListResult["items"][number];
 
 const MAX_QUESTION_MEDIA = 5;
 
@@ -135,17 +138,16 @@ export function QuestionsEditor({
   messages,
   exams,
   topics,
-  questions,
+  initialResult,
   readyMedia,
 }: {
   locale: Locale;
   messages: AdminCatalog;
   exams: Exam[];
   topics: Topic[];
-  questions: Question[];
+  initialResult: AdminQuestionListResult;
   readyMedia: MediaAssetSummary[];
 }) {
-  const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const examsById = useMemo(
     () => new Map(exams.map((exam) => [exam.id, exam])),
@@ -155,6 +157,13 @@ export function QuestionsEditor({
     () => new Map(topics.map((topic) => [topic.id, topic])),
     [topics],
   );
+
+  const [questions, setQuestions] = useState<Question[]>(initialResult.items);
+  const [totalCount, setTotalCount] = useState(initialResult.totalCount);
+  const [page, setPage] = useState(initialResult.page);
+  const pageSize = initialResult.pageSize;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const [listLoading, setListLoading] = useState(false);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedQuestion =
@@ -184,28 +193,47 @@ export function QuestionsEditor({
   const [filterStatus, setFilterStatus] = useState("");
   const [filterKeyword, setFilterKeyword] = useState("");
 
-  const filteredQuestions = questions.filter((question) => {
-    if (filterExam && question.examId !== filterExam) return false;
-    if (filterTopic && question.topicId !== filterTopic) return false;
-    if (filterType && question.type !== filterType) return false;
-    if (filterStatus && question.status !== filterStatus) return false;
-    if (filterKeyword) {
-      const keyword = filterKeyword.trim().toLowerCase();
-      const matches = question.translations.some(
-        (translation) =>
-          translation.content.toLowerCase().includes(keyword) ||
-          translation.explanation.toLowerCase().includes(keyword),
-      );
-      if (!matches) return false;
-    }
-    return true;
-  });
+  function buildQuery(targetPage: number): string {
+    const params = new URLSearchParams();
+    if (filterExam) params.set("examId", filterExam);
+    if (filterTopic) params.set("topicId", filterTopic);
+    if (filterType) params.set("type", filterType);
+    if (filterStatus) params.set("status", filterStatus);
+    if (filterKeyword.trim()) params.set("keyword", filterKeyword.trim());
+    params.set("page", String(targetPage));
+    params.set("pageSize", String(pageSize));
+    return params.toString();
+  }
 
-  const bulk = useBulkSelection(filteredQuestions);
+  async function loadPage(targetPage: number) {
+    setListLoading(true);
+    try {
+      const result = await adminApiRequest<AdminQuestionListResult>(
+        `/api/admin/questions?${buildQuery(targetPage)}`,
+        locale,
+        { method: "GET" },
+      );
+      setQuestions(result.items);
+      setTotalCount(result.totalCount);
+      setPage(result.page);
+    } catch (error) {
+      setListResult({
+        kind: "error",
+        message:
+          error instanceof AdminApiRequestError
+            ? (error.body?.message ?? messages.common.requestFailed)
+            : messages.common.connectionError,
+      });
+    } finally {
+      setListLoading(false);
+    }
+  }
+
+  const bulk = useBulkSelection(questions);
   const [bulkStatus, setBulkStatus] = useState<ContentStatus>("PUBLISHED");
   const [bulkPending, setBulkPending] = useState(false);
 
-  const selectedForBulk = filteredQuestions.filter((question) =>
+  const selectedForBulk = questions.filter((question) =>
     bulk.selected.has(question.id),
   );
   // Mirrors the backend rule: a question under a topic that isn't published
@@ -247,7 +275,7 @@ export function QuestionsEditor({
         reasons.length > 0 ? `${summary} — ${reasons.join("; ")}` : summary,
     });
     bulk.replace(failed.map((item) => item.id));
-    router.refresh();
+    void loadPage(page);
   }
 
   async function applyBulkStatus() {
@@ -530,7 +558,7 @@ export function QuestionsEditor({
         },
       });
       dialogRef.current?.close();
-      router.refresh();
+      void loadPage(page);
     } catch (error) {
       setResult({
         kind: "error",
@@ -552,7 +580,7 @@ export function QuestionsEditor({
         method: "DELETE",
       });
       setListResult({ kind: "success", message: messages.common.deleted });
-      router.refresh();
+      void loadPage(page);
     } catch (error) {
       console.error("[admin:questions:delete] failed to delete question", {
         questionId: question.id,
@@ -658,8 +686,23 @@ export function QuestionsEditor({
             <input
               value={filterKeyword}
               onChange={(event) => setFilterKeyword(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  void loadPage(1);
+                }
+              }}
             />
           </label>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => void loadPage(1)}
+            disabled={listLoading}
+          >
+            <Filter size={16} aria-hidden />
+            {messages.common.apply}
+          </button>
         </div>
 
         {listResult && (
@@ -714,7 +757,7 @@ export function QuestionsEditor({
               </tr>
             </thead>
             <tbody>
-              {filteredQuestions.map((question) => (
+              {questions.map((question) => (
                 <tr key={question.id}>
                   <td className="admin-cell-nowrap">
                     <input
@@ -775,9 +818,41 @@ export function QuestionsEditor({
               ))}
             </tbody>
           </table>
-          {filteredQuestions.length === 0 && (
+          {questions.length === 0 && (
             <p className="admin-empty">{messages.common.empty}</p>
           )}
+        </div>
+
+        <div className="admin-pagination">
+          <span className="admin-hint">
+            {messages.common.resultsCount.replace(
+              "{count}",
+              String(totalCount),
+            )}
+          </span>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => void loadPage(page - 1)}
+            disabled={listLoading || page <= 1}
+          >
+            <ChevronLeft size={16} aria-hidden />
+            {messages.common.previousPage}
+          </button>
+          <span>
+            {messages.common.pageOf
+              .replace("{page}", String(page))
+              .replace("{total}", String(totalPages))}
+          </span>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => void loadPage(page + 1)}
+            disabled={listLoading || page >= totalPages}
+          >
+            {messages.common.nextPage}
+            <ChevronRight size={16} aria-hidden />
+          </button>
         </div>
       </div>
 

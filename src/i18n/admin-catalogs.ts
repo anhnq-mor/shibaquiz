@@ -60,6 +60,11 @@ export interface AdminCatalog {
     actions: string;
     apply: string;
     loadMore: string;
+    previousPage: string;
+    nextPage: string;
+    pageOf: string;
+    resultsCount: string;
+    clone: string;
     moveUp: string;
     moveDown: string;
     selectAllLabel: string;
@@ -92,6 +97,7 @@ export interface AdminCatalog {
     newAction: string;
     listHeading: string;
     displayOrder: string;
+    cloneHeading: string;
   };
   questions: {
     title: string;
@@ -356,6 +362,11 @@ const vi: AdminCatalog = {
     actions: "Thao tác",
     apply: "Áp dụng",
     loadMore: "Tải thêm",
+    previousPage: "Trang trước",
+    nextPage: "Trang sau",
+    pageOf: "Trang {page}/{total}",
+    resultsCount: "{count} kết quả",
+    clone: "Nhân bản",
     moveUp: "Lên",
     moveDown: "Xuống",
     selectAllLabel: "Chọn tất cả",
@@ -363,8 +374,7 @@ const vi: AdminCatalog = {
     filterAllStatuses: "Tất cả trạng thái",
     bulkStatusLabel: "Đổi trạng thái hàng loạt",
     bulkDeleteAction: "Xóa vĩnh viễn",
-    bulkDeleteOnlyArchivedHint:
-      "Chỉ xóa vĩnh viễn được các mục đã Đã lưu trữ.",
+    bulkDeleteOnlyArchivedHint: "Chỉ xóa vĩnh viễn được các mục đã Đã lưu trữ.",
     bulkStatusConfirm: "Đổi trạng thái của {count} mục thành {status}?",
     bulkArchiveConfirm:
       "Lưu trữ (xóa mềm) {count} câu hỏi đã chọn? Sau khi lưu trữ, câu hỏi sẽ không thể chỉnh sửa được nữa.",
@@ -393,6 +403,7 @@ const vi: AdminCatalog = {
     newAction: "Thêm chủ đề",
     listHeading: "Danh sách chủ đề",
     displayOrder: "Thứ tự hiển thị",
+    cloneHeading: "Nhân bản chủ đề",
   },
   questions: {
     title: "Câu hỏi",
@@ -678,6 +689,11 @@ const en: AdminCatalog = {
     actions: "Actions",
     apply: "Apply",
     loadMore: "Load more",
+    previousPage: "Previous page",
+    nextPage: "Next page",
+    pageOf: "Page {page}/{total}",
+    resultsCount: "{count} results",
+    clone: "Clone",
     moveUp: "Up",
     moveDown: "Down",
     selectAllLabel: "Select all",
@@ -685,7 +701,8 @@ const en: AdminCatalog = {
     filterAllStatuses: "All statuses",
     bulkStatusLabel: "Bulk change status",
     bulkDeleteAction: "Delete permanently",
-    bulkDeleteOnlyArchivedHint: "Only archived items can be permanently deleted.",
+    bulkDeleteOnlyArchivedHint:
+      "Only archived items can be permanently deleted.",
     bulkStatusConfirm: "Change the status of {count} item(s) to {status}?",
     bulkArchiveConfirm:
       "Archive (soft-delete) the selected {count} question(s)? Once archived, a question can no longer be edited.",
@@ -715,6 +732,7 @@ const en: AdminCatalog = {
     newAction: "Add topic",
     listHeading: "Topic list",
     displayOrder: "Display order",
+    cloneHeading: "Clone topic",
   },
   questions: {
     title: "Questions",
@@ -886,8 +904,10 @@ const en: AdminCatalog = {
       "The import failed on one batch; earlier batches that already committed were kept.",
     logRetried: "An administrator queued the failed job again.",
     logRecovered: "The expired worker lease was recovered and queued again.",
-    logCancelling: "An administrator requested cancellation; stopping after the current batch.",
-    logCancelled: "The job was cancelled. Data written before cancelling was kept.",
+    logCancelling:
+      "An administrator requested cancellation; stopping after the current batch.",
+    logCancelled:
+      "The job was cancelled. Data written before cancelling was kept.",
   },
   users: {
     title: "Users",

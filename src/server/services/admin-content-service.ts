@@ -2,6 +2,7 @@ import {
   assertQuestionCorrectness,
   assertUniqueTestStructure,
   type AdminContentRepository,
+  type AdminQuestionListQuery,
   type ContentStatus,
   type SaveExamInput,
   type SaveQuestionInput,
@@ -14,6 +15,14 @@ export class AdminContentService {
 
   getWorkspace() {
     return this.repository.getWorkspace();
+  }
+
+  listExamsAndTopics() {
+    return this.repository.listExamsAndTopics();
+  }
+
+  listQuestions(params: AdminQuestionListQuery) {
+    return this.repository.listQuestions(params);
   }
 
   saveExam(input: SaveExamInput, actorUserId: string, now = new Date()) {

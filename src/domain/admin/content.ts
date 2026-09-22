@@ -146,6 +146,19 @@ export const saveTestSchema = z.object({
   dynamicRules: z.array(dynamicRuleSchema).max(1_000),
 });
 
+export const adminQuestionListQuerySchema = z.object({
+  examId: idSchema.optional(),
+  topicId: idSchema.optional(),
+  type: z.enum(questionTypes).optional(),
+  status: statusSchema.optional(),
+  keyword: z.string().trim().max(200).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type AdminQuestionListQuery = z.infer<
+  typeof adminQuestionListQuerySchema
+>;
+
 export const entityIdSchema = z.object({ id: idSchema });
 
 export const bulkIdsSchema = z.object({
@@ -230,6 +243,15 @@ export interface AdminContentWorkspace {
   }>;
 }
 
+export type AdminQuestionListItem = AdminContentWorkspace["questions"][number];
+
+export interface AdminQuestionListResult {
+  items: AdminQuestionListItem[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
 export class AdminContentError extends Error {
   constructor(
     public readonly code:
@@ -260,6 +282,12 @@ export function isAdminContentError(
 
 export interface AdminContentRepository {
   getWorkspace(): Promise<AdminContentWorkspace>;
+  listExamsAndTopics(): Promise<
+    Pick<AdminContentWorkspace, "exams" | "topics">
+  >;
+  listQuestions(
+    params: AdminQuestionListQuery,
+  ): Promise<AdminQuestionListResult>;
   saveExam(
     input: SaveExamInput,
     actorUserId: string,

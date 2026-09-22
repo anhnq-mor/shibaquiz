@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, type FormEvent } from "react";
-import { Check, Pencil, Plus, X } from "lucide-react";
+import { Check, Copy, Pencil, Plus, X } from "lucide-react";
 
 import { AdminDialog } from "@/components/admin/admin-dialog";
 import { BulkActionsToolbar } from "@/components/admin/bulk-actions-toolbar";
@@ -67,6 +67,7 @@ export function TopicsEditor({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedTopic = topics.find((topic) => topic.id === selectedId) ?? null;
+  const [isCloning, setIsCloning] = useState(false);
   const [form, setForm] = useState<TopicForm>(() =>
     formFromTopic(null, exams[0]?.id ?? ""),
   );
@@ -184,7 +185,20 @@ export function TopicsEditor({
 
   function openDialog(topic: Topic | null) {
     setSelectedId(topic?.id ?? null);
+    setIsCloning(false);
     setForm(formFromTopic(topic, exams[0]?.id ?? ""));
+    setResult(null);
+    dialogRef.current?.showModal();
+  }
+
+  function openDialogForClone(topic: Topic) {
+    // No `id`, so submit() creates a new topic instead of updating this one.
+    setSelectedId(null);
+    setIsCloning(true);
+    setForm({
+      ...formFromTopic(topic, exams[0]?.id ?? ""),
+      slug: `${topic.slug}-copy`,
+    });
     setResult(null);
     dialogRef.current?.showModal();
   }
@@ -351,6 +365,14 @@ export function TopicsEditor({
                         <Pencil size={16} aria-hidden />
                         {messages.common.edit}
                       </button>
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        onClick={() => openDialogForClone(topic)}
+                      >
+                        <Copy size={16} aria-hidden />
+                        {messages.common.clone}
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -365,7 +387,11 @@ export function TopicsEditor({
 
       <AdminDialog dialogRef={dialogRef} titleId="topic-dialog-title">
         <h2 id="topic-dialog-title">
-          {selectedTopic ? messages.common.edit : messages.topics.newAction}
+          {isCloning
+            ? messages.topics.cloneHeading
+            : selectedTopic
+              ? messages.common.edit
+              : messages.topics.newAction}
         </h2>
         <form className="admin-form" onSubmit={submit}>
           <label>

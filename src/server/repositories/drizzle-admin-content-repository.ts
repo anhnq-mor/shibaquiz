@@ -1,4 +1,14 @@
-import { and, asc, count, eq, inArray, isNull, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  eq,
+  ilike,
+  inArray,
+  isNull,
+  or,
+  sql,
+} from "drizzle-orm";
 
 import {
   AdminContentError,
@@ -6,6 +16,8 @@ import {
   isAdminContentError,
   type AdminContentRepository,
   type AdminContentWorkspace,
+  type AdminQuestionListQuery,
+  type AdminQuestionListResult,
   type BulkActionResult,
   type ContentStatus,
   type SaveExamInput,
@@ -188,12 +200,61 @@ async function buildTestPreview(
 export class DrizzleAdminContentRepository implements AdminContentRepository {
   constructor(private readonly database: Database) {}
 
+  private async loadExamsAndTopics(): Promise<
+    Pick<AdminContentWorkspace, "exams" | "topics">
+  > {
+    const [examRows, examTranslationRows, topicRows, topicTranslationRows] =
+      await Promise.all([
+        this.database.select().from(exams).orderBy(asc(exams.code)),
+        this.database.select().from(examTranslations),
+        this.database
+          .select()
+          .from(topics)
+          .orderBy(asc(topics.examId), asc(topics.displayOrder)),
+        this.database.select().from(topicTranslations),
+      ]);
+    return {
+      exams: examRows.map((exam) => ({
+        id: exam.id,
+        code: exam.code,
+        slug: exam.slug,
+        primaryLocale: exam.primaryLocale,
+        enabledLocales: exam.enabledLocales,
+        status: exam.status,
+        translations: examTranslationRows
+          .filter((translation) => translation.examId === exam.id)
+          .map(({ locale, name, description }) => ({
+            locale,
+            name,
+            description,
+          })),
+      })),
+      topics: topicRows.map((topic) => ({
+        id: topic.id,
+        examId: topic.examId,
+        slug: topic.slug,
+        displayOrder: topic.displayOrder,
+        status: topic.status,
+        translations: topicTranslationRows
+          .filter((translation) => translation.topicId === topic.id)
+          .map(({ locale, name, description }) => ({
+            locale,
+            name,
+            description,
+          })),
+      })),
+    };
+  }
+
+  async listExamsAndTopics(): Promise<
+    Pick<AdminContentWorkspace, "exams" | "topics">
+  > {
+    return this.loadExamsAndTopics();
+  }
+
   async getWorkspace(): Promise<AdminContentWorkspace> {
     const [
-      examRows,
-      examTranslationRows,
-      topicRows,
-      topicTranslationRows,
+      { exams: examsResult, topics: topicsResult },
       questionRows,
       questionTranslationRows,
       optionRows,
@@ -204,13 +265,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
       ruleRows,
       questionMediaRows,
     ] = await Promise.all([
-      this.database.select().from(exams).orderBy(asc(exams.code)),
-      this.database.select().from(examTranslations),
-      this.database
-        .select()
-        .from(topics)
-        .orderBy(asc(topics.examId), asc(topics.displayOrder)),
-      this.database.select().from(topicTranslations),
+      this.loadExamsAndTopics(),
       this.database.select().from(questions).orderBy(asc(questions.createdAt)),
       this.database.select().from(questionTranslations),
       this.database
@@ -245,35 +300,8 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     ]);
 
     return {
-      exams: examRows.map((exam) => ({
-        id: exam.id,
-        code: exam.code,
-        slug: exam.slug,
-        primaryLocale: exam.primaryLocale,
-        enabledLocales: exam.enabledLocales,
-        status: exam.status,
-        translations: examTranslationRows
-          .filter((translation) => translation.examId === exam.id)
-          .map(({ locale, name, description }) => ({
-            locale,
-            name,
-            description,
-          })),
-      })),
-      topics: topicRows.map((topic) => ({
-        id: topic.id,
-        examId: topic.examId,
-        slug: topic.slug,
-        displayOrder: topic.displayOrder,
-        status: topic.status,
-        translations: topicTranslationRows
-          .filter((translation) => translation.topicId === topic.id)
-          .map(({ locale, name, description }) => ({
-            locale,
-            name,
-            description,
-          })),
-      })),
+      exams: examsResult,
+      topics: topicsResult,
       questions: questionRows.map((question) => ({
         id: question.id,
         externalId: question.externalId,
@@ -345,6 +373,144 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           })),
       })),
     };
+  }
+
+  async listQuestions(
+    params: AdminQuestionListQuery,
+  ): Promise<AdminQuestionListResult> {
+    const conditions = [];
+    if (params.examId) conditions.push(eq(questions.examId, params.examId));
+    if (params.topicId) conditions.push(eq(questions.topicId, params.topicId));
+    if (params.type) conditions.push(eq(questions.type, params.type));
+    if (params.status) conditions.push(eq(questions.status, params.status));
+    if (params.keyword) {
+      const matchingIdRows = await this.database
+        .selectDistinct({ questionId: questionTranslations.questionId })
+        .from(questionTranslations)
+        .where(
+          or(
+            ilike(questionTranslations.content, `%${params.keyword}%`),
+            ilike(questionTranslations.explanation, `%${params.keyword}%`),
+          ),
+        );
+      const matchingIds = matchingIdRows.map((row) => row.questionId);
+      if (matchingIds.length === 0) {
+        return {
+          items: [],
+          totalCount: 0,
+          page: params.page,
+          pageSize: params.pageSize,
+        };
+      }
+      conditions.push(inArray(questions.id, matchingIds));
+    }
+    const where = conditions.length ? and(...conditions) : undefined;
+
+    const [countRow, pageQuestionRows] = await Promise.all([
+      this.database.select({ value: count() }).from(questions).where(where),
+      this.database
+        .select()
+        .from(questions)
+        .where(where)
+        .orderBy(asc(questions.createdAt))
+        .limit(params.pageSize)
+        .offset((params.page - 1) * params.pageSize),
+    ]);
+    const totalCount = Number(countRow[0]?.value ?? 0);
+
+    if (pageQuestionRows.length === 0) {
+      return {
+        items: [],
+        totalCount,
+        page: params.page,
+        pageSize: params.pageSize,
+      };
+    }
+
+    const questionIds = pageQuestionRows.map((question) => question.id);
+    const [questionTranslationRows, optionRows, questionMediaRows] =
+      await Promise.all([
+        this.database
+          .select()
+          .from(questionTranslations)
+          .where(inArray(questionTranslations.questionId, questionIds)),
+        this.database
+          .select()
+          .from(questionOptions)
+          .where(inArray(questionOptions.questionId, questionIds))
+          .orderBy(
+            asc(questionOptions.questionId),
+            asc(questionOptions.displayOrder),
+          ),
+        this.database
+          .select({
+            questionId: questionMedia.questionId,
+            mediaAssetId: questionMedia.mediaAssetId,
+            displayOrder: questionMedia.displayOrder,
+            originalFileName: mediaAssets.originalFileName,
+            status: mediaAssets.status,
+          })
+          .from(questionMedia)
+          .innerJoin(
+            mediaAssets,
+            eq(mediaAssets.id, questionMedia.mediaAssetId),
+          )
+          .where(inArray(questionMedia.questionId, questionIds))
+          .orderBy(
+            asc(questionMedia.questionId),
+            asc(questionMedia.displayOrder),
+          ),
+      ]);
+    const optionIds = optionRows.map((option) => option.id);
+    const optionTranslationRows = optionIds.length
+      ? await this.database
+          .select()
+          .from(questionOptionTranslations)
+          .where(inArray(questionOptionTranslations.optionId, optionIds))
+      : [];
+
+    const items = pageQuestionRows.map((question) => ({
+      id: question.id,
+      externalId: question.externalId,
+      examId: question.examId,
+      topicId: question.topicId,
+      type: question.type,
+      status: question.status,
+      version: question.version,
+      deletedAt: question.deletedAt?.toISOString() ?? null,
+      translations: questionTranslationRows
+        .filter((translation) => translation.questionId === question.id)
+        .map(({ locale, content, explanation }) => ({
+          locale,
+          content,
+          explanation,
+        })),
+      options: optionRows
+        .filter((option) => option.questionId === question.id)
+        .map((option) => ({
+          id: option.id,
+          label: option.label,
+          isCorrect: option.isCorrect,
+          displayOrder: option.displayOrder,
+          translations: optionTranslationRows
+            .filter((translation) => translation.optionId === option.id)
+            .map(({ locale, content, matchTargetContent }) => ({
+              locale,
+              content,
+              matchContent: matchTargetContent,
+            })),
+        })),
+      media: questionMediaRows
+        .filter((row) => row.questionId === question.id)
+        .map((row) => ({
+          mediaAssetId: row.mediaAssetId,
+          displayOrder: row.displayOrder,
+          originalFileName: row.originalFileName,
+          status: row.status,
+        })),
+    }));
+
+    return { items, totalCount, page: params.page, pageSize: params.pageSize };
   }
 
   async saveExam(

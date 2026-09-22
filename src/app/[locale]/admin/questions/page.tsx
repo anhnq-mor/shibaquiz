@@ -18,9 +18,10 @@ export default async function AdminQuestionsPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const messages = getAdminMessages(locale);
-  const [workspace, readyMedia] = await Promise.all([
-    getAdminContentService().getWorkspace(),
+  const [{ exams, topics }, readyMedia, initialResult] = await Promise.all([
+    getAdminContentService().listExamsAndTopics(),
     getMediaLibraryService().listLibrary({ status: "READY", limit: 100 }),
+    getAdminContentService().listQuestions({ page: 1, pageSize: 20 }),
   ]);
 
   return (
@@ -32,9 +33,9 @@ export default async function AdminQuestionsPage({
       <QuestionsEditor
         locale={locale}
         messages={messages}
-        exams={workspace.exams}
-        topics={workspace.topics}
-        questions={workspace.questions}
+        exams={exams}
+        topics={topics}
+        initialResult={initialResult}
         readyMedia={readyMedia.items}
       />
     </>

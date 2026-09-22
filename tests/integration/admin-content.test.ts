@@ -560,9 +560,9 @@ describe("bulk content status updates", () => {
     });
 
     const workspace = await service.getWorkspace();
-    expect(workspace.exams.find((item) => item.id === readyExamId)?.status).toBe(
-      "PUBLISHED",
-    );
+    expect(
+      workspace.exams.find((item) => item.id === readyExamId)?.status,
+    ).toBe("PUBLISHED");
     expect(
       workspace.exams.find((item) => item.id === notReadyExamId)?.status,
     ).toBe("DRAFT");
@@ -602,7 +602,9 @@ describe("bulk content status updates", () => {
         slug: "bulk-topic",
         primaryLocale: "vi",
         status: "DRAFT",
-        translations: [{ locale: "vi", name: "Topic exam", description: "Mô tả." }],
+        translations: [
+          { locale: "vi", name: "Topic exam", description: "Mô tả." },
+        ],
       },
       adminId,
     );
@@ -756,13 +758,17 @@ describe("bulk content hard delete", () => {
         slug: "hard-not-archived",
         primaryLocale: "vi",
         status: "DRAFT",
-        translations: [{ locale: "vi", name: "Not archived", description: "Mô tả." }],
+        translations: [
+          { locale: "vi", name: "Not archived", description: "Mô tả." },
+        ],
       },
       adminId,
     );
 
     const results = await service.bulkDeleteExams([examId], adminId);
-    expect(results).toMatchObject([{ id: examId, ok: false, code: "CONFLICT" }]);
+    expect(results).toMatchObject([
+      { id: examId, ok: false, code: "CONFLICT" },
+    ]);
 
     const workspace = await service.getWorkspace();
     expect(workspace.exams.some((item) => item.id === examId)).toBe(true);
@@ -950,7 +956,9 @@ describe("bulk content hard delete", () => {
         passingScorePercent: 70,
         shuffleQuestions: false,
         shuffleOptions: false,
-        translations: [{ locale: "vi", name: "Đề động", description: "Mô tả." }],
+        translations: [
+          { locale: "vi", name: "Đề động", description: "Mô tả." },
+        ],
         fixedQuestions: [],
         dynamicRules: [{ topicId, percentage: 100 }],
       },
@@ -1138,7 +1146,11 @@ describe("bulk content hard delete", () => {
         primaryLocale: "vi",
         status: "DRAFT",
         translations: [
-          { locale: "vi", name: "Question published ref", description: "Mô tả." },
+          {
+            locale: "vi",
+            name: "Question published ref",
+            description: "Mô tả.",
+          },
         ],
       },
       adminId,
@@ -1328,7 +1340,11 @@ describe("bulk content hard delete", () => {
         primaryLocale: "vi",
         status: "DRAFT",
         translations: [
-          { locale: "vi", name: "Question bulk archived", description: "Mô tả." },
+          {
+            locale: "vi",
+            name: "Question bulk archived",
+            description: "Mô tả.",
+          },
         ],
       },
       adminId,
@@ -1549,5 +1565,261 @@ describe("bulk content hard delete", () => {
     expect(workspace.questions.some((item) => item.id === questionId)).toBe(
       true,
     );
+  });
+});
+
+describe("listQuestions pagination and filters", () => {
+  it("paginates results and reports the total count across pages", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "list-questions-paging",
+        slug: "list-questions-paging",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Paging exam", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "list-questions-paging-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    for (let index = 0; index < 25; index += 1) {
+      await service.saveQuestion(
+        questionInput({
+          examId,
+          topicId,
+          status: "DRAFT",
+          translations: [
+            {
+              locale: "vi",
+              content: `Câu hỏi phân trang số ${index}`,
+              explanation: "Giải thích.",
+            },
+          ],
+        }),
+        adminId,
+      );
+    }
+
+    const firstPage = await service.listQuestions({
+      examId,
+      page: 1,
+      pageSize: 10,
+    });
+    expect(firstPage.items).toHaveLength(10);
+    expect(firstPage.totalCount).toBe(25);
+    expect(firstPage.page).toBe(1);
+
+    const secondPage = await service.listQuestions({
+      examId,
+      page: 2,
+      pageSize: 10,
+    });
+    expect(secondPage.items).toHaveLength(10);
+    expect(secondPage.totalCount).toBe(25);
+
+    const thirdPage = await service.listQuestions({
+      examId,
+      page: 3,
+      pageSize: 10,
+    });
+    expect(thirdPage.items).toHaveLength(5);
+
+    // No overlap between pages.
+    const allIds = new Set([
+      ...firstPage.items.map((item) => item.id),
+      ...secondPage.items.map((item) => item.id),
+      ...thirdPage.items.map((item) => item.id),
+    ]);
+    expect(allIds.size).toBe(25);
+  });
+
+  it("filters by topicId, type, and status independently of other exams' data", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "list-questions-filters",
+        slug: "list-questions-filters",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Filters exam", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicA = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "list-questions-filters-a",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Chủ đề A", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicB = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "list-questions-filters-b",
+        displayOrder: 1,
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Chủ đề B", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    await service.saveQuestion(
+      questionInput({ examId, topicId: topicA, status: "DRAFT" }),
+      adminId,
+    );
+    await service.saveQuestion(
+      questionInput({ examId, topicId: topicA, status: "PUBLISHED" }),
+      adminId,
+    );
+    await service.saveQuestion(
+      questionInput({
+        examId,
+        topicId: topicB,
+        status: "DRAFT",
+        type: "TRUE_FALSE",
+        options: [
+          {
+            label: "TRUE",
+            isCorrect: true,
+            displayOrder: 0,
+            translations: [{ locale: "vi", content: "Đúng" }],
+          },
+          {
+            label: "FALSE",
+            isCorrect: false,
+            displayOrder: 1,
+            translations: [{ locale: "vi", content: "Sai" }],
+          },
+        ],
+      }),
+      adminId,
+    );
+
+    const byTopic = await service.listQuestions({
+      examId,
+      topicId: topicA,
+      page: 1,
+      pageSize: 20,
+    });
+    expect(byTopic.totalCount).toBe(2);
+    expect(byTopic.items.every((item) => item.topicId === topicA)).toBe(true);
+
+    const byStatus = await service.listQuestions({
+      examId,
+      status: "PUBLISHED",
+      page: 1,
+      pageSize: 20,
+    });
+    expect(byStatus.totalCount).toBe(1);
+
+    const byType = await service.listQuestions({
+      examId,
+      type: "TRUE_FALSE",
+      page: 1,
+      pageSize: 20,
+    });
+    expect(byType.totalCount).toBe(1);
+    expect(byType.items[0]?.topicId).toBe(topicB);
+  });
+
+  it("keyword-searches question content and explanation across locales", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "list-questions-keyword",
+        slug: "list-questions-keyword",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Keyword exam", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "list-questions-keyword-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const matchingId = await service.saveQuestion(
+      questionInput({
+        examId,
+        topicId,
+        status: "DRAFT",
+        translations: [
+          {
+            locale: "vi",
+            content: "Đâu là thủ đô của nước Pháp?",
+            explanation: "Paris.",
+          },
+        ],
+      }),
+      adminId,
+    );
+    await service.saveQuestion(
+      questionInput({
+        examId,
+        topicId,
+        status: "DRAFT",
+        translations: [
+          {
+            locale: "vi",
+            content: "Một câu hỏi hoàn toàn khác?",
+            explanation: "Không liên quan.",
+          },
+        ],
+      }),
+      adminId,
+    );
+
+    const result = await service.listQuestions({
+      examId,
+      keyword: "thủ đô",
+      page: 1,
+      pageSize: 20,
+    });
+    expect(result.totalCount).toBe(1);
+    expect(result.items[0]?.id).toBe(matchingId);
+
+    const noMatch = await service.listQuestions({
+      examId,
+      keyword: "không tồn tại từ khóa này",
+      page: 1,
+      pageSize: 20,
+    });
+    expect(noMatch).toEqual({
+      items: [],
+      totalCount: 0,
+      page: 1,
+      pageSize: 20,
+    });
   });
 });
