@@ -12,6 +12,7 @@ import {
 } from "react";
 import {
   ArrowDown,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- only used by the jump-to-question form, currently commented out below
   ArrowRight,
   ArrowUp,
   Check,
@@ -898,6 +899,7 @@ function AttemptNavigator({
   currentIndex,
   onSelect,
   filter,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- only used by the filter buttons, currently commented out below
   onFilterChange,
   messages,
 }: {
@@ -919,6 +921,7 @@ function AttemptNavigator({
     isAnswerEmpty(question.answer),
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- only used by the jump-to-question form, currently commented out below
   function submitJump(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = Number(jumpInputRef.current?.value);
@@ -966,10 +969,7 @@ function AttemptNavigator({
         </span>
         {questions.some((question) => question.isCorrect === false) && (
           <span>
-            <span
-              className="attempt-legend-dot incorrect"
-              aria-hidden="true"
-            />
+            <span className="attempt-legend-dot incorrect" aria-hidden="true" />
             {messages.attempt.statusIncorrect}
           </span>
         )}
@@ -979,7 +979,7 @@ function AttemptNavigator({
         </span>
       </div>
 
-      <div className="attempt-nav-filters" role="group">
+      {/* <div className="attempt-nav-filters" role="group">
         {(["all", "unanswered", "flagged"] as const).map((option) => (
           <button
             key={option}
@@ -1013,7 +1013,7 @@ function AttemptNavigator({
           <ArrowRight size={16} aria-hidden />
           {messages.attempt.jumpToQuestionAction}
         </button>
-      </form>
+      </form> */}
 
       <div className="attempt-nav-scroll">
         {questions.some((question) => matchesFilter(question, filter)) ? (
