@@ -3152,6 +3152,10 @@ dialog.attempt-nav-dialog {
   resize: vertical;
 }
 
+.comment-form textarea {
+  min-height: 8rem;
+}
+
 .comment-form textarea:focus,
 .comment-edit textarea:focus {
   border-color: var(--focus);

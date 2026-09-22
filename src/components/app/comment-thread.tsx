@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Check,
   ChevronDown,
@@ -31,7 +31,7 @@ export function CommentThread({
   currentUserId: string;
   isAdmin: boolean;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [items, setItems] = useState<CommentSummary[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -83,6 +83,17 @@ export function CommentThread({
     setExpanded(next);
     if (next && !loaded) await loadFirstPage();
   }
+
+  useEffect(() => {
+    // Load once when this thread first mounts (e.g. a new question is
+    // revealed); it's already expanded by default. Deferred so the
+    // resulting setState doesn't happen synchronously within the effect.
+    const timeoutId = window.setTimeout(() => {
+      void loadFirstPage();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function submitNew(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
