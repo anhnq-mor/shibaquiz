@@ -5,6 +5,7 @@ import { Bot, Send, Settings, X } from "lucide-react";
 
 import { appApiRequest, AppApiRequestError } from "@/components/app/app-api";
 import {
+  chatbotProviderDefaults,
   chatbotProviders,
   type ChatbotProvider,
 } from "@/domain/chatbot/chatbot";
@@ -62,6 +63,9 @@ export function ChatbotWidget({
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modelOptions, setModelOptions] = useState<string[] | null>(null);
+  const [loadingModels, setLoadingModels] = useState(false);
+  const [modelsError, setModelsError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -85,6 +89,36 @@ export function ChatbotWidget({
       window.setTimeout(() => setSettingsSaved(false), 2000);
     } catch {
       // localStorage unavailable; settings still apply for this session
+    }
+  }
+
+  async function loadModels() {
+    if (!settings || !settings.apiKey.trim() || loadingModels) return;
+    setLoadingModels(true);
+    setModelsError(null);
+    try {
+      const result = await appApiRequest<{ models: string[] }>(
+        "/api/chatbot/models",
+        locale,
+        {
+          method: "POST",
+          silent: true,
+          body: { provider: settings.provider, apiKey: settings.apiKey },
+        },
+      );
+      setModelOptions(result.models);
+    } catch (requestError) {
+      setModelOptions(null);
+      if (
+        requestError instanceof AppApiRequestError &&
+        requestError.body?.code === "RATE_LIMITED"
+      ) {
+        setModelsError(t.rateLimited);
+      } else {
+        setModelsError(t.modelsLoadError);
+      }
+    } finally {
+      setLoadingModels(false);
     }
   }
 
@@ -164,12 +198,15 @@ export function ChatbotWidget({
                 {t.providerLabel}
                 <select
                   value={settings.provider}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    setModelOptions(null);
+                    setModelsError(null);
                     saveSettings({
                       ...settings,
                       provider: event.target.value as ChatbotProvider,
-                    })
-                  }
+                      model: "",
+                    });
+                  }}
                 >
                   {chatbotProviders.map((provider) => (
                     <option key={provider} value={provider}>
@@ -185,23 +222,55 @@ export function ChatbotWidget({
                   value={settings.apiKey}
                   placeholder={t.apiKeyPlaceholder}
                   autoComplete="off"
-                  onChange={(event) =>
-                    saveSettings({ ...settings, apiKey: event.target.value })
-                  }
+                  onChange={(event) => {
+                    setModelOptions(null);
+                    setModelsError(null);
+                    saveSettings({ ...settings, apiKey: event.target.value });
+                  }}
+                  onBlur={() => void loadModels()}
                 />
               </label>
               <p className="chatbot-hint">{t.apiKeyHint}</p>
               <label>
                 {t.modelLabel}
-                <input
-                  type="text"
-                  value={settings.model}
-                  placeholder={t.modelPlaceholder}
-                  onChange={(event) =>
-                    saveSettings({ ...settings, model: event.target.value })
-                  }
-                />
+                {modelOptions && modelOptions.length > 0 ? (
+                  <select
+                    value={settings.model}
+                    onChange={(event) =>
+                      saveSettings({ ...settings, model: event.target.value })
+                    }
+                  >
+                    <option value="">
+                      {chatbotProviderDefaults[settings.provider].defaultModel}
+                    </option>
+                    {modelOptions.map((modelId) => (
+                      <option key={modelId} value={modelId}>
+                        {modelId}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={settings.model}
+                    placeholder={t.modelPlaceholder}
+                    onChange={(event) =>
+                      saveSettings({ ...settings, model: event.target.value })
+                    }
+                  />
+                )}
               </label>
+              <div className="chatbot-model-actions">
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  disabled={!settings.apiKey.trim() || loadingModels}
+                  onClick={() => void loadModels()}
+                >
+                  {loadingModels ? t.loadingModels : t.loadModelsAction}
+                </button>
+              </div>
+              {modelsError && <p className="chatbot-error">{modelsError}</p>}
               {settingsSaved && (
                 <p className="chatbot-hint">{t.settingsSavedNotice}</p>
               )}

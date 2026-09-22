@@ -3346,6 +3346,14 @@ dialog.attempt-nav-dialog {
   margin: 0;
 }
 
+.chatbot-model-actions {
+  display: flex;
+}
+
+.chatbot-model-actions button {
+  font-size: 0.8rem;
+}
+
 .chatbot-messages {
   flex: 1;
   display: flex;

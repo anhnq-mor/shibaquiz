@@ -4,12 +4,16 @@ import {
   type ChatCompletionRequest,
   type ChatCompletionResult,
   type ChatbotRepository,
+  type ChatbotProvider,
+  type ListModelsResult,
 } from "@/domain/chatbot/chatbot";
 import { hashRateLimitKey } from "@/server/auth/crypto";
 
 const RATE_LIMIT_MAX_MESSAGES = 20;
 const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_MODEL_LOOKUPS = 10;
 const REQUEST_TIMEOUT_MS = 30_000;
+const MODELS_REQUEST_TIMEOUT_MS = 15_000;
 
 async function callOpenAiCompatible(
   baseUrl: string,
@@ -79,6 +83,34 @@ async function callAnthropic(
   return { content };
 }
 
+async function fetchModelIds(
+  baseUrl: string,
+  apiKey: string,
+  provider: ChatbotProvider,
+): Promise<string[]> {
+  const headers: Record<string, string> =
+    provider === "anthropic"
+      ? { "x-api-key": apiKey, "anthropic-version": "2023-06-01" }
+      : { Authorization: `Bearer ${apiKey}` };
+  const response = await fetch(`${baseUrl}/models`, {
+    method: "GET",
+    headers,
+    signal: AbortSignal.timeout(MODELS_REQUEST_TIMEOUT_MS),
+  });
+  if (!response.ok) {
+    throw new ChatbotError(
+      "PROVIDER_ERROR",
+      502,
+      `Provider responded with status ${response.status}`,
+    );
+  }
+  const data = (await response.json()) as { data?: { id?: string }[] };
+  const ids = (data.data ?? [])
+    .map((entry) => entry.id)
+    .filter((id): id is string => Boolean(id));
+  return ids.sort((a, b) => a.localeCompare(b));
+}
+
 export class ChatbotService {
   constructor(
     private readonly repository: ChatbotRepository,
@@ -122,6 +154,40 @@ export class ChatbotService {
         model,
         input.messages,
       );
+    } catch (error) {
+      if (error instanceof ChatbotError) throw error;
+      throw new ChatbotError(
+        "PROVIDER_ERROR",
+        502,
+        "Failed to reach the provider",
+      );
+    }
+  }
+
+  async listModels(
+    provider: ChatbotProvider,
+    apiKey: string,
+    userId: string,
+    now = new Date(),
+  ): Promise<ListModelsResult> {
+    const attempt = await this.repository.consumeRateLimit({
+      action: "CHATBOT_LIST_MODELS",
+      keyHash: hashRateLimitKey(
+        this.rateLimitSecret,
+        "CHATBOT_LIST_MODELS",
+        userId,
+      ),
+      windowExpiresAt: new Date(now.getTime() + RATE_LIMIT_WINDOW_MS),
+      now,
+    });
+    if (attempt > RATE_LIMIT_MAX_MODEL_LOOKUPS) {
+      throw new ChatbotError("RATE_LIMITED", 429, "Too many model lookups");
+    }
+
+    const defaults = chatbotProviderDefaults[provider];
+    try {
+      const models = await fetchModelIds(defaults.baseUrl, apiKey, provider);
+      return { models };
     } catch (error) {
       if (error instanceof ChatbotError) throw error;
       throw new ChatbotError(

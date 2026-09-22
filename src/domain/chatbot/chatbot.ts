@@ -43,8 +43,18 @@ export const chatCompletionRequestSchema = z.object({
 });
 export type ChatCompletionRequest = z.infer<typeof chatCompletionRequestSchema>;
 
+export const listModelsRequestSchema = z.object({
+  provider: z.enum(chatbotProviders),
+  apiKey: z.string().trim().min(1).max(500),
+});
+export type ListModelsRequest = z.infer<typeof listModelsRequestSchema>;
+
 export interface ChatCompletionResult {
   content: string;
+}
+
+export interface ListModelsResult {
+  models: string[];
 }
 
 export class ChatbotError extends Error {

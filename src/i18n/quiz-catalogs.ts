@@ -191,6 +191,9 @@ export interface QuizCatalog {
     apiKeyHint: string;
     modelLabel: string;
     modelPlaceholder: string;
+    loadModelsAction: string;
+    loadingModels: string;
+    modelsLoadError: string;
     saveSettingsAction: string;
     settingsSavedNotice: string;
     settingsAction: string;
@@ -400,6 +403,10 @@ const vi: QuizCatalog = {
       "API key chỉ lưu trong trình duyệt của bạn, không được gửi tới máy chủ để lưu trữ.",
     modelLabel: "Model (tùy chọn)",
     modelPlaceholder: "Để trống để dùng model mặc định",
+    loadModelsAction: "Tải danh sách model",
+    loadingModels: "Đang tải danh sách model…",
+    modelsLoadError:
+      "Không thể tải danh sách model. Kiểm tra API key và thử lại.",
     saveSettingsAction: "Lưu cài đặt",
     settingsSavedNotice: "Đã lưu cài đặt trên trình duyệt này.",
     settingsAction: "Cài đặt",
@@ -613,6 +620,9 @@ const en: QuizCatalog = {
       "The API key is stored only in your browser and is never saved on our servers.",
     modelLabel: "Model (optional)",
     modelPlaceholder: "Leave blank to use the default model",
+    loadModelsAction: "Load model list",
+    loadingModels: "Loading model list…",
+    modelsLoadError: "Couldn't load models. Check your API key and try again.",
     saveSettingsAction: "Save settings",
     settingsSavedNotice: "Settings saved in this browser.",
     settingsAction: "Settings",
