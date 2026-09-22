@@ -554,6 +554,45 @@ describe("server-authoritative expiry", () => {
       ),
     ).rejects.toMatchObject({ code: "LOCKED" });
   });
+
+  it("auto-expires and scores a timed TOPIC real-exam attempt using the user-chosen duration", async () => {
+    const startedAt = new Date("2026-08-06T13:00:00.000Z");
+    const { attemptId } = await service.startOrResumeAttempt(
+      {
+        examId,
+        scope: "TOPIC",
+        mode: "EXAM_DEFERRED",
+        topicId: topicMath,
+        durationMinutes: 5,
+      },
+      u1,
+      "vi",
+      startedAt,
+    );
+    const view = await service.getAttemptForTaking(attemptId, u1, startedAt);
+    expect(view.expiresAt).toBe("2026-08-06T13:05:00.000Z");
+    const [first] = view.questions;
+    await service.saveAnswer(
+      attemptId,
+      first!.attemptQuestionId,
+      u1,
+      { selectedOptionIds: [uid(20)] }, // q1 correct option (A)
+      new Date("2026-08-06T13:01:00.000Z"),
+    );
+
+    const pastExpiry = new Date("2026-08-06T13:06:00.000Z");
+    const expiredView = await service.getAttemptForTaking(
+      attemptId,
+      u1,
+      pastExpiry,
+    );
+    expect(expiredView.status).toBe("EXPIRED");
+
+    const result = await service.getAttemptResult(attemptId, u1, pastExpiry);
+    expect(result.status).toBe("EXPIRED");
+    expect(result.correctCount).toBe(1);
+    expect(result.unansweredCount).toBe(2);
+  });
 });
 
 describe("ownership and abandonment", () => {

@@ -19,17 +19,17 @@ export function AdminShell({
 }) {
   return (
     <div className="admin-shell">
-      <header className="admin-topbar">
-        <div className="page-shell admin-topbar-inner">
-          <Link
-            href={`/${locale}/admin` as Route}
-            className="brand"
-            aria-label={messages.dashboard.title}
-          >
-            <BrandMark />
-            <span>ShibaQuiz Admin</span>
-          </Link>
-          <AdminNav locale={locale} messages={messages} />
+      <aside className="admin-sidebar">
+        <Link
+          href={`/${locale}/admin` as Route}
+          className="brand admin-sidebar-brand"
+          aria-label={messages.dashboard.title}
+        >
+          <BrandMark />
+          <span>ShibaQuiz Admin</span>
+        </Link>
+        <AdminNav locale={locale} messages={messages} />
+        <div className="admin-sidebar-footer">
           <Link href={`/${locale}` as Route}>{messages.nav.backToSite}</Link>
           <LocaleSwitcher
             locale={locale}
@@ -38,8 +38,10 @@ export function AdminShell({
             englishLabel="English"
           />
         </div>
-      </header>
-      <main className="page-shell admin-main">{children}</main>
+      </aside>
+      <div className="admin-content">
+        <main className="page-shell admin-main">{children}</main>
+      </div>
     </div>
   );
 }

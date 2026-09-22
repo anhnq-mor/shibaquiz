@@ -37,7 +37,13 @@ export default async function AttemptPage({
 
   return (
     <AppShell locale={locale} user={user}>
-      <AttemptRunner locale={locale} messages={messages} initial={attempt} />
+      <AttemptRunner
+        locale={locale}
+        messages={messages}
+        initial={attempt}
+        currentUserId={user.id}
+        isAdmin={user.role === "ADMIN"}
+      />
     </AppShell>
   );
 }

@@ -261,12 +261,14 @@ function answerFromRow(row: {
 function attemptQuestionRowToState(
   row: {
     id: string;
+    sourceQuestionId: string;
     displayOrder: number;
     topicId: string;
     selectedOptionIds: string[];
     answerPayload: AttemptAnswer;
     isFlagged: boolean;
     checkedAt: Date | null;
+    isCorrect: boolean | null;
     questionSnapshot: StoredQuestionSnapshot;
   },
   topicName: string,
@@ -275,6 +277,7 @@ function attemptQuestionRowToState(
 ): AttemptQuestionState {
   return {
     attemptQuestionId: row.id,
+    sourceQuestionId: row.sourceQuestionId,
     displayOrder: row.displayOrder,
     topicId: row.topicId,
     topicName,
@@ -283,6 +286,7 @@ function attemptQuestionRowToState(
     answer: answerFromRow(row),
     isFlagged: row.isFlagged,
     checkedAt: row.checkedAt ? row.checkedAt.toISOString() : null,
+    isCorrect: row.isCorrect,
     question: toQuestionDto(row.questionSnapshot, {
       mode,
       attemptStatus,
@@ -401,7 +405,11 @@ export class DrizzleAttemptRepository implements AttemptRepository {
           )
           .orderBy(asc(questions.id));
         questionIds = rows.map((row) => row.id);
-        generationConfigSnapshot = { topicId: input.topicId };
+        durationMinutes = input.durationMinutes ?? null;
+        generationConfigSnapshot = {
+          topicId: input.topicId,
+          ...(durationMinutes ? { durationMinutes } : {}),
+        };
       } else if (input.scope === "QUESTION_BANK") {
         const rows = await transaction
           .select({ id: questions.id })

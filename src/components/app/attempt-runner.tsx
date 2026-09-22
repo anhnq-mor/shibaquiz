@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 
 import { appApiRequest } from "@/components/app/app-api";
+import { CommentThread } from "@/components/app/comment-thread";
 import { RouteLink } from "@/components/route-link";
 import {
   type AttemptQuestionState,
@@ -70,10 +71,14 @@ export function AttemptRunner({
   locale,
   messages,
   initial,
+  currentUserId,
+  isAdmin,
 }: {
   locale: Locale;
   messages: QuizCatalog;
   initial: AttemptTakingView;
+  currentUserId: string;
+  isAdmin: boolean;
 }) {
   const router = useRouter();
   const [questions, setQuestions] = useState<AttemptQuestionState[]>(
@@ -381,49 +386,7 @@ export function AttemptRunner({
   const status = saveStatus[current.attemptQuestionId] ?? "idle";
   const revealed = current.question.disclosure === "REVEALED";
   const isCurrentCorrect =
-    revealed && current.checkedAt
-      ? current.type === "MATCHING" && current.answer.kind === "MATCHING"
-        ? current.answer.pairs.length === current.question.options.length &&
-          current.question.options.every(
-            (option) =>
-              "correctMatchTargetId" in option &&
-              current.answer.kind === "MATCHING" &&
-              current.answer.pairs.some(
-                (pair) =>
-                  pair.leftOptionId === option.id &&
-                  pair.rightOptionId === option.correctMatchTargetId,
-              ),
-          )
-        : current.type === "ORDERING" && current.answer.kind === "ORDERING"
-          ? [...current.question.options]
-              .sort((left, right) =>
-                "correctOrder" in left && "correctOrder" in right
-                  ? left.correctOrder - right.correctOrder
-                  : 0,
-              )
-              .every(
-                (option, index) =>
-                  current.answer.kind === "ORDERING" &&
-                  current.answer.orderedOptionIds[index] === option.id,
-              )
-          : current.answer.kind === "CHOICE"
-            ? (() => {
-                const correct = new Set(
-                  current.question.options
-                    .filter(
-                      (option) => "isCorrect" in option && option.isCorrect,
-                    )
-                    .map((option) => option.id),
-                );
-                return (
-                  correct.size === current.answer.selectedOptionIds.length &&
-                  current.answer.selectedOptionIds.every((id) =>
-                    correct.has(id),
-                  )
-                );
-              })()
-            : false
-      : null;
+    revealed && current.checkedAt ? current.isCorrect : null;
 
   return (
     <div>
@@ -710,6 +673,17 @@ export function AttemptRunner({
               </div>
             )}
 
+          {revealed && (
+            <CommentThread
+              key={current.sourceQuestionId}
+              locale={locale}
+              messages={messages}
+              questionId={current.sourceQuestionId}
+              currentUserId={currentUserId}
+              isAdmin={isAdmin}
+            />
+          )}
+
           <div className="attempt-toolbar">
             <span
               className={`save-indicator${status === "error" ? "error" : ""}`}
@@ -990,6 +964,15 @@ function AttemptNavigator({
           <span className="attempt-legend-dot flagged" aria-hidden="true" />
           {messages.attempt.statusFlagged}
         </span>
+        {questions.some((question) => question.isCorrect === false) && (
+          <span>
+            <span
+              className="attempt-legend-dot incorrect"
+              aria-hidden="true"
+            />
+            {messages.attempt.statusIncorrect}
+          </span>
+        )}
         <span>
           <span className="attempt-legend-dot" aria-hidden="true" />
           {messages.attempt.statusUnanswered}
@@ -1040,6 +1023,12 @@ function AttemptNavigator({
               const classes = [
                 "attempt-nav-item",
                 !isAnswerEmpty(question.answer) ? "answered" : "",
+                question.checkedAt && question.isCorrect === true
+                  ? "correct"
+                  : "",
+                question.checkedAt && question.isCorrect === false
+                  ? "incorrect"
+                  : "",
                 question.isFlagged ? "flagged" : "",
                 index === currentIndex ? "current" : "",
               ]

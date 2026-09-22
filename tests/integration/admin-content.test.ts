@@ -1122,6 +1122,64 @@ describe("bulk content hard delete", () => {
     expect(workspace.tests.some((item) => item.id === testId)).toBe(true);
   });
 
+  it("refuses to archive a question that is still referenced by a published fixed test", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "soft-question-published-ref",
+        slug: "soft-question-published-ref",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Question published ref", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "soft-question-published-ref-topic",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "FIXED",
+        status: "PUBLISHED",
+        questionCount: 1,
+        durationMinutes: 30,
+        passingScorePercent: 70,
+        shuffleQuestions: false,
+        shuffleOptions: false,
+        translations: [
+          { locale: "vi", name: "Đề cố định", description: "Mô tả." },
+        ],
+        fixedQuestions: [{ questionId, displayOrder: 0 }],
+        dynamicRules: [],
+      },
+      adminId,
+    );
+
+    await expect(
+      service.deleteQuestion(questionId, adminId),
+    ).rejects.toMatchObject({ code: "CONFLICT" });
+
+    const workspace = await service.getWorkspace();
+    const question = workspace.questions.find((item) => item.id === questionId);
+    expect(question?.deletedAt).toBeNull();
+  });
+
   it("blocks deleting an archived question that still has a comment", async () => {
     const examId = await service.saveExam(
       {
@@ -1162,5 +1220,81 @@ describe("bulk content hard delete", () => {
     expect(results).toMatchObject([
       { id: questionId, ok: false, code: "CONFLICT" },
     ]);
+  });
+
+  it("refuses to permanently delete a question that was only archived via bulk status, not truly soft-deleted", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-bulk-archived",
+        slug: "hard-question-bulk-archived",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          { locale: "vi", name: "Question bulk archived", description: "Mô tả." },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-bulk-archived-topic",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    const { id: testId } = await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "FIXED",
+        status: "PUBLISHED",
+        questionCount: 1,
+        durationMinutes: 30,
+        passingScorePercent: 70,
+        shuffleQuestions: false,
+        shuffleOptions: false,
+        translations: [
+          { locale: "vi", name: "Đề cố định", description: "Mô tả." },
+        ],
+        fixedQuestions: [{ questionId, displayOrder: 0 }],
+        dynamicRules: [],
+      },
+      adminId,
+    );
+
+    // Bulk status can archive a question without going through the guarded
+    // single soft-delete path, so it must not become hard-delete eligible.
+    const statusResults = await service.bulkSetQuestionStatus(
+      [questionId],
+      "ARCHIVED",
+      adminId,
+    );
+    expect(statusResults).toEqual([{ id: questionId, ok: true }]);
+
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toMatchObject([
+      { id: questionId, ok: false, code: "CONFLICT" },
+    ]);
+
+    const remainingLinks = await database
+      .select()
+      .from(schema.testQuestions)
+      .where(eq(schema.testQuestions.questionId, questionId));
+    expect(remainingLinks).toHaveLength(1);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      true,
+    );
+    expect(workspace.tests.some((item) => item.id === testId)).toBe(true);
   });
 });

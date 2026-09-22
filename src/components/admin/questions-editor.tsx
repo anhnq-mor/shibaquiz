@@ -176,6 +176,7 @@ export function QuestionsEditor({
     kind: "error" | "success";
     message: string;
   } | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [filterExam, setFilterExam] = useState("");
   const [filterTopic, setFilterTopic] = useState("");
@@ -273,8 +274,25 @@ export function QuestionsEditor({
         locale,
         { body: { ids: [...bulk.selected] } },
       );
+      for (const item of response.results) {
+        if (!item.ok) {
+          console.error(
+            "[admin:questions:bulk-delete] failed to delete question",
+            {
+              questionId: item.id,
+              code: item.code,
+              cause: item.message,
+            },
+          );
+        }
+      }
       summarizeBulkResults(response.results);
     } catch (error) {
+      console.error("[admin:questions:bulk-delete] request failed", {
+        ids: [...bulk.selected],
+        cause:
+          error instanceof AdminApiRequestError ? error.body : error,
+      });
       setListResult({
         kind: "error",
         message:
@@ -498,6 +516,7 @@ export function QuestionsEditor({
 
   async function deleteQuestion(question: Question) {
     if (!window.confirm(messages.common.deleteConfirm)) return;
+    setDeletingId(question.id);
     try {
       await adminApiRequest(`/api/admin/questions/${question.id}`, locale, {
         method: "DELETE",
@@ -505,6 +524,10 @@ export function QuestionsEditor({
       setListResult({ kind: "success", message: messages.common.deleted });
       router.refresh();
     } catch (error) {
+      console.error("[admin:questions:delete] failed to delete question", {
+        questionId: question.id,
+        cause: error instanceof AdminApiRequestError ? error.body : error,
+      });
       setListResult({
         kind: "error",
         message:
@@ -512,6 +535,8 @@ export function QuestionsEditor({
             ? (error.body?.message ?? messages.common.requestFailed)
             : messages.common.connectionError,
       });
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -708,6 +733,7 @@ export function QuestionsEditor({
                           type="button"
                           className="button button-danger"
                           onClick={() => void deleteQuestion(question)}
+                          disabled={deletingId === question.id}
                         >
                           <Trash2 size={16} aria-hidden />
                           {messages.common.delete}

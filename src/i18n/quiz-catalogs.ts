@@ -59,6 +59,9 @@ export interface QuizCatalog {
     selectedLabel: string;
     immediateCheckLabel: string;
     immediateCheckHint: string;
+    examDurationLabel: string;
+    examDurationHint: string;
+    examDurationRequiredError: string;
   };
   attempt: {
     loadError: string;
@@ -79,6 +82,7 @@ export interface QuizCatalog {
     statusAnswered: string;
     statusFlagged: string;
     statusChecked: string;
+    statusIncorrect: string;
     savingIndicator: string;
     savedIndicator: string;
     saveErrorIndicator: string;
@@ -239,6 +243,10 @@ const vi: QuizCatalog = {
     immediateCheckLabel: "Cho phép kiểm tra đáp án ngay sau mỗi câu",
     immediateCheckHint:
       "Nếu tắt, bạn chỉ xem được đáp án sau khi nộp toàn bộ bài.",
+    examDurationLabel: "Thời gian làm bài (phút)",
+    examDurationHint:
+      "Đồng hồ đếm ngược sẽ tự động nộp bài khi hết thời gian.",
+    examDurationRequiredError: "Vui lòng nhập thời gian làm bài hợp lệ (1–600 phút).",
   },
   attempt: {
     loadError: "Không thể tải bài làm. Vui lòng thử lại.",
@@ -259,6 +267,7 @@ const vi: QuizCatalog = {
     statusAnswered: "Đã trả lời",
     statusFlagged: "Đã đánh dấu",
     statusChecked: "Đã kiểm tra",
+    statusIncorrect: "Trả lời sai",
     savingIndicator: "Đang lưu…",
     savedIndicator: "Đã lưu.",
     saveErrorIndicator: "Lỗi lưu.",
@@ -419,6 +428,10 @@ const en: QuizCatalog = {
     immediateCheckLabel: "Allow checking the answer right after each question",
     immediateCheckHint:
       "If off, you'll only see answers after submitting the whole attempt.",
+    examDurationLabel: "Time limit (minutes)",
+    examDurationHint:
+      "The countdown will automatically submit the attempt when it runs out.",
+    examDurationRequiredError: "Enter a valid time limit (1-600 minutes).",
     topicsGridHeading: "Topics in this exam",
     inProgressNotice: "You have an unfinished attempt for this exam.",
     continueAttemptAction: "Continue attempt",
@@ -442,6 +455,7 @@ const en: QuizCatalog = {
     statusAnswered: "Answered",
     statusFlagged: "Flagged",
     statusChecked: "Checked",
+    statusIncorrect: "Incorrect",
     savingIndicator: "Saving…",
     savedIndicator: "Saved.",
     saveErrorIndicator: "Save failed.",

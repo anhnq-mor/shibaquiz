@@ -6,7 +6,56 @@ import {
   isAnswerCorrect,
   isAttemptExpired,
   shuffle,
+  startAttemptSchema,
 } from "@/domain/attempts/attempt";
+
+const examId = "11111111-1111-4111-8111-111111111111";
+const topicId = "22222222-2222-4222-8222-222222222222";
+const testId = "33333333-3333-4333-8333-333333333333";
+
+describe("startAttemptSchema durationMinutes rules", () => {
+  it("requires durationMinutes for a TOPIC EXAM_DEFERRED (timed real exam) attempt", () => {
+    const result = startAttemptSchema.safeParse({
+      examId,
+      scope: "TOPIC",
+      mode: "EXAM_DEFERRED",
+      topicId,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts a TOPIC EXAM_DEFERRED attempt with a valid durationMinutes", () => {
+    const result = startAttemptSchema.safeParse({
+      examId,
+      scope: "TOPIC",
+      mode: "EXAM_DEFERRED",
+      topicId,
+      durationMinutes: 45,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects durationMinutes for scopes/modes other than a TOPIC real exam", () => {
+    expect(
+      startAttemptSchema.safeParse({
+        examId,
+        scope: "TOPIC",
+        mode: "STUDY",
+        topicId,
+        durationMinutes: 45,
+      }).success,
+    ).toBe(false);
+    expect(
+      startAttemptSchema.safeParse({
+        examId,
+        scope: "FULL_TEST",
+        mode: "EXAM_DEFERRED",
+        testId,
+        durationMinutes: 45,
+      }).success,
+    ).toBe(false);
+  });
+});
 
 describe("isAnswerCorrect", () => {
   it("matches an exact single-choice selection", () => {

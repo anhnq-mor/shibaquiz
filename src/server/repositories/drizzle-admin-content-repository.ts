@@ -819,55 +819,50 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     actorUserId: string,
     now: Date,
   ): Promise<void> {
-    await this.database.transaction(async (transaction) => {
-      const question = (
-        await transaction
-          .select({ id: questions.id, deletedAt: questions.deletedAt })
-          .from(questions)
-          .where(eq(questions.id, id))
-          .limit(1)
-          .for("update")
-      )[0];
-      if (!question) {
-        throw new AdminContentError("NOT_FOUND", 404, "Question not found");
-      }
-      if (question.deletedAt) return;
+    try {
+      await this.database.transaction(async (transaction) => {
+        const question = (
+          await transaction
+            .select({ id: questions.id, deletedAt: questions.deletedAt })
+            .from(questions)
+            .where(eq(questions.id, id))
+            .limit(1)
+            .for("update")
+        )[0];
+        if (!question) {
+          throw new AdminContentError("NOT_FOUND", 404, "Question not found");
+        }
+        if (question.deletedAt) return;
 
-      const publishedReferences = await transaction
-        .select({ value: count() })
-        .from(testQuestions)
-        .innerJoin(quizTests, eq(quizTests.id, testQuestions.testId))
-        .where(
-          and(
-            eq(testQuestions.questionId, id),
-            eq(quizTests.status, "PUBLISHED"),
-          ),
+        await this.assertQuestionHasNoPublishedTestReferences(
+          transaction,
+          id,
         );
-      if (Number(publishedReferences[0]?.value ?? 0) > 0) {
-        throw new AdminContentError(
-          "CONFLICT",
-          409,
-          "Archive published fixed tests before deleting this question",
-        );
-      }
-      await transaction
-        .update(questions)
-        .set({
-          status: "ARCHIVED",
-          deletedAt: now,
-          updatedBy: actorUserId,
-          updatedAt: now,
-        })
-        .where(eq(questions.id, id));
-      await transaction.insert(auditLogs).values({
-        actorUserId,
-        action: "CONTENT_QUESTION_SOFT_DELETED",
-        entityType: "QUESTION",
-        entityId: id,
-        metadata: { status: "ARCHIVED" },
-        createdAt: now,
+        await transaction
+          .update(questions)
+          .set({
+            status: "ARCHIVED",
+            deletedAt: now,
+            updatedBy: actorUserId,
+            updatedAt: now,
+          })
+          .where(eq(questions.id, id));
+        await transaction.insert(auditLogs).values({
+          actorUserId,
+          action: "CONTENT_QUESTION_SOFT_DELETED",
+          entityType: "QUESTION",
+          entityId: id,
+          metadata: { status: "ARCHIVED" },
+          createdAt: now,
+        });
       });
-    });
+    } catch (error) {
+      console.error(
+        "[admin-content:questions:soft-delete] failed to delete question",
+        { questionId: id, cause: error },
+      );
+      throw error;
+    }
   }
 
   async previewTest(input: SaveTestInput): Promise<TestAllocationPreview[]> {
@@ -1396,10 +1391,34 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     });
   }
 
+  private async assertQuestionHasNoPublishedTestReferences(
+    tx: MutableExecutor,
+    id: string,
+  ): Promise<void> {
+    const publishedReferences = await tx
+      .select({ value: count() })
+      .from(testQuestions)
+      .innerJoin(quizTests, eq(quizTests.id, testQuestions.testId))
+      .where(
+        and(
+          eq(testQuestions.questionId, id),
+          eq(quizTests.status, "PUBLISHED"),
+        ),
+      );
+    if (Number(publishedReferences[0]?.value ?? 0) > 0) {
+      throw new AdminContentError(
+        "CONFLICT",
+        409,
+        "Archive published fixed tests before deleting this question",
+      );
+    }
+  }
+
   private async cascadeDeleteQuestion(
     tx: MutableExecutor,
     id: string,
   ): Promise<number> {
+    await this.assertQuestionHasNoPublishedTestReferences(tx, id);
     const unlinked = await tx
       .delete(testQuestions)
       .where(eq(testQuestions.questionId, id))
@@ -1569,7 +1588,11 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     return this.runBulk(ids, async (id, tx) => {
       const existing = (
         await tx
-          .select({ id: questions.id, status: questions.status })
+          .select({
+            id: questions.id,
+            status: questions.status,
+            deletedAt: questions.deletedAt,
+          })
           .from(questions)
           .where(eq(questions.id, id))
           .limit(1)
@@ -1578,22 +1601,30 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
       if (!existing) {
         throw new AdminContentError("NOT_FOUND", 404, "Question not found");
       }
-      if (existing.status !== "ARCHIVED") {
+      if (existing.status !== "ARCHIVED" || !existing.deletedAt) {
         throw new AdminContentError(
           "CONFLICT",
           409,
-          "Only archived records can be permanently deleted",
+          "Only soft-deleted records can be permanently deleted",
         );
       }
-      const unlinkedTestCount = await this.cascadeDeleteQuestion(tx, id);
-      await tx.insert(auditLogs).values({
-        actorUserId,
-        action: "CONTENT_QUESTION_HARD_DELETED",
-        entityType: "QUESTION",
-        entityId: id,
-        metadata: { status: "ARCHIVED", unlinkedTestCount },
-        createdAt: now,
-      });
+      try {
+        const unlinkedTestCount = await this.cascadeDeleteQuestion(tx, id);
+        await tx.insert(auditLogs).values({
+          actorUserId,
+          action: "CONTENT_QUESTION_HARD_DELETED",
+          entityType: "QUESTION",
+          entityId: id,
+          metadata: { status: "ARCHIVED", unlinkedTestCount },
+          createdAt: now,
+        });
+      } catch (error) {
+        console.error(
+          "[admin-content:questions:hard-delete] failed to permanently delete question",
+          { questionId: id, cause: error },
+        );
+        throw error;
+      }
     });
   }
 }

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 interface SelectableRow {
   id: string;
   status: string;
+  deletedAt?: string | null;
 }
 
 export function useBulkSelection<T extends SelectableRow>(rows: T[]) {
@@ -49,7 +50,11 @@ export function useBulkSelection<T extends SelectableRow>(rows: T[]) {
   const selectedRows = rows.filter((row) => selected.has(row.id));
   const allArchived =
     selectedRows.length > 0 &&
-    selectedRows.every((row) => row.status === "ARCHIVED");
+    selectedRows.every(
+      (row) =>
+        row.status === "ARCHIVED" &&
+        (row.deletedAt === undefined || row.deletedAt !== null),
+    );
 
   return {
     selected,

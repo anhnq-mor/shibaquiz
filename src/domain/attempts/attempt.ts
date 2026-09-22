@@ -39,6 +39,7 @@ export const startAttemptSchema = z
     mode: z.enum(attemptModes),
     topicId: idSchema.optional(),
     testId: idSchema.optional(),
+    durationMinutes: z.number().int().positive().max(10_000).optional(),
   })
   .superRefine((value, context) => {
     if (value.scope === "TOPIC" && !value.topicId) {
@@ -74,6 +75,22 @@ export const startAttemptSchema = z
         code: "custom",
         path: ["topicId"],
         message: "FULL_TEST scope does not accept topicId",
+      });
+    }
+    const isTimedTopicExam =
+      value.scope === "TOPIC" && value.mode === "EXAM_DEFERRED";
+    if (isTimedTopicExam && value.durationMinutes === undefined) {
+      context.addIssue({
+        code: "custom",
+        path: ["durationMinutes"],
+        message: "durationMinutes is required for a timed TOPIC exam",
+      });
+    }
+    if (!isTimedTopicExam && value.durationMinutes !== undefined) {
+      context.addIssue({
+        code: "custom",
+        path: ["durationMinutes"],
+        message: "durationMinutes is only accepted for a timed TOPIC exam",
       });
     }
   });
@@ -255,6 +272,7 @@ export function computeAttemptResult(
 
 export interface AttemptQuestionState {
   attemptQuestionId: string;
+  sourceQuestionId: string;
   displayOrder: number;
   topicId: string;
   topicName: string;
@@ -263,6 +281,7 @@ export interface AttemptQuestionState {
   answer: AttemptAnswer;
   isFlagged: boolean;
   checkedAt: string | null;
+  isCorrect: boolean | null;
   question: QuestionDto;
 }
 

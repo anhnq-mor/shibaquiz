@@ -12,7 +12,7 @@ import type { AttemptMode } from "@/domain/attempts/disclosure";
 import type { Locale } from "@/domain/common/locale";
 import type { QuizCatalog } from "@/i18n/quiz-catalogs";
 
-type UiMode = "STUDY" | "PRACTICE";
+type UiMode = "STUDY" | "PRACTICE" | "EXAM";
 
 export interface AttemptSelection {
   scope: AttemptScope;
@@ -37,18 +37,29 @@ export function StartAttemptForm({
   const router = useRouter();
   const [uiMode, setUiMode] = useState<UiMode | null>(null);
   const [immediateCheck, setImmediateCheck] = useState(true);
+  const [examDurationMinutes, setExamDurationMinutes] = useState("60");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const canOfferTimedExam = selection.scope === "TOPIC";
+  const parsedExamDuration = Number.parseInt(examDurationMinutes, 10);
+  const examDurationValid =
+    Number.isInteger(parsedExamDuration) &&
+    parsedExamDuration > 0 &&
+    parsedExamDuration <= 600;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!uiMode) return;
+    if (uiMode === "EXAM" && !examDurationValid) return;
     const mode: AttemptMode =
       uiMode === "STUDY"
         ? "STUDY"
-        : immediateCheck
-          ? "PRACTICE_IMMEDIATE"
-          : "EXAM_DEFERRED";
+        : uiMode === "EXAM"
+          ? "EXAM_DEFERRED"
+          : immediateCheck
+            ? "PRACTICE_IMMEDIATE"
+            : "EXAM_DEFERRED";
     setPending(true);
     setError(null);
     try {
@@ -62,6 +73,9 @@ export function StartAttemptForm({
             mode,
             topicId: selection.topicId,
             testId: selection.testId,
+            ...(uiMode === "EXAM"
+              ? { durationMinutes: parsedExamDuration }
+              : {}),
           },
         },
       );
@@ -125,6 +139,20 @@ export function StartAttemptForm({
                 <span>{messages.exams.modePracticeImmediateHint}</span>
               </span>
             </label>
+            {canOfferTimedExam && (
+              <label className="choice-card">
+                <input
+                  type="radio"
+                  name="mode"
+                  checked={uiMode === "EXAM"}
+                  onChange={() => setUiMode("EXAM")}
+                />
+                <span className="choice-card-body">
+                  {messages.common.modeExamDeferred}
+                  <span>{messages.exams.modeExamDeferredHint}</span>
+                </span>
+              </label>
+            )}
           </div>
 
           {uiMode === "PRACTICE" && (
@@ -140,6 +168,31 @@ export function StartAttemptForm({
               <p className="admin-hint">{messages.exams.immediateCheckHint}</p>
             </div>
           )}
+
+          {uiMode === "EXAM" && (
+            <div>
+              <label>
+                <span>{messages.exams.examDurationLabel}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={600}
+                  inputMode="numeric"
+                  value={examDurationMinutes}
+                  onChange={(event) =>
+                    setExamDurationMinutes(event.target.value)
+                  }
+                  aria-invalid={!examDurationValid}
+                />
+              </label>
+              <p className="admin-hint">{messages.exams.examDurationHint}</p>
+              {!examDurationValid && (
+                <p className="form-message error" role="alert">
+                  {messages.exams.examDurationRequiredError}
+                </p>
+              )}
+            </div>
+          )}
         </fieldset>
 
         {error && (
@@ -152,7 +205,11 @@ export function StartAttemptForm({
           <button
             type="submit"
             className="button button-primary"
-            disabled={pending || !uiMode}
+            disabled={
+              pending ||
+              !uiMode ||
+              (uiMode === "EXAM" && !examDurationValid)
+            }
           >
             {pending ? (
               <Loader2 size={16} aria-hidden className="icon-spin" />
