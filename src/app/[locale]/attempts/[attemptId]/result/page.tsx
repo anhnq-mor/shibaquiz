@@ -169,202 +169,220 @@ export default async function AttemptResultPage({
         </div>
       </div>
 
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h2>{messages.result.reviewHeading}</h2>
-        </div>
-        <nav
-          className="attempt-nav-grid result-review-nav"
-          aria-label={messages.result.reviewHeading}
-        >
-          {result.questions.map((question, index) => {
-            const unanswered = isAnswerEmpty(question.answer);
-            const classes = [
-              "attempt-nav-item",
-              !unanswered ? "answered" : "",
-              !unanswered && question.isCorrect === false ? "incorrect" : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-            return (
-              <a
-                key={question.attemptQuestionId}
-                href={`#review-question-${index + 1}`}
-                className={classes}
-              >
-                {index + 1}
-              </a>
-            );
-          })}
-        </nav>
-        <div className="attempt-legend">
-          <span>
-            <span className="attempt-legend-dot answered" aria-hidden="true" />
-            {messages.result.correctCountLabel}
-          </span>
-          <span>
-            <span className="attempt-legend-dot incorrect" aria-hidden="true" />
-            {messages.result.incorrectCountLabel}
-          </span>
-          <span>
-            <span className="attempt-legend-dot" aria-hidden="true" />
-            {messages.result.unansweredCountLabel}
-          </span>
-        </div>
-        {result.questions.map((question, index) => (
-          <div
-            key={question.attemptQuestionId}
-            id={`review-question-${index + 1}`}
-            className="review-question"
-          >
-            <p>
-              <strong>
-                {index + 1}. {question.question.content}
-              </strong>
-            </p>
-            {question.question.media.length > 0 && (
-              <div className="attempt-media-list">
-                {question.question.media.map((item) => {
-                  const url = mediaUrlById.get(item.id);
-                  if (!url) return null;
-                  if (item.type === "IMAGE") {
-                    return (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img key={item.id} src={url} alt={item.altText ?? ""} />
-                    );
-                  }
-                  if (item.type === "AUDIO") {
+      <div className="result-review-layout">
+        <div className="admin-card">
+          <div className="admin-card-header">
+            <h2>{messages.result.reviewHeading}</h2>
+          </div>
+          {result.questions.map((question, index) => (
+            <div
+              key={question.attemptQuestionId}
+              id={`review-question-${index + 1}`}
+              className="review-question"
+            >
+              <p>
+                <strong>
+                  {index + 1}. {question.question.content}
+                </strong>
+              </p>
+              {question.question.media.length > 0 && (
+                <div className="attempt-media-list">
+                  {question.question.media.map((item) => {
+                    const url = mediaUrlById.get(item.id);
+                    if (!url) return null;
+                    if (item.type === "IMAGE") {
+                      return (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img key={item.id} src={url} alt={item.altText ?? ""} />
+                      );
+                    }
+                    if (item.type === "AUDIO") {
+                      return (
+                        <figure key={item.id}>
+                          <audio controls src={url} />
+                          {item.caption && (
+                            <figcaption>{item.caption}</figcaption>
+                          )}
+                        </figure>
+                      );
+                    }
                     return (
                       <figure key={item.id}>
-                        <audio controls src={url} />
+                        <video controls src={url} />
                         {item.caption && (
                           <figcaption>{item.caption}</figcaption>
                         )}
                       </figure>
                     );
-                  }
-                  return (
-                    <figure key={item.id}>
-                      <video controls src={url} />
-                      {item.caption && <figcaption>{item.caption}</figcaption>}
-                    </figure>
-                  );
-                })}
-              </div>
-            )}
-            {question.question.type === "MATCHING" &&
-            question.answer.kind === "MATCHING" ? (
-              <ul className="option-list">
-                {question.question.options.map((option) => {
-                  const submittedTargetId =
-                    question.answer.kind === "MATCHING"
-                      ? question.answer.pairs.find(
-                          (pair) => pair.leftOptionId === option.id,
-                        )?.rightOptionId
-                      : undefined;
-                  const submittedTarget =
-                    question.question.matchingTargets.find(
-                      (target) => target.id === submittedTargetId,
+                  })}
+                </div>
+              )}
+              {question.question.type === "MATCHING" &&
+              question.answer.kind === "MATCHING" ? (
+                <ul className="option-list">
+                  {question.question.options.map((option) => {
+                    const submittedTargetId =
+                      question.answer.kind === "MATCHING"
+                        ? question.answer.pairs.find(
+                            (pair) => pair.leftOptionId === option.id,
+                          )?.rightOptionId
+                        : undefined;
+                    const submittedTarget =
+                      question.question.matchingTargets.find(
+                        (target) => target.id === submittedTargetId,
+                      );
+                    const correctTarget =
+                      "correctMatchTargetId" in option
+                        ? question.question.matchingTargets.find(
+                            (target) =>
+                              target.id === option.correctMatchTargetId,
+                          )
+                        : undefined;
+                    return (
+                      <li
+                        key={option.id}
+                        className={
+                          submittedTargetId ===
+                          ("correctMatchTargetId" in option
+                            ? option.correctMatchTargetId
+                            : undefined)
+                            ? "correct"
+                            : "incorrect"
+                        }
+                      >
+                        {option.content} → {submittedTarget?.content ?? "—"}
+                        {correctTarget && submittedTargetId !== correctTarget.id
+                          ? ` · ${messages.result.correctAnswerLabel}: ${correctTarget.content}`
+                          : ""}
+                      </li>
                     );
-                  const correctTarget =
-                    "correctMatchTargetId" in option
-                      ? question.question.matchingTargets.find(
-                          (target) => target.id === option.correctMatchTargetId,
-                        )
-                      : undefined;
-                  return (
-                    <li
-                      key={option.id}
-                      className={
-                        submittedTargetId ===
-                        ("correctMatchTargetId" in option
-                          ? option.correctMatchTargetId
-                          : undefined)
-                          ? "correct"
-                          : "incorrect"
-                      }
-                    >
-                      {option.content} → {submittedTarget?.content ?? "—"}
-                      {correctTarget && submittedTargetId !== correctTarget.id
-                        ? ` · ${messages.result.correctAnswerLabel}: ${correctTarget.content}`
-                        : ""}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : question.question.type === "ORDERING" &&
-              question.answer.kind === "ORDERING" ? (
-              <div>
-                <p>
-                  {messages.result.yourAnswerLabel}:{" "}
-                  {question.answer.orderedOptionIds
-                    .map(
-                      (id) =>
-                        question.question.options.find(
-                          (option) => option.id === id,
-                        )?.content,
-                    )
-                    .filter(Boolean)
-                    .join(" → ") || "—"}
-                </p>
-                <p>
-                  {messages.result.correctAnswerLabel}:{" "}
-                  {[...question.question.options]
-                    .sort((left, right) =>
-                      "correctOrder" in left && "correctOrder" in right
-                        ? left.correctOrder - right.correctOrder
-                        : 0,
-                    )
-                    .map((option) => option.content)
-                    .join(" → ")}
-                </p>
-              </div>
-            ) : (
-              <ul className="option-list">
-                {question.question.options.map((option) => {
-                  const isSelected = question.selectedOptionIds.includes(
-                    option.id,
-                  );
-                  const isCorrectOption =
-                    "isCorrect" in option ? option.isCorrect : undefined;
-                  const optionClass = isCorrectOption
-                    ? "correct"
-                    : isSelected && isCorrectOption === false
-                      ? "incorrect"
-                      : "";
-                  return (
-                    <li key={option.id} className={optionClass}>
-                      {(question.question.type === "SINGLE_CHOICE" ||
-                        question.question.type === "MULTIPLE_CHOICE") && (
-                        <span className="option-label" aria-hidden="true">
-                          {option.label}
-                        </span>
-                      )}
-                      {option.content}
-                      {isSelected && ` — ${messages.result.yourAnswerLabel}`}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-            {"explanation" in question.question &&
-              question.question.explanation && (
-                <p>
-                  <em>{question.question.explanation}</em>
-                </p>
+                  })}
+                </ul>
+              ) : question.question.type === "ORDERING" &&
+                question.answer.kind === "ORDERING" ? (
+                <div>
+                  <p>
+                    {messages.result.yourAnswerLabel}:{" "}
+                    {question.answer.orderedOptionIds
+                      .map(
+                        (id) =>
+                          question.question.options.find(
+                            (option) => option.id === id,
+                          )?.content,
+                      )
+                      .filter(Boolean)
+                      .join(" → ") || "—"}
+                  </p>
+                  <p>
+                    {messages.result.correctAnswerLabel}:{" "}
+                    {[...question.question.options]
+                      .sort((left, right) =>
+                        "correctOrder" in left && "correctOrder" in right
+                          ? left.correctOrder - right.correctOrder
+                          : 0,
+                      )
+                      .map((option) => option.content)
+                      .join(" → ")}
+                  </p>
+                </div>
+              ) : (
+                <ul className="option-list">
+                  {question.question.options.map((option) => {
+                    const isSelected = question.selectedOptionIds.includes(
+                      option.id,
+                    );
+                    const isCorrectOption =
+                      "isCorrect" in option ? option.isCorrect : undefined;
+                    const optionClass = isCorrectOption
+                      ? "correct"
+                      : isSelected && isCorrectOption === false
+                        ? "incorrect"
+                        : "";
+                    return (
+                      <li key={option.id} className={optionClass}>
+                        {(question.question.type === "SINGLE_CHOICE" ||
+                          question.question.type === "MULTIPLE_CHOICE") && (
+                          <span className="option-label" aria-hidden="true">
+                            {option.label}
+                          </span>
+                        )}
+                        {option.content}
+                        {isSelected && ` — ${messages.result.yourAnswerLabel}`}
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
-            {question.question.disclosure === "REVEALED" &&
-              question.sourceQuestionId && (
-                <CommentThread
-                  locale={locale}
-                  messages={messages}
-                  questionId={question.sourceQuestionId}
-                  currentUserId={user.id}
-                  isAdmin={user.role === "ADMIN"}
-                />
-              )}
+              {"explanation" in question.question &&
+                question.question.explanation && (
+                  <p>
+                    <em>{question.question.explanation}</em>
+                  </p>
+                )}
+              {question.question.disclosure === "REVEALED" &&
+                question.sourceQuestionId && (
+                  <CommentThread
+                    locale={locale}
+                    messages={messages}
+                    questionId={question.sourceQuestionId}
+                    currentUserId={user.id}
+                    isAdmin={user.role === "ADMIN"}
+                  />
+                )}
+            </div>
+          ))}
+        </div>
+
+        <nav
+          className="result-review-nav-panel"
+          aria-label={messages.result.reviewHeading}
+        >
+          <div className="attempt-navigator-header">
+            <h2>{messages.result.reviewHeading}</h2>
+            <span className="attempt-nav-count">{result.questions.length}</span>
           </div>
-        ))}
+          <div className="attempt-nav-grid">
+            {result.questions.map((question, index) => {
+              const unanswered = isAnswerEmpty(question.answer);
+              const classes = [
+                "attempt-nav-item",
+                !unanswered ? "answered" : "",
+                !unanswered && question.isCorrect === false ? "incorrect" : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+              return (
+                <a
+                  key={question.attemptQuestionId}
+                  href={`#review-question-${index + 1}`}
+                  className={classes}
+                >
+                  {index + 1}
+                </a>
+              );
+            })}
+          </div>
+          <div className="attempt-legend">
+            <span>
+              <span
+                className="attempt-legend-dot answered"
+                aria-hidden="true"
+              />
+              {messages.result.correctCountLabel}
+            </span>
+            <span>
+              <span
+                className="attempt-legend-dot incorrect"
+                aria-hidden="true"
+              />
+              {messages.result.incorrectCountLabel}
+            </span>
+            <span>
+              <span className="attempt-legend-dot" aria-hidden="true" />
+              {messages.result.unansweredCountLabel}
+            </span>
+          </div>
+        </nav>
       </div>
 
       <p className="admin-hint">{formatDateTime(result.startedAt, locale)}</p>

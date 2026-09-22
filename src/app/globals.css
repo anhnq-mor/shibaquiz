@@ -3074,13 +3074,34 @@ dialog.attempt-nav-dialog {
   padding-top: 0;
 }
 
-.result-review-nav {
-  margin-top: 0.75rem;
+.result-review-layout {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr 18rem;
+  align-items: start;
 }
 
-.result-review-nav + .attempt-legend {
-  margin-top: 0.6rem;
-  margin-bottom: 0.5rem;
+.result-review-nav-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  position: sticky;
+  top: 6rem;
+}
+
+@media (max-width: 55rem) {
+  .result-review-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .result-review-nav-panel {
+    position: static;
+    order: -1;
+  }
 }
 
 .comment-thread {
