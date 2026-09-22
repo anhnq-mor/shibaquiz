@@ -16,21 +16,25 @@ const REQUEST_TIMEOUT_MS = 30_000;
 const MODELS_REQUEST_TIMEOUT_MS = 15_000;
 
 async function extractErrorDetail(response: Response): Promise<string> {
+  const rawText = await response
+    .clone()
+    .text()
+    .catch(() => "");
+  let providerMessage: string | undefined;
   try {
-    const data = (await response.clone().json()) as {
+    const data = JSON.parse(rawText) as {
       error?: { message?: string } | string;
       message?: string;
     };
-    const providerMessage =
+    providerMessage =
       typeof data.error === "string"
         ? data.error
         : (data.error?.message ?? data.message);
-    return providerMessage
-      ? `${response.status}: ${providerMessage}`
-      : `${response.status} ${response.statusText}`;
   } catch {
-    return `${response.status} ${response.statusText}`;
+    // response body wasn't JSON; fall through to the raw text below
   }
+  const fallback = rawText.trim().slice(0, 300) || response.statusText;
+  return `${response.status}: ${providerMessage ?? fallback}`;
 }
 
 async function callOpenAiCompatible(
