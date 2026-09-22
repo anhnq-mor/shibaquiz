@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { Bot, Send, Settings, X } from "lucide-react";
 
 import { appApiRequest, AppApiRequestError } from "@/components/app/app-api";
@@ -24,6 +30,26 @@ interface ChatbotSettings {
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+interface PanelSize {
+  width: number;
+  height: number;
+}
+
+const MIN_PANEL_WIDTH = 288;
+const MIN_PANEL_HEIGHT = 256;
+const VIEWPORT_MARGIN_X = 40;
+const VIEWPORT_MARGIN_Y = 128;
+
+type ResizeEdge = "top" | "left" | "corner";
+
+interface ResizeState {
+  edge: ResizeEdge;
+  startX: number;
+  startY: number;
+  startWidth: number;
+  startHeight: number;
 }
 
 function loadSettings(): ChatbotSettings {
@@ -67,7 +93,10 @@ export function ChatbotWidget({
   const [modelOptions, setModelOptions] = useState<string[] | null>(null);
   const [loadingModels, setLoadingModels] = useState(false);
   const [modelsError, setModelsError] = useState<string | null>(null);
+  const [panelSize, setPanelSize] = useState<PanelSize | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const resizeStateRef = useRef<ResizeState | null>(null);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -79,6 +108,69 @@ export function ChatbotWidget({
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
   }, [chat, sending]);
+
+  const handlePointerMove = useCallback((event: PointerEvent) => {
+    const state = resizeStateRef.current;
+    if (!state) return;
+    const maxWidth = window.innerWidth - VIEWPORT_MARGIN_X;
+    const maxHeight = window.innerHeight - VIEWPORT_MARGIN_Y;
+    setPanelSize(() => {
+      let width = state.startWidth;
+      let height = state.startHeight;
+      if (state.edge === "left" || state.edge === "corner") {
+        width = Math.min(
+          maxWidth,
+          Math.max(
+            MIN_PANEL_WIDTH,
+            state.startWidth + (state.startX - event.clientX),
+          ),
+        );
+      }
+      if (state.edge === "top" || state.edge === "corner") {
+        height = Math.min(
+          maxHeight,
+          Math.max(
+            MIN_PANEL_HEIGHT,
+            state.startHeight + (state.startY - event.clientY),
+          ),
+        );
+      }
+      return { width, height };
+    });
+  }, []);
+
+  const endResize = useCallback(() => {
+    if (!resizeStateRef.current) return;
+    resizeStateRef.current = null;
+    document.body.style.removeProperty("user-select");
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", endResize);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", endResize);
+    };
+  }, [handlePointerMove, endResize]);
+
+  const beginResize = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const edge = event.currentTarget.dataset.edge as ResizeEdge;
+      event.preventDefault();
+      const rect = panelRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      resizeStateRef.current = {
+        edge,
+        startX: event.clientX,
+        startY: event.clientY,
+        startWidth: rect.width,
+        startHeight: rect.height,
+      };
+      document.body.style.userSelect = "none";
+    },
+    [],
+  );
 
   if (!settings) return null;
 
@@ -179,7 +271,30 @@ export function ChatbotWidget({
   return (
     <div className="chatbot-widget">
       {open && (
-        <div className="chatbot-panel">
+        <div
+          className="chatbot-panel"
+          ref={panelRef}
+          style={
+            panelSize
+              ? { width: panelSize.width, height: panelSize.height }
+              : undefined
+          }
+        >
+          <div
+            className="chatbot-resize-handle chatbot-resize-handle-top"
+            data-edge="top"
+            onPointerDown={beginResize}
+          />
+          <div
+            className="chatbot-resize-handle chatbot-resize-handle-left"
+            data-edge="left"
+            onPointerDown={beginResize}
+          />
+          <div
+            className="chatbot-resize-handle chatbot-resize-handle-corner"
+            data-edge="corner"
+            onPointerDown={beginResize}
+          />
           <div className="chatbot-panel-header">
             <span>
               <Bot size={18} aria-hidden />
