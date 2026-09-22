@@ -176,18 +176,6 @@ export function ResultReview({
           </p>
         )}
 
-        {current.question.disclosure === "REVEALED" &&
-          current.sourceQuestionId && (
-            <CommentThread
-              key={current.sourceQuestionId}
-              locale={locale}
-              messages={messages}
-              questionId={current.sourceQuestionId}
-              currentUserId={currentUserId}
-              isAdmin={isAdmin}
-            />
-          )}
-
         <div className="attempt-toolbar">
           <button
             type="button"
@@ -212,6 +200,18 @@ export function ResultReview({
             <ChevronRight size={16} aria-hidden />
           </button>
         </div>
+
+        {current.question.disclosure === "REVEALED" &&
+          current.sourceQuestionId && (
+            <CommentThread
+              key={current.sourceQuestionId}
+              locale={locale}
+              messages={messages}
+              questionId={current.sourceQuestionId}
+              currentUserId={currentUserId}
+              isAdmin={isAdmin}
+            />
+          )}
       </section>
 
       <nav

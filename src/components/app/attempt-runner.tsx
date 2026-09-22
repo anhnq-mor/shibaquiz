@@ -674,17 +674,6 @@ export function AttemptRunner({
               </div>
             )}
 
-          {revealed && current.sourceQuestionId && (
-            <CommentThread
-              key={current.sourceQuestionId}
-              locale={locale}
-              messages={messages}
-              questionId={current.sourceQuestionId}
-              currentUserId={currentUserId}
-              isAdmin={isAdmin}
-            />
-          )}
-
           <div className="attempt-toolbar">
             <span
               className={`save-indicator${status === "error" ? "error" : ""}`}
@@ -745,6 +734,17 @@ export function AttemptRunner({
               <ChevronRight size={16} aria-hidden />
             </button>
           </div>
+
+          {revealed && current.sourceQuestionId && (
+            <CommentThread
+              key={current.sourceQuestionId}
+              locale={locale}
+              messages={messages}
+              questionId={current.sourceQuestionId}
+              currentUserId={currentUserId}
+              isAdmin={isAdmin}
+            />
+          )}
         </section>
 
         <AttemptNavigator
