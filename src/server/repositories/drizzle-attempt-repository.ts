@@ -782,17 +782,47 @@ export class DrizzleAttemptRepository implements AttemptRepository {
       if (!row) {
         throw new AttemptError("NOT_FOUND", 404, "Question not found");
       }
-      if (row.checkedAt) {
-        throw new AttemptError(
-          "LOCKED",
-          409,
-          "This question was already checked",
-        );
-      }
       const answer = input.answer ?? {
         kind: "CHOICE" as const,
         selectedOptionIds: input.selectedOptionIds ?? [],
       };
+      if (row.checkedAt) {
+        // Once checked, the answer itself is locked (it has been scored and
+        // revealed), but the flag is just a personal bookmark and may still
+        // change — only block when the request also tries to change the
+        // answer content.
+        const currentAnswer = answerFromRow(row);
+        if (JSON.stringify(answer) !== JSON.stringify(currentAnswer)) {
+          throw new AttemptError(
+            "LOCKED",
+            409,
+            "This question was already checked",
+          );
+        }
+        const [updated] = await transaction
+          .update(attemptQuestions)
+          .set({
+            isFlagged: input.isFlagged ?? row.isFlagged,
+            updatedAt: now,
+          })
+          .where(eq(attemptQuestions.id, row.id))
+          .returning();
+        await transaction
+          .update(attempts)
+          .set({ lastActivityAt: now, updatedAt: now })
+          .where(eq(attempts.id, attempt.id));
+        const topicNames = await loadTopicNames(
+          transaction,
+          [updated!.topicId],
+          attempt.locale,
+        );
+        return attemptQuestionRowToState(
+          updated!,
+          topicNames.get(updated!.topicId) ?? "",
+          attempt.mode,
+          attempt.status,
+        );
+      }
       if (!validateAnswerForSnapshot(answer, row.questionSnapshot)) {
         throw new AttemptError(
           "INVALID_STRUCTURE",

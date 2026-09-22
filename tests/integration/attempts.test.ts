@@ -464,6 +464,66 @@ describe("practice-immediate disclosure and locking", () => {
       ),
     ).rejects.toMatchObject({ code: "LOCKED" });
   });
+
+  it("still allows flagging/unflagging a question after it has been checked", async () => {
+    const now = new Date("2026-08-06T09:30:00.000Z");
+    const { attemptId } = await service.startOrResumeAttempt(
+      { examId, scope: "QUESTION_BANK", mode: "PRACTICE_IMMEDIATE" },
+      u1,
+      "vi",
+      now,
+    );
+    const view = await service.getAttemptForTaking(attemptId, u1, now);
+    const question = view.questions.find((q) => q.topicId === topicScience)!;
+
+    await service.saveAnswer(
+      attemptId,
+      question.attemptQuestionId,
+      u1,
+      { selectedOptionIds: [uid(32)] }, // q4 correct option (A)
+      now,
+    );
+    const checked = await service.checkAnswer(
+      attemptId,
+      question.attemptQuestionId,
+      u1,
+      now,
+    );
+    expect(checked.checkedAt).not.toBeNull();
+    expect(checked.isFlagged).toBe(false);
+
+    // Flagging (with the exact same, already-checked answer resubmitted, as
+    // the client always does) must not be rejected as a locked change.
+    const flagged = await service.saveAnswer(
+      attemptId,
+      question.attemptQuestionId,
+      u1,
+      { selectedOptionIds: [uid(32)], isFlagged: true },
+      now,
+    );
+    expect(flagged.isFlagged).toBe(true);
+    expect(flagged.checkedAt).not.toBeNull();
+
+    const unflagged = await service.saveAnswer(
+      attemptId,
+      question.attemptQuestionId,
+      u1,
+      { selectedOptionIds: [uid(32)], isFlagged: false },
+      now,
+    );
+    expect(unflagged.isFlagged).toBe(false);
+
+    // But actually changing the answer of a checked question is still locked.
+    await expect(
+      service.saveAnswer(
+        attemptId,
+        question.attemptQuestionId,
+        u1,
+        { selectedOptionIds: [uid(33)], isFlagged: true },
+        now,
+      ),
+    ).rejects.toMatchObject({ code: "LOCKED" });
+  });
 });
 
 describe("deferred exam submission", () => {
