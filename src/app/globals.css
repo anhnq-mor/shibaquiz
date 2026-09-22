@@ -3338,12 +3338,17 @@ dialog.attempt-nav-dialog {
   display: flex;
   flex-direction: column;
   width: min(22rem, calc(100vw - 2.5rem));
-  max-height: min(32rem, calc(100vh - 8rem));
+  height: min(32rem, calc(100vh - 8rem));
+  min-width: 18rem;
+  min-height: 16rem;
+  max-width: calc(100vw - 2.5rem);
+  max-height: calc(100vh - 8rem);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow: auto;
+  resize: both;
 }
 
 .chatbot-panel-header {
