@@ -231,11 +231,20 @@ export function QuestionsEditor({
 
   function summarizeBulkResults(results: BulkActionResult[]) {
     const failed = results.filter((item) => !item.ok);
+    const reasons = [
+      ...new Set(
+        failed
+          .map((item) => item.message)
+          .filter((message): message is string => Boolean(message)),
+      ),
+    ];
+    const summary = messages.common.bulkResultSummary
+      .replace("{success}", String(results.length - failed.length))
+      .replace("{failed}", String(failed.length));
     setListResult({
       kind: failed.length > 0 ? "error" : "success",
-      message: messages.common.bulkResultSummary
-        .replace("{success}", String(results.length - failed.length))
-        .replace("{failed}", String(failed.length)),
+      message:
+        reasons.length > 0 ? `${summary} — ${reasons.join("; ")}` : summary,
     });
     bulk.replace(failed.map((item) => item.id));
     router.refresh();
@@ -312,8 +321,7 @@ export function QuestionsEditor({
     } catch (error) {
       console.error("[admin:questions:bulk-delete] request failed", {
         ids: [...bulk.selected],
-        cause:
-          error instanceof AdminApiRequestError ? error.body : error,
+        cause: error instanceof AdminApiRequestError ? error.body : error,
       });
       setListResult({
         kind: "error",

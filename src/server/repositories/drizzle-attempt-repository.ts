@@ -262,7 +262,7 @@ function answerFromRow(row: {
 function attemptQuestionRowToState(
   row: {
     id: string;
-    sourceQuestionId: string;
+    sourceQuestionId: string | null;
     displayOrder: number;
     topicId: string;
     selectedOptionIds: string[];

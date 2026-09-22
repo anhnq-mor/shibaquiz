@@ -586,9 +586,10 @@ export const attemptQuestions = pgTable(
     attemptId: uuid("attempt_id")
       .notNull()
       .references(() => attempts.id, { onDelete: "cascade" }),
-    sourceQuestionId: uuid("source_question_id")
-      .notNull()
-      .references(() => questions.id, { onDelete: "restrict" }),
+    sourceQuestionId: uuid("source_question_id").references(
+      () => questions.id,
+      { onDelete: "set null" },
+    ),
     topicId: uuid("topic_id")
       .notNull()
       .references(() => topics.id, { onDelete: "restrict" }),
@@ -637,7 +638,7 @@ export const comments = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     questionId: uuid("question_id")
       .notNull()
-      .references(() => questions.id, { onDelete: "restrict" }),
+      .references(() => questions.id, { onDelete: "cascade" }),
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),

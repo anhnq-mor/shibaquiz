@@ -87,7 +87,10 @@ function isForeignKeyViolation(error: unknown): boolean {
   return code === "23503" || code === "23001";
 }
 
-type MutableExecutor = Pick<Database, "select" | "insert" | "update" | "delete">;
+type MutableExecutor = Pick<
+  Database,
+  "select" | "insert" | "update" | "delete"
+>;
 
 async function buildTestPreview(
   executor: SelectExecutor,
@@ -1099,7 +1102,11 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           .select({ locale: examTranslations.locale })
           .from(examTranslations)
           .where(eq(examTranslations.examId, id));
-        assertTranslations(translations, existing.enabledLocales, "translations");
+        assertTranslations(
+          translations,
+          existing.enabledLocales,
+          "translations",
+        );
         const [publishedTopics, publishedQuestions] = await Promise.all([
           tx
             .select({ value: count() })
@@ -1129,7 +1136,10 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         }
       }
 
-      await tx.update(exams).set({ status, updatedAt: now }).where(eq(exams.id, id));
+      await tx
+        .update(exams)
+        .set({ status, updatedAt: now })
+        .where(eq(exams.id, id));
       await tx.insert(auditLogs).values({
         actorUserId,
         action: "CONTENT_EXAM_STATUS_BULK_UPDATED",
@@ -1436,6 +1446,11 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     tx: MutableExecutor,
     id: string,
   ): Promise<number> {
+    // Attempt-question snapshots (the frozen content a learner reviews) and
+    // discussion comments no longer block a hard delete: source_question_id
+    // is ON DELETE SET NULL (the snapshot itself is self-contained and
+    // unaffected) and comments.question_id is ON DELETE CASCADE (a comment
+    // thread has no meaning once its question is gone).
     await this.assertQuestionHasNoPublishedTestReferences(tx, id);
     const unlinked = await tx
       .delete(testQuestions)

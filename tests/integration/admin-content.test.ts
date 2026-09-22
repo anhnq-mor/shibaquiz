@@ -858,7 +858,7 @@ describe("bulk content hard delete", () => {
     expect(workspace.tests.some((item) => item.id === testId)).toBe(false);
   });
 
-  it("blocks deleting an archived exam when a descendant question still has a comment", async () => {
+  it("cascade-deletes an archived exam even when a descendant question still has a comment", async () => {
     const examId = await service.saveExam(
       {
         id: undefined,
@@ -895,14 +895,19 @@ describe("bulk content hard delete", () => {
     await service.bulkSetExamStatus([examId], "ARCHIVED", adminId);
 
     const results = await service.bulkDeleteExams([examId], adminId);
-    expect(results).toMatchObject([{ id: examId, ok: false, code: "CONFLICT" }]);
+    expect(results).toEqual([{ id: examId, ok: true }]);
 
     const workspace = await service.getWorkspace();
-    expect(workspace.exams.some((item) => item.id === examId)).toBe(true);
-    expect(workspace.topics.some((item) => item.id === topicId)).toBe(true);
+    expect(workspace.exams.some((item) => item.id === examId)).toBe(false);
+    expect(workspace.topics.some((item) => item.id === topicId)).toBe(false);
     expect(workspace.questions.some((item) => item.id === questionId)).toBe(
-      true,
+      false,
     );
+    const remainingComments = await database
+      .select()
+      .from(schema.comments)
+      .where(eq(schema.comments.questionId, questionId));
+    expect(remainingComments).toHaveLength(0);
   });
 
   it("cascade-deletes an archived topic's child questions and dynamic-test links", async () => {
@@ -969,7 +974,7 @@ describe("bulk content hard delete", () => {
     expect(remainingRules).toHaveLength(0);
   });
 
-  it("blocks deleting an archived topic when a descendant question still has a comment", async () => {
+  it("cascade-deletes an archived topic even when a descendant question still has a comment", async () => {
     const examId = await service.saveExam(
       {
         id: undefined,
@@ -1006,16 +1011,18 @@ describe("bulk content hard delete", () => {
     await service.bulkSetTopicStatus([topicId], "ARCHIVED", adminId);
 
     const results = await service.bulkDeleteTopics([topicId], adminId);
-    expect(results).toMatchObject([
-      { id: topicId, ok: false, code: "CONFLICT" },
-    ]);
+    expect(results).toEqual([{ id: topicId, ok: true }]);
 
-    // The whole cascade must roll back — the question is still there too.
     const workspace = await service.getWorkspace();
-    expect(workspace.topics.some((item) => item.id === topicId)).toBe(true);
+    expect(workspace.topics.some((item) => item.id === topicId)).toBe(false);
     expect(workspace.questions.some((item) => item.id === questionId)).toBe(
-      true,
+      false,
     );
+    const remainingComments = await database
+      .select()
+      .from(schema.comments)
+      .where(eq(schema.comments.questionId, questionId));
+    expect(remainingComments).toHaveLength(0);
   });
 
   it("permanently deletes an archived question with no references, cascading its options", async () => {
@@ -1180,7 +1187,7 @@ describe("bulk content hard delete", () => {
     expect(question?.deletedAt).toBeNull();
   });
 
-  it("blocks deleting an archived question that still has a comment", async () => {
+  it("permanently deletes a question with comments, cascading the comment away with it", async () => {
     const examId = await service.saveExam(
       {
         id: undefined,
@@ -1217,9 +1224,99 @@ describe("bulk content hard delete", () => {
     });
 
     const results = await service.bulkDeleteQuestions([questionId], adminId);
-    expect(results).toMatchObject([
-      { id: questionId, ok: false, code: "CONFLICT" },
-    ]);
+    expect(results).toEqual([{ id: questionId, ok: true }]);
+
+    const remainingComments = await database
+      .select()
+      .from(schema.comments)
+      .where(eq(schema.comments.questionId, questionId));
+    expect(remainingComments).toHaveLength(0);
+  });
+
+  it("permanently deletes a question used in a learner's exam attempt, leaving the frozen result snapshot intact with a null source question", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-attempt-referenced",
+        slug: "hard-question-attempt-referenced",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          {
+            locale: "vi",
+            name: "Question attempt referenced",
+            description: "Mô tả.",
+          },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-attempt-referenced-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId, status: "DRAFT" }),
+      adminId,
+    );
+    await service.deleteQuestion(questionId, adminId);
+
+    // A frozen attempt-question snapshot references this question as its
+    // source, exactly like a real learner attempt would.
+    const attemptId = crypto.randomUUID();
+    await database.insert(schema.attempts).values({
+      id: attemptId,
+      userId: adminId,
+      examId,
+      scope: "TOPIC",
+      mode: "STUDY",
+      status: "SUBMITTED",
+      locale: "vi",
+      generationConfigSnapshot: { topicId },
+      startedAt: new Date(),
+      submittedAt: new Date(),
+    });
+    const snapshot = {
+      schemaVersion: 2 as const,
+      locale: "vi" as const,
+      sourceQuestionVersion: 1,
+      type: "SINGLE_CHOICE" as const,
+      content: "Câu hỏi mẫu?",
+      explanation: "Giải thích mẫu.",
+      options: [],
+      media: [],
+    };
+    await database.insert(schema.attemptQuestions).values({
+      attemptId,
+      sourceQuestionId: questionId,
+      topicId,
+      displayOrder: 0,
+      questionSnapshot: snapshot,
+    });
+
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toEqual([{ id: questionId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      false,
+    );
+
+    // The frozen snapshot survives untouched — only the live source pointer
+    // (used solely to open the comment thread) is nulled out.
+    const [attemptQuestionRow] = await database
+      .select()
+      .from(schema.attemptQuestions)
+      .where(eq(schema.attemptQuestions.attemptId, attemptId));
+    expect(attemptQuestionRow?.sourceQuestionId).toBeNull();
+    expect(attemptQuestionRow?.questionSnapshot).toEqual(snapshot);
   });
 
   it("archiving via bulk status is the same soft-delete as the single delete action: it is blocked by a published fixed test reference", async () => {

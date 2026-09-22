@@ -310,15 +310,16 @@ export default async function AttemptResultPage({
                   <em>{question.question.explanation}</em>
                 </p>
               )}
-            {question.question.disclosure === "REVEALED" && (
-              <CommentThread
-                locale={locale}
-                messages={messages}
-                questionId={question.sourceQuestionId}
-                currentUserId={user.id}
-                isAdmin={user.role === "ADMIN"}
-              />
-            )}
+            {question.question.disclosure === "REVEALED" &&
+              question.sourceQuestionId && (
+                <CommentThread
+                  locale={locale}
+                  messages={messages}
+                  questionId={question.sourceQuestionId}
+                  currentUserId={user.id}
+                  isAdmin={user.role === "ADMIN"}
+                />
+              )}
           </div>
         ))}
       </div>

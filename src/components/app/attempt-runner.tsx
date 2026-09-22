@@ -673,7 +673,7 @@ export function AttemptRunner({
               </div>
             )}
 
-          {revealed && (
+          {revealed && current.sourceQuestionId && (
             <CommentThread
               key={current.sourceQuestionId}
               locale={locale}

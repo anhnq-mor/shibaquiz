@@ -272,7 +272,7 @@ export function computeAttemptResult(
 
 export interface AttemptQuestionState {
   attemptQuestionId: string;
-  sourceQuestionId: string;
+  sourceQuestionId: string | null;
   displayOrder: number;
   topicId: string;
   topicName: string;
@@ -302,7 +302,7 @@ export interface AttemptTakingView {
 
 export interface AttemptResultQuestion {
   attemptQuestionId: string;
-  sourceQuestionId: string;
+  sourceQuestionId: string | null;
   displayOrder: number;
   topicId: string;
   selectedOptionIds: string[];

@@ -57,6 +57,13 @@
       "when": 1786524070672,
       "tag": "0007_breezy_viper",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790059446495,
+      "tag": "0008_clear_vivisector",
+      "breakpoints": true
     }
   ]
 }
