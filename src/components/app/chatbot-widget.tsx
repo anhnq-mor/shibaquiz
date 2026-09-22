@@ -6,6 +6,7 @@ import { Bot, Send, Settings, X } from "lucide-react";
 import { appApiRequest, AppApiRequestError } from "@/components/app/app-api";
 import {
   chatbotProviderDefaults,
+  chatbotProviderLabels,
   chatbotProviders,
   type ChatbotProvider,
 } from "@/domain/chatbot/chatbot";
@@ -210,7 +211,7 @@ export function ChatbotWidget({
                 >
                   {chatbotProviders.map((provider) => (
                     <option key={provider} value={provider}>
-                      {provider}
+                      {chatbotProviderLabels[provider]}
                     </option>
                   ))}
                 </select>

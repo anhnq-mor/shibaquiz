@@ -3,6 +3,9 @@ import { z } from "zod";
 export const chatbotProviders = [
   "openai",
   "anthropic",
+  "google",
+  "deepseek",
+  "meta",
   "openrouter",
   "groq",
 ] as const;
@@ -20,6 +23,18 @@ export const chatbotProviderDefaults: Record<
     baseUrl: "https://api.anthropic.com/v1",
     defaultModel: "claude-3-5-haiku-20241022",
   },
+  google: {
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
+    defaultModel: "gemini-2.0-flash",
+  },
+  deepseek: {
+    baseUrl: "https://api.deepseek.com/v1",
+    defaultModel: "deepseek-chat",
+  },
+  meta: {
+    baseUrl: "https://api.llama.com/compat/v1",
+    defaultModel: "Llama-3.3-70B-Instruct",
+  },
   openrouter: {
     baseUrl: "https://openrouter.ai/api/v1",
     defaultModel: "openai/gpt-4o-mini",
@@ -28,6 +43,16 @@ export const chatbotProviderDefaults: Record<
     baseUrl: "https://api.groq.com/openai/v1",
     defaultModel: "llama-3.3-70b-versatile",
   },
+};
+
+export const chatbotProviderLabels: Record<ChatbotProvider, string> = {
+  openai: "OpenAI",
+  anthropic: "Anthropic (Claude)",
+  google: "Google (Gemini)",
+  deepseek: "DeepSeek",
+  meta: "Meta (Llama API)",
+  openrouter: "OpenRouter",
+  groq: "Groq",
 };
 
 const messageSchema = z.object({
