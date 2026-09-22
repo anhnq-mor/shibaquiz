@@ -243,7 +243,7 @@ export function CommentThread({
                       </div>
                     </div>
                   ) : (
-                    <p>{comment.content}</p>
+                    <p className="comment-content">{comment.content}</p>
                   )}
 
                   <div className="admin-row-actions">

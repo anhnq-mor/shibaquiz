@@ -3174,6 +3174,12 @@ dialog.attempt-nav-dialog {
   gap: 0.4rem;
 }
 
+.comment-content {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
 .comment-meta {
   display: flex;
   flex-wrap: wrap;
