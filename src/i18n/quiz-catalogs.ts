@@ -182,6 +182,26 @@ export interface QuizCatalog {
     postError: string;
     rateLimited: string;
   };
+  chatbot: {
+    toggleLabel: string;
+    heading: string;
+    providerLabel: string;
+    apiKeyLabel: string;
+    apiKeyPlaceholder: string;
+    apiKeyHint: string;
+    modelLabel: string;
+    modelPlaceholder: string;
+    saveSettingsAction: string;
+    settingsSavedNotice: string;
+    settingsAction: string;
+    placeholder: string;
+    sendAction: string;
+    sending: string;
+    empty: string;
+    setupRequired: string;
+    sendError: string;
+    rateLimited: string;
+  };
 }
 
 const vi: QuizCatalog = {
@@ -248,9 +268,9 @@ const vi: QuizCatalog = {
     immediateCheckHint:
       "Nếu tắt, bạn chỉ xem được đáp án sau khi nộp toàn bộ bài.",
     examDurationLabel: "Thời gian làm bài (phút)",
-    examDurationHint:
-      "Đồng hồ đếm ngược sẽ tự động nộp bài khi hết thời gian.",
-    examDurationRequiredError: "Vui lòng nhập thời gian làm bài hợp lệ (1–600 phút).",
+    examDurationHint: "Đồng hồ đếm ngược sẽ tự động nộp bài khi hết thời gian.",
+    examDurationRequiredError:
+      "Vui lòng nhập thời gian làm bài hợp lệ (1–600 phút).",
   },
   attempt: {
     loadError: "Không thể tải bài làm. Vui lòng thử lại.",
@@ -369,6 +389,27 @@ const vi: QuizCatalog = {
     moderateReasonPrompt: "Lý do ẩn bình luận này:",
     postError: "Không thể gửi bình luận. Vui lòng thử lại.",
     rateLimited: "Bạn đang bình luận quá nhanh. Vui lòng thử lại sau.",
+  },
+  chatbot: {
+    toggleLabel: "Trợ lý AI",
+    heading: "Trợ lý AI",
+    providerLabel: "Nhà cung cấp",
+    apiKeyLabel: "API key",
+    apiKeyPlaceholder: "Dán API key của bạn…",
+    apiKeyHint:
+      "API key chỉ lưu trong trình duyệt của bạn, không được gửi tới máy chủ để lưu trữ.",
+    modelLabel: "Model (tùy chọn)",
+    modelPlaceholder: "Để trống để dùng model mặc định",
+    saveSettingsAction: "Lưu cài đặt",
+    settingsSavedNotice: "Đã lưu cài đặt trên trình duyệt này.",
+    settingsAction: "Cài đặt",
+    placeholder: "Nhập câu hỏi của bạn…",
+    sendAction: "Gửi",
+    sending: "Đang gửi…",
+    empty: "Hãy đặt câu hỏi để bắt đầu trò chuyện.",
+    setupRequired: "Vui lòng cấu hình nhà cung cấp và API key trước.",
+    sendError: "Không thể gửi tin nhắn. Vui lòng kiểm tra API key và thử lại.",
+    rateLimited: "Bạn đang gửi tin nhắn quá nhanh. Vui lòng thử lại sau.",
   },
 };
 
@@ -561,6 +602,27 @@ const en: QuizCatalog = {
     moderateReasonPrompt: "Reason for hiding this comment:",
     postError: "Couldn't post the comment. Please try again.",
     rateLimited: "You're commenting too fast. Please try again later.",
+  },
+  chatbot: {
+    toggleLabel: "AI assistant",
+    heading: "AI assistant",
+    providerLabel: "Provider",
+    apiKeyLabel: "API key",
+    apiKeyPlaceholder: "Paste your API key…",
+    apiKeyHint:
+      "The API key is stored only in your browser and is never saved on our servers.",
+    modelLabel: "Model (optional)",
+    modelPlaceholder: "Leave blank to use the default model",
+    saveSettingsAction: "Save settings",
+    settingsSavedNotice: "Settings saved in this browser.",
+    settingsAction: "Settings",
+    placeholder: "Ask a question…",
+    sendAction: "Send",
+    sending: "Sending…",
+    empty: "Ask a question to start the conversation.",
+    setupRequired: "Please configure a provider and API key first.",
+    sendError: "Couldn't send the message. Check your API key and try again.",
+    rateLimited: "You're sending messages too fast. Please try again later.",
   },
 };
 

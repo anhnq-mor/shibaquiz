@@ -12,6 +12,7 @@ import { DrizzleAdminContentRepository } from "@/server/repositories/drizzle-adm
 import { DrizzleAdminUserRepository } from "@/server/repositories/drizzle-admin-user-repository";
 import { DrizzleAttemptRepository } from "@/server/repositories/drizzle-attempt-repository";
 import { DrizzleAuditLogRepository } from "@/server/repositories/drizzle-audit-log-repository";
+import { DrizzleChatbotRepository } from "@/server/repositories/drizzle-chatbot-repository";
 import { DrizzleCommentRepository } from "@/server/repositories/drizzle-comment-repository";
 import { DrizzleContentTranslationRepository } from "@/server/repositories/drizzle-content-translation-repository";
 import { DrizzleDiscoveryRepository } from "@/server/repositories/drizzle-discovery-repository";
@@ -26,6 +27,7 @@ import { AdminContentService } from "@/server/services/admin-content-service";
 import { AdminUserService } from "@/server/services/admin-user-service";
 import { AttemptService } from "@/server/services/attempt-service";
 import { AuditLogService } from "@/server/services/audit-log-service";
+import { ChatbotService } from "@/server/services/chatbot-service";
 import { CommentService } from "@/server/services/comment-service";
 import { ContentTranslationService } from "@/server/services/content-translation-service";
 import { DiscoveryService } from "@/server/services/discovery-service";
@@ -45,6 +47,7 @@ const runtimeGlobal = globalThis as typeof globalThis & {
   shibaQuizMediaStorage?: MediaStorage;
   shibaQuizImportService?: ImportService;
   shibaQuizCommentService?: CommentService;
+  shibaQuizChatbotService?: ChatbotService;
   shibaQuizAdminUserService?: AdminUserService;
   shibaQuizAuditLogService?: AuditLogService;
 };
@@ -134,6 +137,14 @@ export function getCommentService(): CommentService {
     loadAuthConfig().AUTH_SECRET,
   );
   return runtimeGlobal.shibaQuizCommentService;
+}
+
+export function getChatbotService(): ChatbotService {
+  runtimeGlobal.shibaQuizChatbotService ??= new ChatbotService(
+    new DrizzleChatbotRepository(getDatabaseConnection().db),
+    loadAuthConfig().AUTH_SECRET,
+  );
+  return runtimeGlobal.shibaQuizChatbotService;
 }
 
 export function getMediaAccessService(): MediaAccessService {
