@@ -5,6 +5,7 @@ export interface AppApiError {
   code: string;
   message: string;
   fieldErrors?: Record<string, string[]>;
+  detail?: string;
   requestId: string;
 }
 

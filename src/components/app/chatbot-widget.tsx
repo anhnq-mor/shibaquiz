@@ -110,11 +110,16 @@ export function ChatbotWidget({
       setModelOptions(result.models);
     } catch (requestError) {
       setModelOptions(null);
-      if (
-        requestError instanceof AppApiRequestError &&
-        requestError.body?.code === "RATE_LIMITED"
-      ) {
-        setModelsError(t.rateLimited);
+      if (requestError instanceof AppApiRequestError) {
+        if (requestError.body?.code === "RATE_LIMITED") {
+          setModelsError(t.rateLimited);
+        } else {
+          setModelsError(
+            requestError.body?.detail
+              ? `${t.modelsLoadError} (${requestError.body.detail})`
+              : t.modelsLoadError,
+          );
+        }
       } else {
         setModelsError(t.modelsLoadError);
       }
@@ -153,11 +158,16 @@ export function ChatbotWidget({
       );
       setChat([...nextChat, { role: "assistant", content: result.content }]);
     } catch (requestError) {
-      if (
-        requestError instanceof AppApiRequestError &&
-        requestError.body?.code === "RATE_LIMITED"
-      ) {
-        setError(t.rateLimited);
+      if (requestError instanceof AppApiRequestError) {
+        if (requestError.body?.code === "RATE_LIMITED") {
+          setError(t.rateLimited);
+        } else {
+          setError(
+            requestError.body?.detail
+              ? `${t.sendError} (${requestError.body.detail})`
+              : t.sendError,
+          );
+        }
       } else {
         setError(t.sendError);
       }

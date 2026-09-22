@@ -15,6 +15,24 @@ const RATE_LIMIT_MAX_MODEL_LOOKUPS = 10;
 const REQUEST_TIMEOUT_MS = 30_000;
 const MODELS_REQUEST_TIMEOUT_MS = 15_000;
 
+async function extractErrorDetail(response: Response): Promise<string> {
+  try {
+    const data = (await response.clone().json()) as {
+      error?: { message?: string } | string;
+      message?: string;
+    };
+    const providerMessage =
+      typeof data.error === "string"
+        ? data.error
+        : (data.error?.message ?? data.message);
+    return providerMessage
+      ? `${response.status}: ${providerMessage}`
+      : `${response.status} ${response.statusText}`;
+  } catch {
+    return `${response.status} ${response.statusText}`;
+  }
+}
+
 async function callOpenAiCompatible(
   baseUrl: string,
   apiKey: string,
@@ -34,7 +52,8 @@ async function callOpenAiCompatible(
     throw new ChatbotError(
       "PROVIDER_ERROR",
       502,
-      `Provider responded with status ${response.status}`,
+      "Provider request failed",
+      await extractErrorDetail(response),
     );
   }
   const data = (await response.json()) as {
@@ -67,7 +86,8 @@ async function callAnthropic(
     throw new ChatbotError(
       "PROVIDER_ERROR",
       502,
-      `Provider responded with status ${response.status}`,
+      "Provider request failed",
+      await extractErrorDetail(response),
     );
   }
   const data = (await response.json()) as {
@@ -101,7 +121,8 @@ async function fetchModelIds(
     throw new ChatbotError(
       "PROVIDER_ERROR",
       502,
-      `Provider responded with status ${response.status}`,
+      "Provider request failed",
+      await extractErrorDetail(response),
     );
   }
   const data = (await response.json()) as { data?: { id?: string }[] };
@@ -160,6 +181,7 @@ export class ChatbotService {
         "PROVIDER_ERROR",
         502,
         "Failed to reach the provider",
+        error instanceof Error ? error.message : undefined,
       );
     }
   }
@@ -194,6 +216,7 @@ export class ChatbotService {
         "PROVIDER_ERROR",
         502,
         "Failed to reach the provider",
+        error instanceof Error ? error.message : undefined,
       );
     }
   }

@@ -88,6 +88,7 @@ export class ChatbotError extends Error {
       "AUTH_REQUIRED" | "RATE_LIMITED" | "PROVIDER_ERROR" | "BAD_REQUEST",
     public readonly status: number,
     message: string,
+    public readonly detail?: string,
   ) {
     super(message);
     this.name = "ChatbotError";

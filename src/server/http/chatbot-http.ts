@@ -31,6 +31,7 @@ export function chatbotErrorResponse(
         message:
           messages[locale][error.code as keyof (typeof messages)[Locale]] ??
           messages[locale].PROVIDER_ERROR,
+        detail: error.detail,
         requestId: randomUUID(),
       },
       { status: error.status },
