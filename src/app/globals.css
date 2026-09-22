@@ -902,8 +902,13 @@ button:focus-visible {
 
 .auth-submit:disabled,
 .button:disabled {
-  cursor: wait;
+  cursor: not-allowed;
   opacity: 0.65;
+}
+
+.auth-submit:disabled:has(.icon-spin),
+.button:disabled:has(.icon-spin) {
+  cursor: wait;
 }
 
 .button:disabled:hover {
@@ -3100,6 +3105,19 @@ dialog.attempt-nav-dialog {
 .comment-edit textarea {
   width: 100%;
   min-height: 4.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #aeb9b1;
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--ink-950);
+  font: inherit;
+  resize: vertical;
+}
+
+.comment-form textarea:focus,
+.comment-edit textarea:focus {
+  border-color: var(--focus);
+  outline: 3px solid rgb(18 95 212 / 20%);
 }
 
 .comment-list {
