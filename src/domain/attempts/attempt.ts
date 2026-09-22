@@ -354,6 +354,19 @@ export interface ExamProgressSummary {
   tests: Record<string, ModeProgress>;
 }
 
+export interface TopicExamHistoryItem {
+  attemptId: string;
+  status: AttemptStatus;
+  startedAt: string;
+  submittedAt: string | null;
+  scorePercent: number;
+  correctCount: number;
+  incorrectCount: number;
+  unansweredCount: number;
+  durationMinutesLimit: number | null;
+  durationSecondsTaken: number | null;
+}
+
 export interface AttemptRepository {
   startOrResumeAttempt(
     input: StartAttemptInput,
@@ -398,4 +411,8 @@ export interface AttemptRepository {
     userId: string,
     examId: string,
   ): Promise<ExamProgressSummary>;
+  getTopicExamHistory(
+    userId: string,
+    examId: string,
+  ): Promise<Record<string, TopicExamHistoryItem[]>>;
 }

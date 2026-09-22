@@ -71,4 +71,8 @@ export class AttemptService {
   getExamProgress(userId: string, examId: string) {
     return this.repository.getExamProgress(userId, examId);
   }
+
+  getTopicExamHistory(userId: string, examId: string) {
+    return this.repository.getTopicExamHistory(userId, examId);
+  }
 }

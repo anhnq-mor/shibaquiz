@@ -69,6 +69,7 @@ export interface AdminCatalog {
     bulkDeleteAction: string;
     bulkDeleteOnlyArchivedHint: string;
     bulkStatusConfirm: string;
+    bulkArchiveConfirm: string;
     bulkDeleteConfirm: string;
     bulkResultSummary: string;
   };
@@ -365,6 +366,8 @@ const vi: AdminCatalog = {
     bulkDeleteOnlyArchivedHint:
       "Chỉ xóa vĩnh viễn được các mục đã Đã lưu trữ.",
     bulkStatusConfirm: "Đổi trạng thái của {count} mục thành {status}?",
+    bulkArchiveConfirm:
+      "Lưu trữ (xóa mềm) {count} câu hỏi đã chọn? Sau khi lưu trữ, câu hỏi sẽ không thể chỉnh sửa được nữa.",
     bulkDeleteConfirm:
       "Xóa vĩnh viễn {count} mục đã lưu trữ? Hành động này không thể hoàn tác.",
     bulkResultSummary: "Thành công: {success}, thất bại: {failed}.",
@@ -684,6 +687,8 @@ const en: AdminCatalog = {
     bulkDeleteAction: "Delete permanently",
     bulkDeleteOnlyArchivedHint: "Only archived items can be permanently deleted.",
     bulkStatusConfirm: "Change the status of {count} item(s) to {status}?",
+    bulkArchiveConfirm:
+      "Archive (soft-delete) the selected {count} question(s)? Once archived, a question can no longer be edited.",
     bulkDeleteConfirm:
       "Permanently delete {count} archived item(s)? This cannot be undone.",
     bulkResultSummary: "Succeeded: {success}, failed: {failed}.",

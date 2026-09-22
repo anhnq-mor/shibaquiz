@@ -29,6 +29,7 @@ import {
   type SaveAnswerInput,
   type StartAttemptInput,
   type TopicBreakdown,
+  type TopicExamHistoryItem,
 } from "@/domain/attempts/attempt";
 import {
   toQuestionDto,
@@ -1292,5 +1293,61 @@ export class DrizzleAttemptRepository implements AttemptRepository {
     }
 
     return { topics, tests };
+  }
+
+  async getTopicExamHistory(
+    userId: string,
+    examId: string,
+  ): Promise<Record<string, TopicExamHistoryItem[]>> {
+    const rows = await this.database
+      .select({
+        id: attempts.id,
+        topicId: sql<string | null>`${attempts.generationConfigSnapshot}->>'topicId'`,
+        durationMinutesLimit: sql<string | null>`${attempts.generationConfigSnapshot}->>'durationMinutes'`,
+        status: attempts.status,
+        startedAt: attempts.startedAt,
+        submittedAt: attempts.submittedAt,
+        scorePercent: attempts.scorePercent,
+        correctCount: attempts.correctCount,
+        incorrectCount: attempts.incorrectCount,
+        unansweredCount: attempts.unansweredCount,
+      })
+      .from(attempts)
+      .where(
+        and(
+          eq(attempts.userId, userId),
+          eq(attempts.examId, examId),
+          eq(attempts.scope, "TOPIC"),
+          eq(attempts.mode, "EXAM_DEFERRED"),
+          inArray(attempts.status, ["SUBMITTED", "EXPIRED"]),
+        ),
+      )
+      .orderBy(desc(attempts.startedAt));
+
+    const result: Record<string, TopicExamHistoryItem[]> = {};
+    for (const row of rows) {
+      if (!row.topicId) continue;
+      const list = result[row.topicId] ?? [];
+      list.push({
+        attemptId: row.id,
+        status: row.status,
+        startedAt: row.startedAt.toISOString(),
+        submittedAt: row.submittedAt ? row.submittedAt.toISOString() : null,
+        scorePercent: Number(row.scorePercent ?? 0),
+        correctCount: row.correctCount ?? 0,
+        incorrectCount: row.incorrectCount ?? 0,
+        unansweredCount: row.unansweredCount ?? 0,
+        durationMinutesLimit: row.durationMinutesLimit
+          ? Number(row.durationMinutesLimit)
+          : null,
+        durationSecondsTaken: row.submittedAt
+          ? Math.round(
+              (row.submittedAt.getTime() - row.startedAt.getTime()) / 1000,
+            )
+          : null,
+      });
+      result[row.topicId] = list;
+    }
+    return result;
   }
 }

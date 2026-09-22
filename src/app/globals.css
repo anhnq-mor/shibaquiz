@@ -1860,7 +1860,7 @@ h1 {
 }
 
 .topic-card-button:hover {
-  border-color: var(--green-700);
+  background: var(--surface-soft);
 }
 
 .topic-card-button:focus-visible {
@@ -1871,6 +1871,53 @@ h1 {
 .topic-card-button.is-selected {
   border-color: var(--green-700);
   background: var(--green-100);
+}
+
+.topic-exam-history {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+}
+
+.topic-exam-history h4 {
+  margin: 0 0 0.3rem;
+  color: var(--ink-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.topic-exam-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.topic-exam-history-list li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink-700);
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.topic-exam-history-list li a:hover {
+  background: var(--surface-soft);
+}
+
+.topic-exam-history > a {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .admin-table tbody tr.is-selected > td {

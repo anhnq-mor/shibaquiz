@@ -814,6 +814,37 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
     }
   }
 
+  // Archiving a question IS soft-deleting it — there is only one path, used
+  // both by the single-row delete action and by bulk status changes to
+  // ARCHIVED. It always stamps deletedAt and is one-way: once archived, a
+  // question can no longer be edited or un-archived (see the `deletedAt`
+  // guard in saveQuestion/bulkSetQuestionStatus).
+  private async archiveQuestion(
+    tx: MutableExecutor,
+    id: string,
+    actorUserId: string,
+    now: Date,
+  ): Promise<void> {
+    await this.assertQuestionHasNoPublishedTestReferences(tx, id);
+    await tx
+      .update(questions)
+      .set({
+        status: "ARCHIVED",
+        deletedAt: now,
+        updatedBy: actorUserId,
+        updatedAt: now,
+      })
+      .where(eq(questions.id, id));
+    await tx.insert(auditLogs).values({
+      actorUserId,
+      action: "CONTENT_QUESTION_SOFT_DELETED",
+      entityType: "QUESTION",
+      entityId: id,
+      metadata: { status: "ARCHIVED" },
+      createdAt: now,
+    });
+  }
+
   async deleteQuestion(
     id: string,
     actorUserId: string,
@@ -834,27 +865,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         }
         if (question.deletedAt) return;
 
-        await this.assertQuestionHasNoPublishedTestReferences(
-          transaction,
-          id,
-        );
-        await transaction
-          .update(questions)
-          .set({
-            status: "ARCHIVED",
-            deletedAt: now,
-            updatedBy: actorUserId,
-            updatedAt: now,
-          })
-          .where(eq(questions.id, id));
-        await transaction.insert(auditLogs).values({
-          actorUserId,
-          action: "CONTENT_QUESTION_SOFT_DELETED",
-          entityType: "QUESTION",
-          entityId: id,
-          metadata: { status: "ARCHIVED" },
-          createdAt: now,
-        });
+        await this.archiveQuestion(transaction, id, actorUserId, now);
       });
     } catch (error) {
       console.error(
@@ -1209,6 +1220,13 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         );
       }
       if (existing.status === status) return;
+
+      if (status === "ARCHIVED") {
+        // Archiving is soft-deleting: same guard, same deletedAt stamp,
+        // same audit trail as the single-row delete action.
+        await this.archiveQuestion(tx, id, actorUserId, now);
+        return;
+      }
 
       if (status === "PUBLISHED") {
         const exam = (
@@ -1590,6 +1608,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         await tx
           .select({
             id: questions.id,
+            topicId: questions.topicId,
             status: questions.status,
             deletedAt: questions.deletedAt,
           })
@@ -1601,11 +1620,24 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
       if (!existing) {
         throw new AdminContentError("NOT_FOUND", 404, "Question not found");
       }
-      if (existing.status !== "ARCHIVED" || !existing.deletedAt) {
+      const topic = (
+        await tx
+          .select({ status: topics.status })
+          .from(topics)
+          .where(eq(topics.id, existing.topicId))
+          .limit(1)
+      )[0];
+      const belongsToPublishedTopic = topic?.status === "PUBLISHED";
+      const isSoftDeleted =
+        existing.status === "ARCHIVED" && Boolean(existing.deletedAt);
+      // A question under a topic that isn't published can't be reached by
+      // learners, so it may be hard-deleted directly. Under a published
+      // topic, require the guarded single soft-delete first.
+      if (belongsToPublishedTopic && !isSoftDeleted) {
         throw new AdminContentError(
           "CONFLICT",
           409,
-          "Only soft-deleted records can be permanently deleted",
+          "Only soft-deleted records, or questions outside a published topic, can be permanently deleted",
         );
       }
       try {
@@ -1615,7 +1647,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
           action: "CONTENT_QUESTION_HARD_DELETED",
           entityType: "QUESTION",
           entityId: id,
-          metadata: { status: "ARCHIVED", unlinkedTestCount },
+          metadata: { status: existing.status, unlinkedTestCount },
           createdAt: now,
         });
       } catch (error) {

@@ -35,6 +35,8 @@ export interface QuizCatalog {
     topicQuestionsCount: string;
     progressStudyLabel: string;
     progressPracticeLabel: string;
+    topicExamHistoryHeading: string;
+    topicExamHistoryViewAllAction: string;
     testDurationMinutes: string;
     testNoTimeLimit: string;
     testPassingScore: string;
@@ -218,6 +220,8 @@ const vi: QuizCatalog = {
     topicQuestionsCount: "{count} câu đã publish",
     progressStudyLabel: "Ôn tập",
     progressPracticeLabel: "Luyện tập",
+    topicExamHistoryHeading: "Lịch sử thi thật",
+    topicExamHistoryViewAllAction: "Xem tất cả",
     testDurationMinutes: "{minutes} phút",
     testNoTimeLimit: "Không giới hạn thời gian",
     testPassingScore: "Điểm đạt {percent}%",
@@ -404,6 +408,8 @@ const en: QuizCatalog = {
     topicQuestionsCount: "{count} published questions",
     progressStudyLabel: "Study",
     progressPracticeLabel: "Practice",
+    topicExamHistoryHeading: "Real exam history",
+    topicExamHistoryViewAllAction: "View all",
     testDurationMinutes: "{minutes} minutes",
     testNoTimeLimit: "No time limit",
     testPassingScore: "Passing score {percent}%",

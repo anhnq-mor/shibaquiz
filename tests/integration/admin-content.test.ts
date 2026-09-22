@@ -1222,7 +1222,7 @@ describe("bulk content hard delete", () => {
     ]);
   });
 
-  it("refuses to permanently delete a question that was only archived via bulk status, not truly soft-deleted", async () => {
+  it("archiving via bulk status is the same soft-delete as the single delete action: it is blocked by a published fixed test reference", async () => {
     const examId = await service.saveExam(
       {
         id: undefined,
@@ -1271,8 +1271,58 @@ describe("bulk content hard delete", () => {
       adminId,
     );
 
-    // Bulk status can archive a question without going through the guarded
-    // single soft-delete path, so it must not become hard-delete eligible.
+    // Archiving via bulk status now runs through the exact same guarded
+    // soft-delete path as the single delete action, so it is rejected too.
+    const statusResults = await service.bulkSetQuestionStatus(
+      [questionId],
+      "ARCHIVED",
+      adminId,
+    );
+    expect(statusResults).toMatchObject([
+      { id: questionId, ok: false, code: "CONFLICT" },
+    ]);
+
+    const workspace = await service.getWorkspace();
+    const question = workspace.questions.find((item) => item.id === questionId);
+    expect(question?.status).toBe("PUBLISHED");
+    expect(question?.deletedAt).toBeNull();
+    expect(workspace.tests.some((item) => item.id === testId)).toBe(true);
+  });
+
+  it("archiving via bulk status soft-deletes the question immediately, making it hard-delete eligible with no extra step", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-bulk-archived-ok",
+        slug: "hard-question-bulk-archived-ok",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          {
+            locale: "vi",
+            name: "Question bulk archived ok",
+            description: "Mô tả.",
+          },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-bulk-archived-ok-topic",
+        displayOrder: 0,
+        status: "PUBLISHED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+
     const statusResults = await service.bulkSetQuestionStatus(
       [questionId],
       "ARCHIVED",
@@ -1280,21 +1330,127 @@ describe("bulk content hard delete", () => {
     );
     expect(statusResults).toEqual([{ id: questionId, ok: true }]);
 
+    const archived = await service.getWorkspace();
+    const archivedQuestion = archived.questions.find(
+      (item) => item.id === questionId,
+    );
+    expect(archivedQuestion?.status).toBe("ARCHIVED");
+    expect(archivedQuestion?.deletedAt).not.toBeNull();
+
+    // No prior single soft-delete step needed — bulk-archiving already did it.
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toEqual([{ id: questionId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      false,
+    );
+  });
+
+  it("permanently deletes a question directly when its topic is not published, without requiring soft-delete first", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-unpublished-topic",
+        slug: "hard-question-unpublished-topic",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          {
+            locale: "vi",
+            name: "Question unpublished topic",
+            description: "Mô tả.",
+          },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-unpublished-topic-topic",
+        displayOrder: 0,
+        status: "DRAFT",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+
+    const results = await service.bulkDeleteQuestions([questionId], adminId);
+    expect(results).toEqual([{ id: questionId, ok: true }]);
+
+    const workspace = await service.getWorkspace();
+    expect(workspace.questions.some((item) => item.id === questionId)).toBe(
+      false,
+    );
+  });
+
+  it("still blocks hard-deleting a question outside a published topic if a published fixed test references it", async () => {
+    const examId = await service.saveExam(
+      {
+        id: undefined,
+        code: "hard-question-unpublished-topic-fixed-ref",
+        slug: "hard-question-unpublished-topic-fixed-ref",
+        primaryLocale: "vi",
+        status: "DRAFT",
+        translations: [
+          {
+            locale: "vi",
+            name: "Question unpublished topic fixed ref",
+            description: "Mô tả.",
+          },
+        ],
+      },
+      adminId,
+    );
+    const topicId = await service.saveTopic(
+      {
+        id: undefined,
+        examId,
+        slug: "hard-question-unpublished-topic-fixed-ref-topic",
+        displayOrder: 0,
+        status: "ARCHIVED",
+        translations: [{ locale: "vi", name: "Chủ đề", description: "Mô tả." }],
+      },
+      adminId,
+    );
+    const questionId = await service.saveQuestion(
+      questionInput({ examId, topicId }),
+      adminId,
+    );
+    await service.saveTest(
+      {
+        id: undefined,
+        examId,
+        type: "FIXED",
+        status: "PUBLISHED",
+        questionCount: 1,
+        durationMinutes: 30,
+        passingScorePercent: 70,
+        shuffleQuestions: false,
+        shuffleOptions: false,
+        translations: [
+          { locale: "vi", name: "Đề cố định", description: "Mô tả." },
+        ],
+        fixedQuestions: [{ questionId, displayOrder: 0 }],
+        dynamicRules: [],
+      },
+      adminId,
+    );
+
     const results = await service.bulkDeleteQuestions([questionId], adminId);
     expect(results).toMatchObject([
       { id: questionId, ok: false, code: "CONFLICT" },
     ]);
 
-    const remainingLinks = await database
-      .select()
-      .from(schema.testQuestions)
-      .where(eq(schema.testQuestions.questionId, questionId));
-    expect(remainingLinks).toHaveLength(1);
-
     const workspace = await service.getWorkspace();
     expect(workspace.questions.some((item) => item.id === questionId)).toBe(
       true,
     );
-    expect(workspace.tests.some((item) => item.id === testId)).toBe(true);
   });
 });

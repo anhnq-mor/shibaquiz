@@ -205,6 +205,22 @@ export function QuestionsEditor({
   const [bulkStatus, setBulkStatus] = useState<ContentStatus>("PUBLISHED");
   const [bulkPending, setBulkPending] = useState(false);
 
+  const selectedForBulk = filteredQuestions.filter((question) =>
+    bulk.selected.has(question.id),
+  );
+  // Mirrors the backend rule: a question under a topic that isn't published
+  // can't be reached by learners, so it's hard-delete eligible outright;
+  // under a published topic it must have gone through the guarded soft-delete.
+  const hardDeleteEligible =
+    selectedForBulk.length > 0 &&
+    selectedForBulk.every((question) => {
+      const belongsToPublishedTopic =
+        topicsById.get(question.topicId)?.status === "PUBLISHED";
+      const isSoftDeleted =
+        question.status === "ARCHIVED" && Boolean(question.deletedAt);
+      return !belongsToPublishedTopic || isSoftDeleted;
+    });
+
   function statusLabel(status: ContentStatus): string {
     return {
       DRAFT: messages.common.statusDraft,
@@ -226,13 +242,19 @@ export function QuestionsEditor({
   }
 
   async function applyBulkStatus() {
-    if (
-      !window.confirm(
-        messages.common.bulkStatusConfirm
-          .replace("{count}", String(bulk.count))
-          .replace("{status}", statusLabel(bulkStatus)),
-      )
-    ) {
+    // Archiving a question is soft-deleting it (it becomes uneditable), so
+    // warn with the same intent as the permanent-delete confirmation instead
+    // of the generic status-change prompt.
+    const confirmMessage =
+      bulkStatus === "ARCHIVED"
+        ? messages.common.bulkArchiveConfirm.replace(
+            "{count}",
+            String(bulk.count),
+          )
+        : messages.common.bulkStatusConfirm
+            .replace("{count}", String(bulk.count))
+            .replace("{status}", statusLabel(bulkStatus));
+    if (!window.confirm(confirmMessage)) {
       return;
     }
     setBulkPending(true);
@@ -644,7 +666,7 @@ export function QuestionsEditor({
         <BulkActionsToolbar
           messages={messages}
           count={bulk.count}
-          allArchived={bulk.allArchived}
+          allArchived={hardDeleteEligible}
           pending={bulkPending}
           status={bulkStatus}
           onStatusChange={setBulkStatus}
