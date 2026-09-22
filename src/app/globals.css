@@ -56,7 +56,7 @@ button:focus-visible {
 }
 
 .page-shell {
-  width: min(72rem, calc(100% - 2rem));
+  width: min(80rem, calc(100% - 2rem));
   margin-inline: auto;
 }
 
@@ -1040,13 +1040,12 @@ h1 {
 
 .button {
   display: inline-flex;
-  min-height: 3rem;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.65rem 1.15rem;
+  padding: 0.45rem 1.15rem;
   border: 1px solid var(--green-800);
-  border-radius: 999px;
+  border-radius: 10px;
   font-weight: 750;
   text-decoration: none;
   cursor: pointer;
@@ -1598,6 +1597,7 @@ h1 {
 .admin-content {
   flex: 1;
   min-width: 0;
+  padding: 1.5rem 1.25rem;
 }
 
 .admin-content .page-shell {
@@ -2145,12 +2145,14 @@ h1 {
   resize: vertical;
 }
 
-/* .admin-form input:focus,
+.admin-form input:focus,
 .admin-form select:focus,
-.admin-form textarea:focus {
+.admin-form textarea:focus,
+.admin-inline-fields input:focus,
+.admin-inline-fields select:focus {
   border-color: var(--focus);
   outline: 3px solid rgb(18 95 212 / 20%);
-} */
+}
 
 .admin-checkbox-field {
   display: flex !important;
@@ -2169,6 +2171,27 @@ h1 {
   display: grid;
   gap: 0.85rem;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.admin-inline-fields label {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-700);
+}
+
+.admin-inline-fields input,
+.admin-inline-fields select {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #aeb9b1;
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--ink-950);
+  font: inherit;
 }
 
 .admin-fieldset {
@@ -2543,8 +2566,9 @@ a:has(svg):not(.button) {
 .attempt-layout {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: 1fr 18rem;
+  grid-template-columns: 1fr 23rem;
   align-items: start;
+  margin-top: 1rem;
 }
 
 .attempt-topic-badge {
