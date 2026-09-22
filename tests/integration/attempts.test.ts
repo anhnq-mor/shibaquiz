@@ -1170,13 +1170,13 @@ describe("exam progress", () => {
   });
 });
 
-describe("topic real-exam history", () => {
-  it("returns nothing for a topic with no real-exam attempts yet", async () => {
-    const history = await service.getTopicExamHistory(p2, examId);
+describe("topic attempt history", () => {
+  it("returns nothing for a topic with no completed attempts yet", async () => {
+    const history = await service.getTopicAttemptHistory(p2, examId);
     expect(history[topicMath]).toBeUndefined();
   });
 
-  it("lists only SUBMITTED/EXPIRED TOPIC EXAM_DEFERRED attempts, newest first, grouped per topic", async () => {
+  it("lists completed TOPIC PRACTICE_IMMEDIATE and EXAM_DEFERRED attempts, newest first, grouped per topic", async () => {
     // Submitted timed real exam on topicMath (1/3 correct).
     const first = await service.startOrResumeAttempt(
       {
@@ -1271,18 +1271,52 @@ describe("topic real-exam history", () => {
       new Date("2026-08-13T11:02:00.000Z"),
     );
 
-    const history = await service.getTopicExamHistory(p2, examId);
+    // A practice-mode attempt on topicMath must also show up alongside the
+    // real-exam ones, started later so it sorts first.
+    const practiceAttempt = await service.startOrResumeAttempt(
+      { examId, scope: "TOPIC", mode: "PRACTICE_IMMEDIATE", topicId: topicMath },
+      p2,
+      "vi",
+      new Date("2026-08-13T12:00:00.000Z"),
+    );
+    const practiceView = await service.getAttemptForTaking(
+      practiceAttempt.attemptId,
+      p2,
+      new Date("2026-08-13T12:00:00.000Z"),
+    );
+    await service.saveAnswer(
+      practiceAttempt.attemptId,
+      practiceView.questions[0]!.attemptQuestionId,
+      p2,
+      { selectedOptionIds: [uid(20)] }, // q1 correct option (A)
+      new Date("2026-08-13T12:01:00.000Z"),
+    );
+    await service.submitAttempt(
+      practiceAttempt.attemptId,
+      p2,
+      new Date("2026-08-13T12:02:00.000Z"),
+    );
 
-    expect(history[topicMath]).toHaveLength(2);
-    const [newest, oldest] = history[topicMath]!;
+    const history = await service.getTopicAttemptHistory(p2, examId);
+
+    expect(history[topicMath]).toHaveLength(3);
+    const [newest, middle, oldest] = history[topicMath]!;
     expect(newest).toMatchObject({
+      attemptId: practiceAttempt.attemptId,
+      mode: "PRACTICE_IMMEDIATE",
+      status: "SUBMITTED",
+      durationMinutesLimit: null,
+    });
+    expect(middle).toMatchObject({
       attemptId: second.attemptId,
+      mode: "EXAM_DEFERRED",
       status: "EXPIRED",
       scorePercent: 0,
       durationMinutesLimit: 5,
     });
     expect(oldest).toMatchObject({
       attemptId: first.attemptId,
+      mode: "EXAM_DEFERRED",
       status: "SUBMITTED",
       scorePercent: 33.33,
       durationMinutesLimit: 10,
@@ -1292,6 +1326,7 @@ describe("topic real-exam history", () => {
     expect(history[topicScience]).toHaveLength(1);
     expect(history[topicScience]![0]).toMatchObject({
       attemptId: scienceAttempt.attemptId,
+      mode: "EXAM_DEFERRED",
       status: "SUBMITTED",
       scorePercent: 50,
     });

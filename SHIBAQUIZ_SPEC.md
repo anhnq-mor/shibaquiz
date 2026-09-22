@@ -190,7 +190,7 @@ Tiêu chí chấp nhận:
 - Review hiển thị đáp án user, đáp án đúng và explanation.
 - Attempt đã submit là bất biến đối với user.
 - **[Cập nhật]** Màn review dùng layout hai cột giống màn làm bài: chỉ hiển thị một câu tại một thời điểm bên trái, kèm nút Trước/Sau; bên phải là bảng điều hướng dạng lưới (tô màu đúng/sai/bỏ trống) cho phép nhảy thẳng tới câu bất kỳ, không cuộn tuần tự qua toàn bộ danh sách câu.
-- **[Cập nhật]** Với mỗi topic, trang bắt đầu làm bài của topic đó hiển thị lịch sử tối đa 10 lần "thi thật" (`TOPIC` + `EXAM_DEFERRED`) gần nhất đã hoàn tất, kèm liên kết xem toàn bộ lịch sử đã lọc sẵn.
+- **[Cập nhật]** Với mỗi topic, trang bắt đầu làm bài của topic đó hiển thị lịch sử tối đa 10 lần làm bài gần nhất đã hoàn tất thuộc phạm vi `TOPIC` (cả `PRACTICE_IMMEDIATE` và `EXAM_DEFERRED`, không gồm `STUDY`), mỗi dòng có ghi rõ chế độ, kèm liên kết xem toàn bộ lịch sử của kỳ thi đã lọc sẵn.
 
 ### FR-08 — Lịch sử
 

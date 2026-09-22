@@ -11,7 +11,7 @@ import {
 } from "@/components/app/start-attempt-form";
 import {
   attemptScopes,
-  type TopicExamHistoryItem,
+  type TopicAttemptHistoryItem,
 } from "@/domain/attempts/attempt";
 import { isLocale, type Locale } from "@/domain/common/locale";
 import { formatDateTime, formatPercent } from "@/i18n/format";
@@ -23,10 +23,10 @@ import {
 } from "@/server/content/runtime";
 import type { PublishedExamDetail } from "@/domain/discovery/discovery";
 
-const TOPIC_EXAM_HISTORY_PREVIEW_COUNT = 10;
+const TOPIC_ATTEMPT_HISTORY_PREVIEW_COUNT = 10;
 
-function topicExamHistoryStatusLabel(
-  status: TopicExamHistoryItem["status"],
+function topicAttemptHistoryStatusLabel(
+  status: TopicAttemptHistoryItem["status"],
   messages: QuizCatalog,
 ): string {
   return status === "EXPIRED"
@@ -34,23 +34,32 @@ function topicExamHistoryStatusLabel(
     : messages.common.statusSubmitted;
 }
 
-function TopicExamHistory({
+function topicAttemptHistoryModeLabel(
+  mode: TopicAttemptHistoryItem["mode"],
+  messages: QuizCatalog,
+): string {
+  return mode === "EXAM_DEFERRED"
+    ? messages.common.modeExamDeferred
+    : messages.common.modePracticeImmediate;
+}
+
+function TopicAttemptHistory({
   items,
   locale,
   messages,
   examId,
 }: {
-  items: TopicExamHistoryItem[];
+  items: TopicAttemptHistoryItem[];
   locale: Locale;
   messages: QuizCatalog;
   examId: string;
 }) {
   if (items.length === 0) return null;
-  const preview = items.slice(0, TOPIC_EXAM_HISTORY_PREVIEW_COUNT);
+  const preview = items.slice(0, TOPIC_ATTEMPT_HISTORY_PREVIEW_COUNT);
   return (
     <div className="admin-card">
       <div className="admin-card-header">
-        <h2>{messages.exams.topicExamHistoryHeading}</h2>
+        <h2>{messages.exams.topicAttemptHistoryHeading}</h2>
       </div>
       <ul className="topic-exam-history-list">
         {preview.map((item) => (
@@ -61,22 +70,21 @@ function TopicExamHistory({
               <span>
                 {formatDateTime(item.submittedAt ?? item.startedAt, locale)}
               </span>
+              <span>{topicAttemptHistoryModeLabel(item.mode, messages)}</span>
               <span className={`status-pill ${attemptStatusTone(item.status)}`}>
-                {topicExamHistoryStatusLabel(item.status, messages)}
+                {topicAttemptHistoryStatusLabel(item.status, messages)}
               </span>
               <span>{formatPercent(item.scorePercent / 100, locale)}</span>
             </Link>
           </li>
         ))}
       </ul>
-      {items.length > TOPIC_EXAM_HISTORY_PREVIEW_COUNT && (
+      {items.length > TOPIC_ATTEMPT_HISTORY_PREVIEW_COUNT && (
         <Link
-          href={
-            `/${locale}/history?examId=${examId}&mode=EXAM_DEFERRED` as Route
-          }
+          href={`/${locale}/history?examId=${examId}` as Route}
           className="button button-secondary"
         >
-          {messages.exams.topicExamHistoryViewAllAction}
+          {messages.exams.topicAttemptHistoryViewAllAction}
           <ChevronRight size={16} aria-hidden />
         </Link>
       )}
@@ -148,11 +156,12 @@ export default async function StartAttemptPage({
   const selection = resolveSelection(exam, messages, query);
   if (!selection) redirect(`/${locale}/exams/${slug}` as Route);
 
-  const topicExamHistory =
+  const topicAttemptHistory =
     selection.scope === "TOPIC" && selection.topicId
-      ? ((await getAttemptService().getTopicExamHistory(user.id, exam.id))[
-          selection.topicId
-        ] ?? [])
+      ? ((await getAttemptService().getTopicAttemptHistory(
+          user.id,
+          exam.id,
+        ))[selection.topicId] ?? [])
       : [];
 
   return (
@@ -172,8 +181,8 @@ export default async function StartAttemptPage({
           exam={exam}
           selection={selection}
         />
-        <TopicExamHistory
-          items={topicExamHistory}
+        <TopicAttemptHistory
+          items={topicAttemptHistory}
           locale={locale}
           messages={messages}
           examId={exam.id}

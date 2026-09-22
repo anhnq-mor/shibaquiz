@@ -28,8 +28,8 @@ import {
   type ModeProgress,
   type SaveAnswerInput,
   type StartAttemptInput,
+  type TopicAttemptHistoryItem,
   type TopicBreakdown,
-  type TopicExamHistoryItem,
 } from "@/domain/attempts/attempt";
 import {
   toQuestionDto,
@@ -1325,15 +1325,16 @@ export class DrizzleAttemptRepository implements AttemptRepository {
     return { topics, tests };
   }
 
-  async getTopicExamHistory(
+  async getTopicAttemptHistory(
     userId: string,
     examId: string,
-  ): Promise<Record<string, TopicExamHistoryItem[]>> {
+  ): Promise<Record<string, TopicAttemptHistoryItem[]>> {
     const rows = await this.database
       .select({
         id: attempts.id,
         topicId: sql<string | null>`${attempts.generationConfigSnapshot}->>'topicId'`,
         durationMinutesLimit: sql<string | null>`${attempts.generationConfigSnapshot}->>'durationMinutes'`,
+        mode: attempts.mode,
         status: attempts.status,
         startedAt: attempts.startedAt,
         submittedAt: attempts.submittedAt,
@@ -1348,18 +1349,19 @@ export class DrizzleAttemptRepository implements AttemptRepository {
           eq(attempts.userId, userId),
           eq(attempts.examId, examId),
           eq(attempts.scope, "TOPIC"),
-          eq(attempts.mode, "EXAM_DEFERRED"),
+          inArray(attempts.mode, ["PRACTICE_IMMEDIATE", "EXAM_DEFERRED"]),
           inArray(attempts.status, ["SUBMITTED", "EXPIRED"]),
         ),
       )
       .orderBy(desc(attempts.startedAt));
 
-    const result: Record<string, TopicExamHistoryItem[]> = {};
+    const result: Record<string, TopicAttemptHistoryItem[]> = {};
     for (const row of rows) {
       if (!row.topicId) continue;
       const list = result[row.topicId] ?? [];
       list.push({
         attemptId: row.id,
+        mode: row.mode,
         status: row.status,
         startedAt: row.startedAt.toISOString(),
         submittedAt: row.submittedAt ? row.submittedAt.toISOString() : null,
