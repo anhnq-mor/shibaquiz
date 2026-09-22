@@ -3062,18 +3062,6 @@ dialog.attempt-nav-dialog {
   font-size: clamp(2.5rem, 8vw, 3.5rem);
 }
 
-.review-question {
-  padding-top: 1.25rem;
-  margin-top: 1.25rem;
-  border-top: 1px solid var(--line);
-  scroll-margin-top: 6rem;
-}
-
-.review-question:first-child {
-  margin-top: 0;
-  padding-top: 0;
-}
-
 .result-review-layout {
   display: grid;
   gap: 1.5rem;
