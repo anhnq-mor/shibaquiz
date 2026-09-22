@@ -4,79 +4,17 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, BookOpen, Layers, Play } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
-import { attemptStatusTone } from "@/components/app/status-tone";
 import {
   historyFilterSchema,
   type ModeProgress,
-  type TopicExamHistoryItem,
 } from "@/domain/attempts/attempt";
-import { isLocale, type Locale } from "@/domain/common/locale";
-import { formatDateTime, formatPercent } from "@/i18n/format";
+import { isLocale } from "@/domain/common/locale";
 import { getQuizMessages, type QuizCatalog } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
 import {
   getAttemptService,
   getDiscoveryService,
 } from "@/server/content/runtime";
-
-const TOPIC_EXAM_HISTORY_PREVIEW_COUNT = 3;
-
-function topicExamHistoryStatusLabel(
-  status: TopicExamHistoryItem["status"],
-  messages: QuizCatalog,
-): string {
-  return status === "EXPIRED"
-    ? messages.common.statusExpired
-    : messages.common.statusSubmitted;
-}
-
-function TopicExamHistory({
-  items,
-  locale,
-  messages,
-  examId,
-}: {
-  items: TopicExamHistoryItem[];
-  locale: Locale;
-  messages: QuizCatalog;
-  examId: string;
-}) {
-  if (items.length === 0) return null;
-  const preview = items.slice(0, TOPIC_EXAM_HISTORY_PREVIEW_COUNT);
-  return (
-    <div className="topic-exam-history">
-      <h4>{messages.exams.topicExamHistoryHeading}</h4>
-      <ul className="topic-exam-history-list">
-        {preview.map((item) => (
-          <li key={item.attemptId}>
-            <Link
-              href={`/${locale}/attempts/${item.attemptId}/result` as Route}
-            >
-              <span>
-                {formatDateTime(item.submittedAt ?? item.startedAt, locale)}
-              </span>
-              <span
-                className={`status-pill ${attemptStatusTone(item.status)}`}
-              >
-                {topicExamHistoryStatusLabel(item.status, messages)}
-              </span>
-              <span>{formatPercent(item.scorePercent / 100, locale)}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {items.length > TOPIC_EXAM_HISTORY_PREVIEW_COUNT && (
-        <Link
-          href={
-            `/${locale}/history?examId=${examId}&mode=EXAM_DEFERRED` as Route
-          }
-        >
-          {messages.exams.topicExamHistoryViewAllAction}
-        </Link>
-      )}
-    </div>
-  );
-}
 
 export const dynamic = "force-dynamic";
 
@@ -135,14 +73,7 @@ export default async function ExamDetailPage({
     user.id,
     historyFilterSchema.parse({ examId: exam.id, status: "IN_PROGRESS" }),
   );
-  const progress = await getAttemptService().getExamProgress(
-    user.id,
-    exam.id,
-  );
-  const topicExamHistory = await getAttemptService().getTopicExamHistory(
-    user.id,
-    exam.id,
-  );
+  const progress = await getAttemptService().getExamProgress(user.id, exam.id);
   const noProgress: ModeProgress = { studyPercent: 0, practicePercent: 0 };
 
   const startBase = `/${locale}/exams/${slug}/start`;
@@ -186,35 +117,26 @@ export default async function ExamDetailPage({
             </div>
             <div className="topic-grid">
               {exam.topics.map((topic) => (
-                <div key={topic.id} className="topic-card">
-                  <Link
-                    href={
-                      `${startBase}?scope=TOPIC&topicId=${topic.id}` as Route
-                    }
-                    className="topic-card-button"
-                  >
-                    <strong className="topic-card-title">
-                      <BookOpen size={16} aria-hidden />
-                      {topic.name}
-                    </strong>
-                    <span>
-                      {messages.exams.topicQuestionsCount.replace(
-                        "{count}",
-                        String(topic.publishedQuestionCount),
-                      )}
-                    </span>
-                    <ProgressMiniBars
-                      progress={progress.topics[topic.id] ?? noProgress}
-                      messages={messages}
-                    />
-                  </Link>
-                  <TopicExamHistory
-                    items={topicExamHistory[topic.id] ?? []}
-                    locale={locale}
+                <Link
+                  key={topic.id}
+                  href={`${startBase}?scope=TOPIC&topicId=${topic.id}` as Route}
+                  className="topic-card topic-card-button"
+                >
+                  <strong className="topic-card-title">
+                    <BookOpen size={16} aria-hidden />
+                    {topic.name}
+                  </strong>
+                  <span>
+                    {messages.exams.topicQuestionsCount.replace(
+                      "{count}",
+                      String(topic.publishedQuestionCount),
+                    )}
+                  </span>
+                  <ProgressMiniBars
+                    progress={progress.topics[topic.id] ?? noProgress}
                     messages={messages}
-                    examId={exam.id}
                   />
-                </div>
+                </Link>
               ))}
               {exam.publishedQuestionCount > 0 && (
                 <Link

@@ -1,19 +1,88 @@
 import type { Route } from "next";
 import { RouteLink as Link } from "@/components/route-link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
+import { attemptStatusTone } from "@/components/app/status-tone";
 import {
   StartAttemptForm,
   type AttemptSelection,
 } from "@/components/app/start-attempt-form";
-import { attemptScopes } from "@/domain/attempts/attempt";
-import { isLocale } from "@/domain/common/locale";
+import {
+  attemptScopes,
+  type TopicExamHistoryItem,
+} from "@/domain/attempts/attempt";
+import { isLocale, type Locale } from "@/domain/common/locale";
+import { formatDateTime, formatPercent } from "@/i18n/format";
 import { getQuizMessages, type QuizCatalog } from "@/i18n/quiz-catalogs";
 import { getCurrentUser } from "@/server/auth/authorization";
-import { getDiscoveryService } from "@/server/content/runtime";
+import {
+  getAttemptService,
+  getDiscoveryService,
+} from "@/server/content/runtime";
 import type { PublishedExamDetail } from "@/domain/discovery/discovery";
+
+const TOPIC_EXAM_HISTORY_PREVIEW_COUNT = 10;
+
+function topicExamHistoryStatusLabel(
+  status: TopicExamHistoryItem["status"],
+  messages: QuizCatalog,
+): string {
+  return status === "EXPIRED"
+    ? messages.common.statusExpired
+    : messages.common.statusSubmitted;
+}
+
+function TopicExamHistory({
+  items,
+  locale,
+  messages,
+  examId,
+}: {
+  items: TopicExamHistoryItem[];
+  locale: Locale;
+  messages: QuizCatalog;
+  examId: string;
+}) {
+  if (items.length === 0) return null;
+  const preview = items.slice(0, TOPIC_EXAM_HISTORY_PREVIEW_COUNT);
+  return (
+    <div className="admin-card">
+      <div className="admin-card-header">
+        <h2>{messages.exams.topicExamHistoryHeading}</h2>
+      </div>
+      <ul className="topic-exam-history-list">
+        {preview.map((item) => (
+          <li key={item.attemptId}>
+            <Link
+              href={`/${locale}/attempts/${item.attemptId}/result` as Route}
+            >
+              <span>
+                {formatDateTime(item.submittedAt ?? item.startedAt, locale)}
+              </span>
+              <span className={`status-pill ${attemptStatusTone(item.status)}`}>
+                {topicExamHistoryStatusLabel(item.status, messages)}
+              </span>
+              <span>{formatPercent(item.scorePercent / 100, locale)}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {items.length > TOPIC_EXAM_HISTORY_PREVIEW_COUNT && (
+        <Link
+          href={
+            `/${locale}/history?examId=${examId}&mode=EXAM_DEFERRED` as Route
+          }
+          className="button button-secondary"
+        >
+          {messages.exams.topicExamHistoryViewAllAction}
+          <ChevronRight size={16} aria-hidden />
+        </Link>
+      )}
+    </div>
+  );
+}
 
 function resolveSelection(
   exam: PublishedExamDetail,
@@ -79,6 +148,13 @@ export default async function StartAttemptPage({
   const selection = resolveSelection(exam, messages, query);
   if (!selection) redirect(`/${locale}/exams/${slug}` as Route);
 
+  const topicExamHistory =
+    selection.scope === "TOPIC" && selection.topicId
+      ? ((await getAttemptService().getTopicExamHistory(user.id, exam.id))[
+          selection.topicId
+        ] ?? [])
+      : [];
+
   return (
     <AppShell locale={locale} user={user}>
       <div className="app-page-header">
@@ -95,6 +171,12 @@ export default async function StartAttemptPage({
           messages={messages}
           exam={exam}
           selection={selection}
+        />
+        <TopicExamHistory
+          items={topicExamHistory}
+          locale={locale}
+          messages={messages}
+          examId={exam.id}
         />
       </div>
     </AppShell>

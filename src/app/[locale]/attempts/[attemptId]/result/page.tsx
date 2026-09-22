@@ -5,6 +5,7 @@ import { History } from "lucide-react";
 
 import { AppShell } from "@/components/app/app-shell";
 import { CommentThread } from "@/components/app/comment-thread";
+import { isAnswerEmpty } from "@/domain/attempts/answer";
 import { isAttemptError } from "@/domain/attempts/attempt";
 import { isLocale } from "@/domain/common/locale";
 import { formatDateTime } from "@/i18n/format";
@@ -172,8 +173,50 @@ export default async function AttemptResultPage({
         <div className="admin-card-header">
           <h2>{messages.result.reviewHeading}</h2>
         </div>
+        <nav
+          className="attempt-nav-grid result-review-nav"
+          aria-label={messages.result.reviewHeading}
+        >
+          {result.questions.map((question, index) => {
+            const unanswered = isAnswerEmpty(question.answer);
+            const classes = [
+              "attempt-nav-item",
+              !unanswered ? "answered" : "",
+              !unanswered && question.isCorrect === false ? "incorrect" : "",
+            ]
+              .filter(Boolean)
+              .join(" ");
+            return (
+              <a
+                key={question.attemptQuestionId}
+                href={`#review-question-${index + 1}`}
+                className={classes}
+              >
+                {index + 1}
+              </a>
+            );
+          })}
+        </nav>
+        <div className="attempt-legend">
+          <span>
+            <span className="attempt-legend-dot answered" aria-hidden="true" />
+            {messages.result.correctCountLabel}
+          </span>
+          <span>
+            <span className="attempt-legend-dot incorrect" aria-hidden="true" />
+            {messages.result.incorrectCountLabel}
+          </span>
+          <span>
+            <span className="attempt-legend-dot" aria-hidden="true" />
+            {messages.result.unansweredCountLabel}
+          </span>
+        </div>
         {result.questions.map((question, index) => (
-          <div key={question.attemptQuestionId} className="review-question">
+          <div
+            key={question.attemptQuestionId}
+            id={`review-question-${index + 1}`}
+            className="review-question"
+          >
             <p>
               <strong>
                 {index + 1}. {question.question.content}

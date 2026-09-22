@@ -1873,26 +1873,11 @@ h1 {
   background: var(--green-100);
 }
 
-.topic-exam-history {
-  margin-top: 0.6rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--line);
-}
-
-.topic-exam-history h4 {
-  margin: 0 0 0.3rem;
-  color: var(--ink-700);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
 .topic-exam-history-list {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  margin: 0;
+  margin: 0 0 0.85rem;
   padding: 0;
   list-style: none;
 }
@@ -1902,22 +1887,17 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.3rem 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   color: var(--ink-700);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-decoration: none;
 }
 
 .topic-exam-history-list li a:hover {
+  border-color: var(--green-700);
   background: var(--surface-soft);
-}
-
-.topic-exam-history > a {
-  display: inline-block;
-  margin-top: 0.3rem;
-  font-size: 0.8rem;
-  font-weight: 700;
 }
 
 .admin-table tbody tr.is-selected > td {
@@ -2660,7 +2640,6 @@ a:has(svg):not(.button) {
     white-space: nowrap;
     justify-content: center;
   }
-
 }
 
 .attempt-question-panel {
@@ -3064,7 +3043,6 @@ dialog.attempt-nav-dialog {
 }
 
 .result-hero {
-  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1.5rem;
@@ -3083,11 +3061,21 @@ dialog.attempt-nav-dialog {
   padding-top: 1.25rem;
   margin-top: 1.25rem;
   border-top: 1px solid var(--line);
+  scroll-margin-top: 6rem;
 }
 
 .review-question:first-child {
   margin-top: 0;
   padding-top: 0;
+}
+
+.result-review-nav {
+  margin-top: 0.75rem;
+}
+
+.result-review-nav + .attempt-legend {
+  margin-top: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
 .comment-thread {
