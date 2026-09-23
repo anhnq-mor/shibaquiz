@@ -1,29 +1,24 @@
 import "server-only";
 
-import { cookies } from "next/headers";
-
+import { createSessionCookieAdapter } from "@shibaquiz/admin-platform/session-cookie";
 import { loadAuthConfig } from "@/server/config/env";
 
 export const SESSION_COOKIE_NAME = "shibaquiz_session";
 
-export async function readSessionCookie(): Promise<string | undefined> {
-  return (await cookies()).get(SESSION_COOKIE_NAME)?.value;
-}
+const adapter = createSessionCookieAdapter(SESSION_COOKIE_NAME);
+
+export const readSessionCookie = adapter.readSessionCookie;
 
 export async function writeSessionCookie(
   value: string,
   expires: Date,
 ): Promise<void> {
   const config = loadAuthConfig();
-  (await cookies()).set(SESSION_COOKIE_NAME, value, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: config.NODE_ENV === "production" || config.VERCEL === "1",
-    path: "/",
+  await adapter.writeSessionCookie(
+    value,
     expires,
-  });
+    config.NODE_ENV === "production" || config.VERCEL === "1",
+  );
 }
 
-export async function clearSessionCookie(): Promise<void> {
-  (await cookies()).delete(SESSION_COOKIE_NAME);
-}
+export const clearSessionCookie = adapter.clearSessionCookie;

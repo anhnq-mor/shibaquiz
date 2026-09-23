@@ -1,0 +1,32 @@
+{
+  "name": "@shibaquiz/admin-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "exports": {
+    "./schema": "./src/schema.ts",
+    "./db": "./src/db.ts",
+    "./crypto": "./src/crypto.ts",
+    "./password-hasher": "./src/password-hasher.ts",
+    "./session-cookie": "./src/session-cookie.ts",
+    "./env": "./src/env.ts",
+    "./http": "./src/http.ts",
+    "./domain/auth": "./src/domain/auth.ts",
+    "./domain/admin-users": "./src/domain/admin-users.ts",
+    "./domain/audit-log": "./src/domain/audit-log.ts",
+    "./repositories/auth": "./src/repositories/drizzle-auth-repository.ts",
+    "./repositories/admin-users": "./src/repositories/drizzle-admin-user-repository.ts",
+    "./repositories/audit-log": "./src/repositories/drizzle-audit-log-repository.ts",
+    "./services/auth": "./src/services/auth-service.ts",
+    "./services/admin-users": "./src/services/admin-user-service.ts",
+    "./services/audit-log": "./src/services/audit-log-service.ts",
+    "./email/auth-email-service": "./src/email/auth-email-service.ts"
+  },
+  "peerDependencies": {
+    "bcryptjs": "*",
+    "drizzle-orm": "*",
+    "next": "*",
+    "zod": "*"
+  }
+}

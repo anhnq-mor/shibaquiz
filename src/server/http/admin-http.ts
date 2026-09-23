@@ -5,6 +5,8 @@ import { isAdminContentError } from "@/domain/admin/content";
 import type { Locale } from "@/domain/common/locale";
 import { authErrorResponse } from "@/server/http/auth-http";
 
+export { localeFromQuery } from "@shibaquiz/admin-platform/http";
+
 const messages = {
   vi: {
     NOT_FOUND: "Không tìm thấy nội dung được yêu cầu.",
@@ -22,10 +24,6 @@ const messages = {
     PUBLISH_NOT_READY: "This content is not ready to publish.",
   },
 } as const;
-
-export function localeFromQuery(request: Request): string | null {
-  return new URL(request.url).searchParams.get("locale");
-}
 
 export function adminErrorResponse(
   error: unknown,

@@ -8,6 +8,9 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run db:setup:local && cross-env NODE_ENV=development STORAGE_DRIVER=pglite PGLITE_DATA_DIR=./data/pglite next dev --webpack",
     "dev:lan": "tsx scripts/dev-lan.ts",
@@ -33,6 +36,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1102.0",
+    "@shibaquiz/admin-platform": "*",
     "@aws-sdk/s3-request-presigner": "3.1102.0",
     "@electric-sql/pglite": "0.5.4",
     "bcryptjs": "3.0.3",
