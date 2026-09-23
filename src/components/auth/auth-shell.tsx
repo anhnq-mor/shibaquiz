@@ -1,6 +1,7 @@
-import type { Route } from "next";
-import { RouteLink as Link } from "@/components/route-link";
+import { RouteLink } from "@/components/route-link";
 import type { ReactNode } from "react";
+
+import { AuthShell as BaseAuthShell } from "@shibaquiz/admin-platform/components/auth-shell";
 
 import { BrandMark } from "@/components/brand-mark";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -24,27 +25,27 @@ export function AuthShell({
   token?: string | undefined;
 }) {
   return (
-    <main className="auth-page">
-      <LocaleSwitcher
-        className="auth-language"
-        locale={locale}
-        navigationLabel={messages.common.languageNavigation}
-        vietnameseLabel={messages.common.switchToVietnamese}
-        englishLabel={messages.common.switchToEnglish}
-        fallbackSearch={token ? `?token=${encodeURIComponent(token)}` : ""}
-      />
-      <section className="auth-card" aria-labelledby="auth-title">
-        <Link href={`/${locale}` as Route} className="auth-brand">
-          <BrandMark />
-          <span>ShibaQuiz</span>
-        </Link>
-        <h1 id="auth-title">{title}</h1>
-        <p className="auth-description">{description}</p>
-        {children}
-        <Link href={`/${locale}` as Route} className="auth-home-link">
-          {messages.common.home}
-        </Link>
-      </section>
-    </main>
+    <BaseAuthShell
+      locale={locale}
+      messages={messages}
+      title={title}
+      description={description}
+      brandHref={`/${locale}`}
+      brandLabel="ShibaQuiz"
+      brandIcon={<BrandMark />}
+      LinkComponent={RouteLink}
+      localeSwitcher={
+        <LocaleSwitcher
+          className="auth-language"
+          locale={locale}
+          navigationLabel={messages.common.languageNavigation}
+          vietnameseLabel={messages.common.switchToVietnamese}
+          englishLabel={messages.common.switchToEnglish}
+          fallbackSearch={token ? `?token=${encodeURIComponent(token)}` : ""}
+        />
+      }
+    >
+      {children}
+    </BaseAuthShell>
   );
 }

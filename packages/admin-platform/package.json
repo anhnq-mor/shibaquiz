@@ -21,12 +21,21 @@
     "./services/auth": "./src/services/auth-service.ts",
     "./services/admin-users": "./src/services/admin-user-service.ts",
     "./services/audit-log": "./src/services/audit-log-service.ts",
-    "./email/auth-email-service": "./src/email/auth-email-service.ts"
+    "./email/auth-email-service": "./src/email/auth-email-service.ts",
+    "./format": "./src/format.ts",
+    "./components/api-client": "./src/components/api-client.ts",
+    "./components/auth-form": "./src/components/auth-form.tsx",
+    "./components/auth-shell": "./src/components/auth-shell.tsx",
+    "./components/admin-shell": "./src/components/admin-shell.tsx",
+    "./components/users-manager": "./src/components/users-manager.tsx",
+    "./components/audit-log-viewer": "./src/components/audit-log-viewer.tsx"
   },
   "peerDependencies": {
     "bcryptjs": "*",
     "drizzle-orm": "*",
+    "lucide-react": "*",
     "next": "*",
+    "react": "*",
     "zod": "*"
   }
 }
