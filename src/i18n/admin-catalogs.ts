@@ -98,6 +98,7 @@ export interface AdminCatalog {
     listHeading: string;
     displayOrder: string;
     cloneHeading: string;
+    shuffleQuestions: string;
   };
   questions: {
     title: string;
@@ -404,6 +405,7 @@ const vi: AdminCatalog = {
     listHeading: "Danh sách chủ đề",
     displayOrder: "Thứ tự hiển thị",
     cloneHeading: "Nhân bản chủ đề",
+    shuffleQuestions: "Trộn thứ tự câu hỏi",
   },
   questions: {
     title: "Câu hỏi",
@@ -733,6 +735,7 @@ const en: AdminCatalog = {
     listHeading: "Topic list",
     displayOrder: "Display order",
     cloneHeading: "Clone topic",
+    shuffleQuestions: "Shuffle question order",
   },
   questions: {
     title: "Questions",

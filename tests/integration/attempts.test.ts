@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { isAttemptError } from "@/domain/attempts/attempt";
 import * as schema from "@/server/db/schema";
@@ -23,11 +23,15 @@ const examId = uid(5);
 const topicMath = uid(6);
 const topicScience = uid(7);
 const topicEmpty = uid(8);
+const topicShuffle = uid(9);
 const q1 = uid(10);
 const q2 = uid(11);
 const q3 = uid(12);
 const q4 = uid(13);
 const q5 = uid(14);
+const qs1 = uid(15);
+const qs2 = uid(16);
+const qs3 = uid(17);
 const fixedTestUntimed = uid(40);
 const fixedTestTimed = uid(41);
 const dynamicTestOk = uid(42);
@@ -181,6 +185,14 @@ beforeAll(async () => {
       displayOrder: 2,
       status: "PUBLISHED",
     },
+    {
+      id: topicShuffle,
+      examId,
+      slug: "shuffle",
+      displayOrder: 3,
+      status: "PUBLISHED",
+      shuffleQuestions: true,
+    },
   ]);
   await database.insert(schema.topicTranslations).values([
     { topicId: topicMath, locale: "vi", name: "Toán", description: "Mô tả." },
@@ -207,6 +219,18 @@ beforeAll(async () => {
       topicId: topicEmpty,
       locale: "en",
       name: "Empty",
+      description: "Description.",
+    },
+    {
+      topicId: topicShuffle,
+      locale: "vi",
+      name: "Trộn câu",
+      description: "Mô tả.",
+    },
+    {
+      topicId: topicShuffle,
+      locale: "en",
+      name: "Shuffle",
       description: "Description.",
     },
   ]);
@@ -240,6 +264,18 @@ beforeAll(async () => {
     { id: uid(37), label: "B", isCorrect: false },
     { id: uid(38), label: "C", isCorrect: false },
     { id: uid(39), label: "D", isCorrect: false },
+  ]);
+  await questionFixture(qs1, topicShuffle, "SINGLE_CHOICE", [
+    { id: uid(60), label: "A", isCorrect: true },
+    { id: uid(61), label: "B", isCorrect: false },
+  ]);
+  await questionFixture(qs2, topicShuffle, "SINGLE_CHOICE", [
+    { id: uid(62), label: "A", isCorrect: true },
+    { id: uid(63), label: "B", isCorrect: false },
+  ]);
+  await questionFixture(qs3, topicShuffle, "SINGLE_CHOICE", [
+    { id: uid(64), label: "A", isCorrect: true },
+    { id: uid(65), label: "B", isCorrect: false },
   ]);
 
   await database.insert(schema.quizTests).values([
@@ -417,6 +453,41 @@ describe("attempt generation and resume", () => {
         now,
       ),
     ).rejects.toMatchObject({ code: "INSUFFICIENT_QUESTIONS" });
+  });
+});
+
+describe("topic question order", () => {
+  it("keeps published questions in a stable ascending order by default", async () => {
+    const now = new Date("2026-08-06T08:20:00.000Z");
+    const { attemptId } = await service.startOrResumeAttempt(
+      { examId, scope: "TOPIC", mode: "STUDY", topicId: topicMath },
+      u2,
+      "vi",
+      now,
+    );
+    const view = await service.getAttemptForTaking(attemptId, u2, now);
+    expect(view.questions.map((q) => q.sourceQuestionId)).toEqual([q1, q2, q3]);
+  });
+
+  it("shuffles the question order when the topic has shuffling enabled", async () => {
+    const now = new Date("2026-08-06T08:25:00.000Z");
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
+    try {
+      const { attemptId } = await service.startOrResumeAttempt(
+        { examId, scope: "TOPIC", mode: "STUDY", topicId: topicShuffle },
+        u2,
+        "vi",
+        now,
+      );
+      const view = await service.getAttemptForTaking(attemptId, u2, now);
+      expect(view.questions.map((q) => q.sourceQuestionId)).toEqual([
+        qs2,
+        qs3,
+        qs1,
+      ]);
+    } finally {
+      randomSpy.mockRestore();
+    }
   });
 });
 
@@ -1047,7 +1118,12 @@ describe("exam progress", () => {
 
   it("rolls both PRACTICE_IMMEDIATE and EXAM_DEFERRED up into practicePercent, using the most recently active attempt", async () => {
     const { attemptId: immediateId } = await service.startOrResumeAttempt(
-      { examId, scope: "TOPIC", mode: "PRACTICE_IMMEDIATE", topicId: topicScience },
+      {
+        examId,
+        scope: "TOPIC",
+        mode: "PRACTICE_IMMEDIATE",
+        topicId: topicScience,
+      },
       p1,
       "vi",
       new Date("2026-08-12T09:00:00.000Z"),
@@ -1274,7 +1350,12 @@ describe("topic attempt history", () => {
     // A practice-mode attempt on topicMath must also show up alongside the
     // real-exam ones, started later so it sorts first.
     const practiceAttempt = await service.startOrResumeAttempt(
-      { examId, scope: "TOPIC", mode: "PRACTICE_IMMEDIATE", topicId: topicMath },
+      {
+        examId,
+        scope: "TOPIC",
+        mode: "PRACTICE_IMMEDIATE",
+        topicId: topicMath,
+      },
       p2,
       "vi",
       new Date("2026-08-13T12:00:00.000Z"),

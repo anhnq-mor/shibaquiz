@@ -66,6 +66,7 @@ export const saveTopicSchema = z.object({
   slug: trimmed(2, 100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   displayOrder: z.number().int().min(0).max(100_000),
   status: statusSchema,
+  shuffleQuestions: z.boolean().default(false),
   translations: namedTranslationsSchema,
 });
 
@@ -207,6 +208,7 @@ export interface AdminContentWorkspace {
     slug: string;
     displayOrder: number;
     status: ContentStatus;
+    shuffleQuestions: boolean;
     translations: SaveTopicInput["translations"];
   }>;
   questions: Array<{

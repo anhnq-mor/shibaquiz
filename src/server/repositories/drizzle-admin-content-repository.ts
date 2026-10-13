@@ -235,6 +235,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
         slug: topic.slug,
         displayOrder: topic.displayOrder,
         status: topic.status,
+        shuffleQuestions: topic.shuffleQuestions,
         translations: topicTranslationRows
           .filter((translation) => translation.topicId === topic.id)
           .map(({ locale, name, description }) => ({
@@ -728,6 +729,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
                   slug: input.slug,
                   displayOrder: input.displayOrder,
                   status: input.status,
+                  shuffleQuestions: input.shuffleQuestions,
                   createdAt: now,
                   updatedAt: now,
                 })
@@ -740,6 +742,7 @@ export class DrizzleAdminContentRepository implements AdminContentRepository {
               slug: input.slug,
               displayOrder: input.displayOrder,
               status: input.status,
+              shuffleQuestions: input.shuffleQuestions,
               updatedAt: now,
             })
             .where(eq(topics.id, id));

@@ -217,6 +217,7 @@ export const topics = pgTable(
     slug: text("slug").notNull(),
     displayOrder: integer("display_order").notNull(),
     status: contentStatusEnum("status").default("DRAFT").notNull(),
+    shuffleQuestions: boolean("shuffle_questions").default(false).notNull(),
     ...timestamps,
   },
   (table) => [

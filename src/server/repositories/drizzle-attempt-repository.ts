@@ -380,7 +380,10 @@ export class DrizzleAttemptRepository implements AttemptRepository {
       if (input.scope === "TOPIC") {
         const topic = (
           await transaction
-            .select({ id: topics.id })
+            .select({
+              id: topics.id,
+              shuffleQuestions: topics.shuffleQuestions,
+            })
             .from(topics)
             .where(
               and(
@@ -405,7 +408,8 @@ export class DrizzleAttemptRepository implements AttemptRepository {
             ),
           )
           .orderBy(asc(questions.id));
-        questionIds = rows.map((row) => row.id);
+        const orderedIds = rows.map((row) => row.id);
+        questionIds = topic.shuffleQuestions ? shuffle(orderedIds) : orderedIds;
         durationMinutes = input.durationMinutes ?? null;
         generationConfigSnapshot = {
           topicId: input.topicId,
@@ -1245,7 +1249,9 @@ export class DrizzleAttemptRepository implements AttemptRepository {
         mode: attempts.mode,
         status: attempts.status,
         testId: attempts.testId,
-        topicId: sql<string | null>`${attempts.generationConfigSnapshot}->>'topicId'`,
+        topicId: sql<
+          string | null
+        >`${attempts.generationConfigSnapshot}->>'topicId'`,
         startedAt: attempts.startedAt,
         lastActivityAt: attempts.lastActivityAt,
       })
@@ -1302,7 +1308,10 @@ export class DrizzleAttemptRepository implements AttemptRepository {
     const tests: Record<string, ModeProgress> = {};
 
     for (const [key, winner] of winners) {
-      const [targetType, targetId] = key.split(":") as ["topic" | "test", string];
+      const [targetType, targetId] = key.split(":") as [
+        "topic" | "test",
+        string,
+      ];
       const counts = countsByAttempt.get(winner.id);
       const percent =
         winner.status === "SUBMITTED"
@@ -1332,8 +1341,12 @@ export class DrizzleAttemptRepository implements AttemptRepository {
     const rows = await this.database
       .select({
         id: attempts.id,
-        topicId: sql<string | null>`${attempts.generationConfigSnapshot}->>'topicId'`,
-        durationMinutesLimit: sql<string | null>`${attempts.generationConfigSnapshot}->>'durationMinutes'`,
+        topicId: sql<
+          string | null
+        >`${attempts.generationConfigSnapshot}->>'topicId'`,
+        durationMinutesLimit: sql<
+          string | null
+        >`${attempts.generationConfigSnapshot}->>'durationMinutes'`,
         mode: attempts.mode,
         status: attempts.status,
         startedAt: attempts.startedAt,

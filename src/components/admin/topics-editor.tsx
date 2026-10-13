@@ -29,6 +29,7 @@ interface TopicForm {
   slug: string;
   displayOrder: string;
   status: ContentStatus;
+  shuffleQuestions: boolean;
   viName: string;
   viDescription: string;
   includeEnglish: boolean;
@@ -44,6 +45,7 @@ function formFromTopic(topic: Topic | null, defaultExamId: string): TopicForm {
     slug: topic?.slug ?? "",
     displayOrder: String(topic?.displayOrder ?? 0),
     status: topic?.status ?? "DRAFT",
+    shuffleQuestions: topic?.shuffleQuestions ?? false,
     viName: vi?.name ?? "",
     viDescription: vi?.description ?? "",
     includeEnglish: Boolean(en),
@@ -231,6 +233,7 @@ export function TopicsEditor({
           slug: form.slug,
           displayOrder: Number(form.displayOrder),
           status: form.status,
+          shuffleQuestions: form.shuffleQuestions,
           translations,
         },
       });
@@ -453,6 +456,19 @@ export function TopicsEditor({
                   {messages.common.statusArchived}
                 </option>
               </select>
+            </label>
+          </div>
+
+          <div className="admin-inline-fields">
+            <label className="admin-checkbox-field">
+              <span>{messages.topics.shuffleQuestions}</span>
+              <input
+                type="checkbox"
+                checked={form.shuffleQuestions}
+                onChange={(event) =>
+                  setForm({ ...form, shuffleQuestions: event.target.checked })
+                }
+              />
             </label>
           </div>
 
