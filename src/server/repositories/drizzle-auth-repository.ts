@@ -308,6 +308,31 @@ export class DrizzleAuthRepository implements AuthRepository {
     });
   }
 
+  async adminSetPassword(
+    input: Parameters<AuthRepository["adminSetPassword"]>[0],
+  ): Promise<void> {
+    await this.database.transaction(async (transaction) => {
+      await transaction
+        .update(users)
+        .set({ passwordHash: input.passwordHash, updatedAt: input.now })
+        .where(eq(users.id, input.userId));
+      await transaction
+        .update(sessions)
+        .set({ revokedAt: input.now, updatedAt: input.now })
+        .where(
+          and(eq(sessions.userId, input.userId), isNull(sessions.revokedAt)),
+        );
+      await transaction.insert(auditLogs).values({
+        actorUserId: input.actorUserId,
+        action: "ADMIN_USER_PASSWORD_SET",
+        entityType: "User",
+        entityId: input.userId,
+        metadata: {},
+        createdAt: input.now,
+      });
+    });
+  }
+
   async updatePreferredLocale(
     input: Parameters<AuthRepository["updatePreferredLocale"]>[0],
   ): Promise<void> {

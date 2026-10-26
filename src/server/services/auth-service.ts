@@ -6,6 +6,7 @@ import type {
 import { AuthError } from "@/domain/auth/auth";
 import type { Locale } from "@/domain/common/locale";
 import {
+  generateTemporaryPassword,
   createOpaqueToken,
   hashOpaqueToken,
   hashRateLimitKey,
@@ -246,6 +247,18 @@ export class AuthService {
       passwordHash: await this.passwordHasher.hash(input.newPassword),
       now: this.now(),
     });
+  }
+
+  /** Returns the plaintext once; only its hash is ever stored. */
+  async adminSetPassword(userId: string, actorUserId: string): Promise<string> {
+    const password = generateTemporaryPassword();
+    await this.repository.adminSetPassword({
+      userId,
+      passwordHash: await this.passwordHasher.hash(password),
+      actorUserId,
+      now: this.now(),
+    });
+    return password;
   }
 
   currentUser(

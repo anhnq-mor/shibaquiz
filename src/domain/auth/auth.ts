@@ -69,6 +69,12 @@ export interface AuthRepository {
     passwordHash: string;
     now: Date;
   }): Promise<void>;
+  adminSetPassword(input: {
+    userId: string;
+    passwordHash: string;
+    actorUserId: string;
+    now: Date;
+  }): Promise<void>;
   updatePreferredLocale(input: {
     userId: string;
     locale: Locale;

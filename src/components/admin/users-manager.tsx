@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ChevronDown,
   Filter,
+  Copy,
   KeyRound,
   Lock,
+  RefreshCw,
   ShieldMinus,
   ShieldPlus,
   Unlock,
 } from "lucide-react";
 
+import { AdminDialog } from "@/components/admin/admin-dialog";
 import {
   adminApiRequest,
   AdminApiRequestError,
@@ -40,6 +43,12 @@ export function UsersManager({
   const [filterRole, setFilterRole] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const passwordDialogRef = useRef<HTMLDialogElement>(null);
+  const [generated, setGenerated] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState<{
     kind: "error" | "success";
     text: string;
@@ -110,8 +119,87 @@ export function UsersManager({
     }
   }
 
+  async function generatePassword(user: AdminUserSummary) {
+    if (!window.confirm(messages.users.confirmGeneratePassword)) return;
+    setMessage(null);
+    setPendingUserId(user.id);
+    try {
+      const result = await adminApiRequest<{ temporaryPassword: string }>(
+        `/api/admin/users/${user.id}/generate-password`,
+        locale,
+      );
+      setGenerated({ email: user.email, password: result.temporaryPassword });
+      setCopied(false);
+      passwordDialogRef.current?.showModal();
+    } catch (error) {
+      setMessage({
+        kind: "error",
+        text:
+          error instanceof AdminApiRequestError
+            ? (error.body?.message ?? messages.users.actionFailed)
+            : messages.common.connectionError,
+      });
+    } finally {
+      setPendingUserId(null);
+    }
+  }
+
+  async function copyGeneratedPassword() {
+    if (!generated) return;
+    try {
+      await navigator.clipboard.writeText(generated.password);
+      setCopied(true);
+    } catch {
+      // Clipboard unavailable; the password stays selectable in the field.
+    }
+  }
+
   return (
     <div className="admin-layout">
+      <AdminDialog
+        dialogRef={passwordDialogRef}
+        titleId="generated-password-title"
+      >
+        <h2 id="generated-password-title">
+          {messages.users.generatedPasswordTitle}
+        </h2>
+        <p>
+          {messages.users.generatedPasswordNotice.replace(
+            "{email}",
+            generated?.email ?? "",
+          )}
+        </p>
+        <div className="admin-inline-fields">
+          <input
+            readOnly
+            value={generated?.password ?? ""}
+            aria-label={messages.users.generatedPasswordTitle}
+            onFocus={(event) => event.currentTarget.select()}
+          />
+          <button
+            type="button"
+            className="button button-primary"
+            onClick={() => void copyGeneratedPassword()}
+          >
+            <Copy size={16} aria-hidden />
+            {copied
+              ? messages.users.passwordCopied
+              : messages.users.copyPasswordAction}
+          </button>
+        </div>
+        <div className="admin-form-actions">
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => {
+              passwordDialogRef.current?.close();
+              setGenerated(null);
+            }}
+          >
+            {messages.users.closeAction}
+          </button>
+        </div>
+      </AdminDialog>
       <div className="admin-card">
         <div className="admin-card-header">
           <h2>{messages.users.title}</h2>
@@ -321,6 +409,15 @@ export function UsersManager({
                         >
                           <KeyRound size={16} aria-hidden />
                           {messages.users.resetPasswordAction}
+                        </button>
+                        <button
+                          type="button"
+                          className="button button-secondary"
+                          disabled={busy}
+                          onClick={() => void generatePassword(user)}
+                        >
+                          <RefreshCw size={16} aria-hidden />
+                          {messages.users.generatePasswordAction}
                         </button>
                       </div>
                     </td>

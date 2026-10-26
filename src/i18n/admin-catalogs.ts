@@ -281,6 +281,13 @@ export interface AdminCatalog {
     demoteAction: string;
     resetPasswordAction: string;
     resetPasswordSent: string;
+    generatePasswordAction: string;
+    confirmGeneratePassword: string;
+    generatedPasswordTitle: string;
+    generatedPasswordNotice: string;
+    copyPasswordAction: string;
+    passwordCopied: string;
+    closeAction: string;
     confirmLock: string;
     confirmUnlock: string;
     confirmPromote: string;
@@ -606,6 +613,15 @@ const vi: AdminCatalog = {
     demoteAction: "Hạ quyền",
     resetPasswordAction: "Gửi email đặt lại mật khẩu",
     resetPasswordSent: "Đã gửi email đặt lại mật khẩu (nếu tài khoản tồn tại).",
+    generatePasswordAction: "Tạo mật khẩu mới",
+    confirmGeneratePassword:
+      "Tạo mật khẩu mới cho người dùng này? Mật khẩu cũ sẽ không dùng được nữa và mọi phiên đăng nhập của họ sẽ bị đăng xuất.",
+    generatedPasswordTitle: "Mật khẩu mới",
+    generatedPasswordNotice:
+      "Chỉ hiển thị một lần. Hãy sao chép và gửi cho {email}; đóng hộp thoại này sẽ không xem lại được.",
+    copyPasswordAction: "Sao chép",
+    passwordCopied: "Đã sao chép",
+    closeAction: "Đóng",
     confirmLock: "Khóa tài khoản này? Mọi phiên đăng nhập sẽ bị thu hồi.",
     confirmUnlock: "Mở khóa tài khoản này?",
     confirmPromote: "Cấp quyền quản trị viên cho người dùng này?",
@@ -936,6 +952,15 @@ const en: AdminCatalog = {
     demoteAction: "Revoke admin",
     resetPasswordAction: "Send password reset email",
     resetPasswordSent: "Password reset email sent (if the account exists).",
+    generatePasswordAction: "Generate new password",
+    confirmGeneratePassword:
+      "Generate a new password for this user? The old password stops working and all their sessions are signed out.",
+    generatedPasswordTitle: "New password",
+    generatedPasswordNotice:
+      "Shown only once. Copy it and send it to {email}; it cannot be viewed again after closing this dialog.",
+    copyPasswordAction: "Copy",
+    passwordCopied: "Copied",
+    closeAction: "Close",
     confirmLock: "Lock this account? All active sessions will be revoked.",
     confirmUnlock: "Unlock this account?",
     confirmPromote: "Grant this user admin access?",

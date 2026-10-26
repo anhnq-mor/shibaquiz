@@ -292,6 +292,42 @@ describe("secure account vertical slice", () => {
     expect(await service.currentUser(other.sessionToken)).toBeNull();
   });
 
+  it("lets an admin set a generated password and signs the user out everywhere", async () => {
+    await optionalVerificationService.register({
+      displayName: "Reset Target",
+      email: "reset-target@example.com",
+      password: "Banđầu12345",
+      locale: "vi",
+    });
+    const session = await optionalVerificationService.login({
+      email: "reset-target@example.com",
+      password: "Banđầu12345",
+    });
+    const password = await service.adminSetPassword(
+      session.user.id,
+      session.user.id,
+    );
+
+    expect(password).toMatch(/^[A-Za-z0-9]{14}$/);
+    expect(password).toMatch(/[A-Za-z]/);
+    expect(password).toMatch(/[0-9]/);
+    expect(
+      await optionalVerificationService.currentUser(session.sessionToken),
+    ).toBeNull();
+    await expect(
+      optionalVerificationService.login({
+        email: "reset-target@example.com",
+        password: "Banđầu12345",
+      }),
+    ).rejects.toMatchObject({ code: "INVALID_CREDENTIALS" });
+    expect(
+      await optionalVerificationService.login({
+        email: "reset-target@example.com",
+        password,
+      }),
+    ).toMatchObject({ user: { id: session.user.id } });
+  });
+
   it("enforces a database-backed request limit", async () => {
     for (let attempt = 0; attempt < 5; attempt += 1) {
       await service.requestPasswordReset({
