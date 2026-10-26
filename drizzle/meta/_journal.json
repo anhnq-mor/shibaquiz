@@ -71,6 +71,13 @@
       "when": 1791875591467,
       "tag": "0009_topic_shuffle_questions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792988970547,
+      "tag": "0010_app_settings",
+      "breakpoints": true
     }
   ]
 }

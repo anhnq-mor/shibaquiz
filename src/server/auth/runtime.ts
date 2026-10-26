@@ -21,6 +21,7 @@ export function getAuthService(): AuthService {
       secret: config.AUTH_SECRET,
       sessionDays: config.AUTH_SESSION_DAYS,
       requireEmailVerification: config.REQUIRE_EMAIL_VERIFICATION,
+      emailDeliveryEnabled: config.EMAIL_PROVIDER !== "disabled",
     },
   );
   return runtimeGlobal.shibaQuizAuthService;

@@ -805,3 +805,12 @@ export const rateLimits = pgTable(
     check("rate_limits_attempt_count_positive", sql`${table.attemptCount} > 0`),
   ],
 );
+
+export const appSettings = pgTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedBy: uuid("updated_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  ...timestamps,
+});

@@ -288,6 +288,12 @@ export interface AdminCatalog {
     copyPasswordAction: string;
     passwordCopied: string;
     closeAction: string;
+    emailVerificationHeading: string;
+    emailVerificationHint: string;
+    emailVerificationLabel: string;
+    emailVerificationSaved: string;
+    emailVerificationDeliveryDisabled: string;
+    emailVerificationConsoleWarning: string;
     confirmLock: string;
     confirmUnlock: string;
     confirmPromote: string;
@@ -622,6 +628,15 @@ const vi: AdminCatalog = {
     copyPasswordAction: "Sao chép",
     passwordCopied: "Đã sao chép",
     closeAction: "Đóng",
+    emailVerificationHeading: "Xác minh email",
+    emailVerificationHint:
+      "Khi bật, tài khoản đăng ký mới phải bấm liên kết trong email mới đăng nhập được, và tài khoản chưa xác minh sẽ bị chặn đăng nhập. Tài khoản đã đăng ký lúc đang tắt được miễn xác minh.",
+    emailVerificationLabel: "Yêu cầu xác minh email",
+    emailVerificationSaved: "Đã lưu cài đặt.",
+    emailVerificationDeliveryDisabled:
+      "Máy chủ đang tắt gửi email (EMAIL_PROVIDER=disabled) nên không thể bật xác minh.",
+    emailVerificationConsoleWarning:
+      "Máy chủ đang dùng EMAIL_PROVIDER=console: email thật sẽ không được gửi, người dùng mới sẽ không xác minh được.",
     confirmLock: "Khóa tài khoản này? Mọi phiên đăng nhập sẽ bị thu hồi.",
     confirmUnlock: "Mở khóa tài khoản này?",
     confirmPromote: "Cấp quyền quản trị viên cho người dùng này?",
@@ -961,6 +976,15 @@ const en: AdminCatalog = {
     copyPasswordAction: "Copy",
     passwordCopied: "Copied",
     closeAction: "Close",
+    emailVerificationHeading: "Email verification",
+    emailVerificationHint:
+      "When on, new accounts must click the emailed link before signing in, and unverified accounts are blocked from signing in. Accounts registered while it was off stay exempt.",
+    emailVerificationLabel: "Require email verification",
+    emailVerificationSaved: "Setting saved.",
+    emailVerificationDeliveryDisabled:
+      "The server has email delivery disabled (EMAIL_PROVIDER=disabled), so verification cannot be turned on.",
+    emailVerificationConsoleWarning:
+      "The server uses EMAIL_PROVIDER=console: real emails are not sent, so new users cannot verify.",
     confirmLock: "Lock this account? All active sessions will be revoked.",
     confirmUnlock: "Unlock this account?",
     confirmPromote: "Grant this user admin access?",

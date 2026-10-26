@@ -75,3 +75,5 @@ export interface AdminUserRepository {
     now: Date,
   ): Promise<void>;
 }
+
+export const setEmailVerificationSchema = z.object({ required: z.boolean() });

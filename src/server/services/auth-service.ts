@@ -22,8 +22,13 @@ const MINUTE = 60 * 1_000;
 export interface AuthServiceConfig {
   secret: string;
   sessionDays: number;
+  /** Default used until an admin saves an override in app settings. */
   requireEmailVerification: boolean;
+  /** When false (EMAIL_PROVIDER=disabled) verification can never be required. */
+  emailDeliveryEnabled?: boolean;
 }
+
+export const REQUIRE_EMAIL_VERIFICATION_SETTING = "require_email_verification";
 
 export class AuthService {
   constructor(
@@ -43,17 +48,14 @@ export class AuthService {
   }): Promise<void> {
     await this.enforceRateLimit("register", input.email, 5, HOUR);
     const now = this.now();
-    const rawToken = this.config.requireEmailVerification
-      ? this.token()
-      : undefined;
+    const verificationRequired = await this.isEmailVerificationRequired();
+    const rawToken = verificationRequired ? this.token() : undefined;
     const result = await this.repository.createUser({
       displayName: input.displayName,
       email: input.email,
       passwordHash: await this.passwordHasher.hash(input.password),
       preferredLocale: input.locale,
-      emailVerificationExemptedAt: this.config.requireEmailVerification
-        ? null
-        : now,
+      emailVerificationExemptedAt: verificationRequired ? null : now,
       ...(rawToken
         ? {
             verificationToken: {
@@ -90,7 +92,7 @@ export class AuthService {
     locale: Locale;
   }): Promise<void> {
     await this.enforceRateLimit("verify-resend", input.email, 3, HOUR);
-    if (!this.config.requireEmailVerification) return;
+    if (!(await this.isEmailVerificationRequired())) return;
     const user = await this.repository.findCredentialsByEmail(input.email);
     if (
       !user ||
@@ -149,7 +151,7 @@ export class AuthService {
       );
     }
     if (
-      this.config.requireEmailVerification &&
+      (await this.isEmailVerificationRequired()) &&
       !user.emailVerifiedAt &&
       !user.emailVerificationExemptedAt
     ) {
@@ -261,14 +263,43 @@ export class AuthService {
     return password;
   }
 
-  currentUser(
+  async isEmailVerificationRequired(): Promise<boolean> {
+    if (this.config.emailDeliveryEnabled === false) return false;
+    const stored = await this.repository.getSetting(
+      REQUIRE_EMAIL_VERIFICATION_SETTING,
+    );
+    return stored === null
+      ? this.config.requireEmailVerification
+      : stored === "true";
+  }
+
+  async setEmailVerificationRequired(
+    required: boolean,
+    actorUserId: string,
+  ): Promise<void> {
+    if (required && this.config.emailDeliveryEnabled === false) {
+      throw new AuthError(
+        "BAD_REQUEST",
+        400,
+        "Email delivery is disabled; verification cannot be required",
+      );
+    }
+    await this.repository.setSetting({
+      key: REQUIRE_EMAIL_VERIFICATION_SETTING,
+      value: String(required),
+      actorUserId,
+      now: this.now(),
+    });
+  }
+
+  async currentUser(
     sessionToken: string | undefined,
   ): Promise<AuthenticatedUserDto | null> {
-    if (!sessionToken) return Promise.resolve(null);
+    if (!sessionToken) return null;
     return this.repository.findActiveSession({
       tokenHash: hashOpaqueToken(sessionToken),
       now: this.now(),
-      requireEmailVerification: this.config.requireEmailVerification,
+      requireEmailVerification: await this.isEmailVerificationRequired(),
     });
   }
 

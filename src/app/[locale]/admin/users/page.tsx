@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
 
+import { EmailVerificationSetting } from "@/components/admin/email-verification-setting";
 import { UsersManager } from "@/components/admin/users-manager";
 import { isLocale } from "@/domain/common/locale";
 import { getAdminMessages } from "@/i18n/admin-catalogs";
+import { getAuthService } from "@/server/auth/runtime";
+import { loadAuthConfig } from "@/server/config/env";
 import { getAdminUserService } from "@/server/content/runtime";
 import { requireAdmin } from "@/server/auth/authorization";
 
@@ -18,6 +21,8 @@ export default async function AdminUsersPage({
   const messages = getAdminMessages(locale);
   const currentAdmin = await requireAdmin();
   const page = await getAdminUserService().listUsers({ limit: 30 });
+  const verificationRequired =
+    await getAuthService().isEmailVerificationRequired();
 
   return (
     <>
@@ -25,6 +30,12 @@ export default async function AdminUsersPage({
         <h1>{messages.users.title}</h1>
         <p>{messages.users.description}</p>
       </div>
+      <EmailVerificationSetting
+        locale={locale}
+        messages={messages}
+        initialRequired={verificationRequired}
+        emailProvider={loadAuthConfig().EMAIL_PROVIDER}
+      />
       <UsersManager
         locale={locale}
         messages={messages}

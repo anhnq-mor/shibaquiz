@@ -7,6 +7,7 @@ import type {
 } from "@/domain/auth/auth";
 import type { Database } from "@/server/db/client";
 import {
+  appSettings,
   auditLogs,
   authTokens,
   rateLimits,
@@ -303,6 +304,47 @@ export class DrizzleAuthRepository implements AuthRepository {
         entityType: "User",
         entityId: input.userId,
         metadata: {},
+        createdAt: input.now,
+      });
+    });
+  }
+
+  async getSetting(key: string): Promise<string | null> {
+    const rows = await this.database
+      .select({ value: appSettings.value })
+      .from(appSettings)
+      .where(eq(appSettings.key, key))
+      .limit(1);
+    return rows[0]?.value ?? null;
+  }
+
+  async setSetting(
+    input: Parameters<AuthRepository["setSetting"]>[0],
+  ): Promise<void> {
+    await this.database.transaction(async (transaction) => {
+      await transaction
+        .insert(appSettings)
+        .values({
+          key: input.key,
+          value: input.value,
+          updatedBy: input.actorUserId,
+          createdAt: input.now,
+          updatedAt: input.now,
+        })
+        .onConflictDoUpdate({
+          target: appSettings.key,
+          set: {
+            value: input.value,
+            updatedBy: input.actorUserId,
+            updatedAt: input.now,
+          },
+        });
+      await transaction.insert(auditLogs).values({
+        actorUserId: input.actorUserId,
+        action: "ADMIN_SETTING_CHANGED",
+        entityType: "Setting",
+        entityId: input.key,
+        metadata: { value: input.value },
         createdAt: input.now,
       });
     });

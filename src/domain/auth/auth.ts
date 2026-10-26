@@ -69,6 +69,13 @@ export interface AuthRepository {
     passwordHash: string;
     now: Date;
   }): Promise<void>;
+  getSetting(key: string): Promise<string | null>;
+  setSetting(input: {
+    key: string;
+    value: string;
+    actorUserId: string;
+    now: Date;
+  }): Promise<void>;
   adminSetPassword(input: {
     userId: string;
     passwordHash: string;

@@ -328,6 +328,64 @@ describe("secure account vertical slice", () => {
     ).toMatchObject({ user: { id: session.user.id } });
   });
 
+  it("lets an admin toggle email verification at runtime", async () => {
+    const authorId = "70000000-0000-4000-8000-000000000001";
+    await database.insert(schema.users).values({
+      id: authorId,
+      email: "settings-admin@example.com",
+      displayName: "Settings Admin",
+      passwordHash: "not-a-real-password-hash",
+      role: "ADMIN",
+    });
+    expect(await service.isEmailVerificationRequired()).toBe(true);
+
+    await service.setEmailVerificationRequired(false, authorId);
+    expect(await service.isEmailVerificationRequired()).toBe(false);
+    await service.register({
+      displayName: "No Verify",
+      email: "toggle-off@example.com",
+      password: "Matkhau12345",
+      locale: "vi",
+    });
+    expect(
+      await service.login({
+        email: "toggle-off@example.com",
+        password: "Matkhau12345",
+      }),
+    ).toMatchObject({ user: { email: "toggle-off@example.com" } });
+
+    await service.setEmailVerificationRequired(true, authorId);
+    await service.register({
+      displayName: "Needs Verify",
+      email: "toggle-on@example.com",
+      password: "Matkhau12345",
+      locale: "vi",
+    });
+    await expect(
+      service.login({
+        email: "toggle-on@example.com",
+        password: "Matkhau12345",
+      }),
+    ).rejects.toMatchObject({ code: "EMAIL_NOT_VERIFIED" });
+
+    const noDelivery = new AuthService(
+      new DrizzleAuthRepository(database),
+      emailService,
+      new BcryptPasswordHasher(10),
+      {
+        secret: "test-secret-that-is-at-least-thirty-two-characters",
+        sessionDays: 7,
+        requireEmailVerification: true,
+        emailDeliveryEnabled: false,
+      },
+    );
+    expect(await noDelivery.isEmailVerificationRequired()).toBe(false);
+    await expect(
+      noDelivery.setEmailVerificationRequired(true, authorId),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await service.setEmailVerificationRequired(true, authorId);
+  });
+
   it("enforces a database-backed request limit", async () => {
     for (let attempt = 0; attempt < 5; attempt += 1) {
       await service.requestPasswordReset({
